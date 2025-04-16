@@ -1,5 +1,6 @@
 package com.newsvision.user.entity;
 
+import com.newsvision.user.dto.request.UpdateUserRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,5 +52,11 @@ public class User {
     }
     public enum Provider {
         LOCAL, GOOGLE, KAKAO, NAVER
+    }
+
+    public void update(UpdateUserRequest request){
+        this.image = request.getImage();
+        this.nickname = request.getNickname();
+        this.introduce = request.getIntroduce();
     }
 }
