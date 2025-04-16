@@ -3,9 +3,12 @@ package com.newsvision.user.controller;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.jwt.JwtTokenProvider;
+import com.newsvision.global.response.ApiResponse;
 import com.newsvision.user.dto.request.LoginUserRequest;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.TokenBlacklistService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -21,6 +24,7 @@ public class AuthController {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginUserRequest request) {
@@ -33,5 +37,20 @@ public class AuthController {
 
         String token = jwtTokenProvider.createToken(user.getUsername(), user.getRole().name());
         return ResponseEntity.ok(token);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+
+        if(header != null && header.startsWith("Bearer ")) {
+            String token = header.split(" ")[1];
+
+            if(jwtTokenProvider.validateToken(token)) {
+                long expiration = jwtTokenProvider.getExpiration(token);
+                tokenBlacklistService.blacklistToken(token, expiration);
+            }
+        }
+        return ResponseEntity.ok().build();
     }
 }

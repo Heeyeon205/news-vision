@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,12 +16,9 @@ import java.util.Date;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtTokenProvider {
-    @Value("${jwt.issuer}")
-    private String issuer;
-
-    @Value("${jwt.secret}")
-    private String secretKey;
+    private final JwtProperties jwtProperties;
 
     private Key key;
 
@@ -28,7 +26,7 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
@@ -39,7 +37,7 @@ public class JwtTokenProvider {
 
         return Jwts.builder()
                 .subject(username)
-                .issuer(issuer)
+                .issuer(jwtProperties.getIssuer())
                 .issuedAt(now)
                 .expiration(expiry)
                 .claim("role", role)
@@ -78,5 +76,12 @@ public class JwtTokenProvider {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    // 남은 JWT 만료 시간
+    public long getExpiration(String token) {
+//      return parseClaims(token).getExpiration().getTime();
+        Date expiration = parseClaims(token).getExpiration();
+        return expiration.getTime() - System.currentTimeMillis();
     }
 }
