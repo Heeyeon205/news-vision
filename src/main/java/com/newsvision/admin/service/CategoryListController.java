@@ -1,4 +1,4 @@
 package com.newsvision.admin.service;
 
-public class Test {
+public class CategoryListController {
 }
