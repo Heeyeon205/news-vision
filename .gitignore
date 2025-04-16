@@ -224,3 +224,13 @@ $RECYCLE.BIN/
 .env
 .env.*
 application-*.yml
+
+# Gradle
+.gradle/
+build/
+
+# IntelliJ
+.idea/
+!*.iml
+
+*.log
