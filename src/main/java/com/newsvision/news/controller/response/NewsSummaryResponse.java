@@ -17,6 +17,7 @@ public class NewsSummaryResponse {
     private String author;
     private LocalDateTime createdAt;
 
+    // 메인등의 화면에서 카드형식으로 news정보 담아 보여주는 response
     public static NewsSummaryResponse from(News news) {
         return NewsSummaryResponse.builder()
                 .id(news.getId())
