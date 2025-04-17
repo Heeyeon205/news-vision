@@ -52,40 +52,51 @@ public class NewsService {
 
 
     @Transactional
-    public boolean toggleLike(Long newsId, User loginUser) {
+    public void addLike(Long newsId, User user) {
         News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        boolean alreadyLiked = newsLikeRepository.existsByUserAndNews(loginUser, news);
-
-        if (alreadyLiked) {
-            newsLikeRepository.deleteByUserAndNews(loginUser, news);
-            return false; // 좋아요 취소
-        } else {
+        boolean exists = newsLikeRepository.existsByUserAndNews(user, news);
+        if (!exists) {
             NewsLike like = NewsLike.builder()
                     .news(news)
-                    .user(loginUser)
+                    .user(user)
                     .build();
             newsLikeRepository.save(like);
-            return true; // 좋아요 추가
         }
     }
 
     @Transactional
-    public boolean toggleScrap(Long newsId, User user) {
+    public void removeLike(Long newsId, User user) {
         News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        boolean alreadyScrapped = scrapRepository.existsByUserAndNews(user, news);
+        newsLikeRepository.deleteByUserAndNews(user, news);
+    }
 
-        if (alreadyScrapped) {
-            scrapRepository.deleteByUserAndNews(user, news);
-            return false; // 취소
-        } else {
-            scrapRepository.save(Scrap.builder().user(user).news(news).build());
-            return true; // 추가
+    @Transactional
+    public void addScrap(Long newsId, User user) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        boolean exists = scrapRepository.existsByUserAndNews(user, news);
+        if (!exists) {
+            Scrap scrap = Scrap.builder()
+                    .news(news)
+                    .user(user)
+                    .build();
+            scrapRepository.save(scrap);
         }
     }
+
+    @Transactional
+    public void removeScrap(Long newsId, User user) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        scrapRepository.deleteByUserAndNews(user, news);
+    }
+
 
     public List<NewsSummaryResponse> getMyScrapList(User user) {
         return scrapRepository.findAllByUser(user).stream()
@@ -104,5 +115,31 @@ public class NewsService {
         return newsRepository.findAllByOrderByCreatedAtDesc(pageable)
                 .map(NewsSummaryResponse::from);
     }
+
+    public Page<NewsSummaryResponse> getFilteredArticles(String type, Long categoryId, User user, Pageable pageable) {
+        Page<News> result;
+
+        switch (type) {
+            case "popular":
+                result = newsRepository.findAllOrderByLikeCountDesc(pageable);
+                break;
+            case "follow":
+                if (user == null) throw new CustomException(ErrorCode.UNAUTHORIZED);
+                result = newsRepository.findByFollowingUsers(user.getId(), pageable);
+                break;
+            case "category":
+                result = newsRepository.findByCategoryId(categoryId, pageable);
+                break;
+            case "recent":
+            default:
+                result = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
+                break;
+        }
+
+
+        return result.map(NewsSummaryResponse::from);
+    }
+
+
 
 }
