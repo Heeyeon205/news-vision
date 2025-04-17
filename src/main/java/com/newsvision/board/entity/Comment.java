@@ -1,5 +1,6 @@
 package com.newsvision.board.entity;
 
+import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,11 +16,9 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id")
-    private Long userId;
-
-    @Column(name = "post_id")
-    private Long postId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false) // user_id 외래 키 설정
+    private User user;
 
     @Column(name = "is_reported")
     private Boolean isReported;
@@ -27,11 +26,15 @@ public class Comment {
 
     //Board 엔티티와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "post_id", referencedColumnName = "id")
+    @JoinColumn(name = "board_id", referencedColumnName = "id")
     private Board board;
 
     // CommentReport와의 관계 설정
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentReport> commentReports;
 
+    @PrePersist // 엔티티가 persist 되기 전에 실행
+    public void prePersist() {
+        this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
+    }
 }
