@@ -1,6 +1,7 @@
 package com.newsvision.board.entity;
 
 
+import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +15,9 @@ public class BoardReport {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
-
-    @Column(name = "board_id", nullable = false)
-    private Long boardId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false) // user_id 외래 키 설정
+    private User user;
 
     //Board 엔티티와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)

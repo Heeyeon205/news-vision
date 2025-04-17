@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class BoardResponse {
-    private Long id;
     private String title;
     private String content;
     private Long categoryId;
@@ -22,12 +21,11 @@ public class BoardResponse {
     private Long likeCount;
     private Long commentCount;
 
-    public BoardResponse(Long id, String title, String content, Long categoryId, LocalDateTime createAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
-        this.id = id;
+    public BoardResponse(String title, String content, Long categoryId, LocalDateTime createdAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
         this.title = title;
         this.content = content;
         this.categoryId = categoryId;
-        this.createdAt = createAt;
+        this.createdAt = createdAt;
         this.userId = userId;
         this.image = image;
         this.view = view;
