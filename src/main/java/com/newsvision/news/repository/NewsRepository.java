@@ -2,6 +2,7 @@ package com.newsvision.news.repository;
 
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.entity.News;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,5 +36,30 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     // 뉴스id로 뉴스 상세보기
     Optional<News> findById(Long id);
+
+    @Query("""
+    SELECT n FROM News n
+    WHERE n.user.role IN ('ADMIN', 'CREATOR')
+    ORDER BY (SELECT COUNT(nl) FROM NewsLike nl WHERE nl.news = n) DESC
+""")
+    Page<News> findAllOrderByLikeCountDesc(Pageable pageable);
+
+    @Query("""
+    SELECT n FROM News n
+    WHERE n.user.id IN (
+        SELECT f.followingId FROM Follow f WHERE f.followerId = :userId
+    )
+    ORDER BY n.createdAt DESC
+""")
+    Page<News> findByFollowingUsers(@Param("userId") Long userId, Pageable pageable);
+
+
+    @Query("""
+    SELECT n FROM News n
+    WHERE n.category.id = :categoryId
+    ORDER BY n.createdAt DESC
+""")
+    Page<News> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+
 
 }
