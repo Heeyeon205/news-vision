@@ -1,27 +1,20 @@
 package com.newsvision.user.dto.oauth2;
 
-import java.util.Map;
-
-public class NaverResponse implements OAuth2Response {
-    private final Map<String, Object> attributes;
-
-    public NaverResponse(Map<String, Object> attributes) {
-        this.attributes = (Map<String, Object>) attributes.get("response");
-    }
+public class KakaoResponse implements OAuth2Response {
 
     @Override
     public String getProvider() {
-        return "naver";
+        return "";
     }
 
     @Override
     public String getProviderId() {
-        return attributes.get("id").toString();
+        return "";
     }
 
     @Override
     public String getEmail() {
-        return attributes.get("email").toString();
+        return "";
     }
 
     @Override

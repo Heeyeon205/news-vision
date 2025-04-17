@@ -8,6 +8,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -40,9 +41,25 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/join", "/api/auth/**").permitAll()
+                .requestMatchers(
+                        // 기본
+                        "/", "/user/login", "/user/join",
+                        // 일단 개발용 풀 개방
+                        "/api/**", "/news/**", "/board/**", "/admin/**",
+                        // auth
+                        "/api/auth/login", "/api/user/join",
+                        // 정적 파일
+                        "/css/**", "/js/**", "/images/**", "/static/**"
+                ).permitAll()
+                .requestMatchers("???").hasAnyRole("ADMIN", "CREATOR", "USER")
+                .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
+
+//        http.oauth2Login(oauth2 -> oauth2
+//                .loginPage("/login-form") // 보여줄 소셜 로그인 폼
+//                .permitAll()
+//        );
 
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 

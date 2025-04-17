@@ -9,13 +9,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user/")
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
 
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<JoinUserRequest>> join(@RequestBody JoinUserRequest request) {
+        System.out.println("회원가입 요청: " + request);
         userService.existsByNickname(request.getNickname());
         userService.save(request);
         return ResponseEntity.ok(ApiResponse.success(request));

@@ -31,10 +31,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String bearerToken = request.getHeader("Authorization");
+        log.debug("Authorization 헤더: {}", bearerToken);
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             String token = bearerToken.split(" ")[1];
+            log.debug("추출된 토큰: {}", token);
 
             if (jwtTokenProvider.validateToken(token)) {
+                log.info("유효한 JWT 토큰 확인됨: {}", token);
 
                 if (tokenBlacklistService.isBlacklisted(token)) {
                     log.warn("사용된 JWT 토큰입니다 (블랙리스트)");
@@ -43,6 +46,8 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 }
 
                 String username = jwtTokenProvider.getUsername(token);
+                log.debug("토큰에서 추출된 사용자명: {}", username);
+
                 CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());

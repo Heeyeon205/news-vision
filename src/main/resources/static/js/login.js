@@ -1,29 +1,28 @@
-const login_form = document.getElementById("login-form");
-login_form.addEventListener('submit',(e) => {
-    e.preventDefault();
+const loginBtn = document.getElementById("login-btn");
 
-    const formData = {
-        username: e.target.username.value,
-        password: e.target.password.value
-    };
+loginBtn.addEventListener('click', async () => {
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+    const formData = { username, password };
 
-    fetch('/api/auth/login', {
-        method: 'post',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-    })
+    try {
+        const response = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
 
-        .then(response => {
-            if(!response.ok) { throw new Error('로그인 실패') }
-            return response.text();
-        })
+        if (response.status !== 200) {
+            throw new Error('로그인 실패' + (response.status));
+        }
 
-        .then(token => {
-            localStorage.setItem("access_token", token);
-            window.location.href = "/main";
-        })
-
-        .catch(error => alert(error.message));
+        const token = await response.text();
+        localStorage.setItem("access_token", token);
+        alert('로그인 성공: ' + (token));
+        window.location.href = "/";
+    } catch (error) {
+        alert(error.message);
+    }
 });

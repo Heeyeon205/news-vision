@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+
 @RequiredArgsConstructor
 @Controller
-
 public class UserListController {
     private final UserListService userService;
 
