@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login Page</title>
+</head>
+
+<body>
+<div th:replace="fragments/header :: header"></div>
+<section>
+    <form id="login-form" method="post" action="/login">
+        <input type="text" name="username" placeholder="Email">
+        <input type="password" name="password" placeholder="Password">
+        <button type="submit">로그인</button>
+    </form>
+
+    <div class="social-login">
+        <button type="button" onclick='location.href="/oauth2/authorization/google"'>Google로 로그인</button>
+        <button type="button" onclick='location.href="/oauth2/authorization/naver"'>Naver로 로그인</button>
+        <button type="button" onclick='location.href="/oauth2/authorization/kakao"'>Kakao로 로그인</button>
+        <img th:src="@{/images/kakao_login_btn_.png}" alt="카카오 로그인">
+    </div>
+</section>
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+
+</html>
