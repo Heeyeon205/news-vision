@@ -7,7 +7,6 @@ if (token) {
          <button onclick="logout()">로그아웃</button>`;
 } else {
     authArea.innerHTML = `
-            <a href="/news/main">메인</a>
             <a href="/news/article">아티클</a>
             <a href="/board/boards">커뮤니티</a>
             <a href="/user/login">로그인</a>
