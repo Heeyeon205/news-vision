@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.management.relation.Role;
 import java.time.LocalDateTime;
 
 @Getter
@@ -22,6 +23,7 @@ public class UserListResponse {
     private String introduce;
     private String image;
     private String provider_id;
+
     public UserListResponse(User userListEntity) {
         this.id = userListEntity.getId();
         this.username = userListEntity.getUsername();
@@ -33,4 +35,7 @@ public class UserListResponse {
         this.image = userListEntity.getImage();
         this.provider_id = userListEntity.getProviderId();
     }
+
+
+
 }

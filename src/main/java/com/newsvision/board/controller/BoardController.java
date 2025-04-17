@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class BoardController {
     private final BoardService boardService;
 
-//    @GetMapping
-//    public String boardPage(Model model, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
-//        Page<Board> boardPage = boardService.getBoardsPage(pageable); // 메소드 이름 복수형으로 수정
-//        model.addAttribute("boardPage", boardPage);
-//        return "board/boardMain";
-//    }
+    @GetMapping
+    public String boardPage(Model model, @PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
+        Page<Board> boardPage = boardService.getBoardsPage(pageable); // 메소드 이름 복수형으로 수정
+        model.addAttribute("boardPage", boardPage);
+       return "board/boardMain";
+    }
             @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
             public Page<Board> getBoards(@PageableDefault(size = 10, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
                 return boardService.getBoardsPage(pageable); // BoardService를 통해 페이징된 게시글 데이터를 가져와서 반환
