@@ -1,10 +1,12 @@
 package com.newsvision.board.controller;
 
 
+import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/boards")
 @RequiredArgsConstructor
+@Slf4j
 public class BoardController {
     private final BoardService boardService;
 
@@ -30,8 +33,16 @@ public class BoardController {
         List<BoardResponse> boards = boardService.getBoardsList(page, size);
         return new ResponseEntity<>(boards, HttpStatus.OK); // 200 OK 상태 코드와 함께 게시글 목록 반환
     }
+
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardDetailResponse> getBoardDetail(@PathVariable Long boardId) {
+        BoardDetailResponse boardDetail = boardService.getBoardDetail(boardId);
+        return new ResponseEntity<>(boardDetail, HttpStatus.OK);
+    }
+
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<Void> likeBoard(@PathVariable Long boardId, @RequestParam Long userId) {
+        log.info("BoardController.likeBoard 메서드 호출됨! boardId: {}, userId: {}", boardId, userId); // 로그 추가
         boardService.likeBoard(boardId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }

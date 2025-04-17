@@ -1,7 +1,6 @@
 package com.newsvision.board.controller.response;
 
-import com.newsvision.board.entity.Board;
-import com.newsvision.category.entity.Categories;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,8 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-public class BoardResponse {
+public class BoardDetailResponse {
+    private Long id;
     private String title;
     private String content;
     private Long categoryId;
@@ -22,7 +22,8 @@ public class BoardResponse {
     private Long likeCount;
     private Long commentCount;
 
-    public BoardResponse(String title, String content, Long categoryId, LocalDateTime createdAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
+    public BoardDetailResponse(Long id, String title, String content, Long categoryId, LocalDateTime createdAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.categoryId = categoryId;

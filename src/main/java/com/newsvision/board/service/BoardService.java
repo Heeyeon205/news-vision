@@ -1,5 +1,6 @@
 package com.newsvision.board.service;
 
+import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.BoardLike;
@@ -39,7 +40,7 @@ public class BoardService {
             return new BoardResponse(
                     board.getTitle(),
                     board.getContent(),
-                    board.getCategoryId(),
+                    board.getCategory().getId(),
                     board.getCreateAt(),
                     board.getUser().getId(),
                     board.getImage(),
@@ -51,6 +52,29 @@ public class BoardService {
             );
         }).collect(Collectors.toList());
     }
+
+    public BoardDetailResponse getBoardDetail(Long boardId) { // 게시글 상세 조회
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        long likeCount = (long) board.getBoardLikes().size(); // 좋아요 수 계산
+        long commentCount = (long) board.getComments().size(); // 댓글 수 계산
+        return new BoardDetailResponse(
+                board.getId(),
+                board.getTitle(),
+                board.getContent(),
+                board.getCategory().getId(),
+                board.getCreateAt(),
+                board.getUser().getId(),
+                board.getImage(),
+                board.getView(),
+                board.getNewsId(),
+                board.getIsReported(),
+                likeCount,
+                commentCount
+        );
+    }
+
+
 
     @Transactional
     public void likeBoard(Long boardId, Long userId) { // 좋아요 기능
