@@ -21,7 +21,7 @@ public class BoardLike {
 
     // Board 엔티티와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "board_id", referencedColumnName = "id" , insertable = false,updatable = false)
+    @JoinColumn(name = "board_id", referencedColumnName = "id")
     private Board board;
 
 

@@ -1,5 +1,6 @@
 package com.newsvision.board.entity;
 
+import com.newsvision.category.entity.Categories;
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -24,8 +25,9 @@ public class Board {
     private String title;
     @Column(nullable = false, length = 1000)
     private String content;
-    @Column(name = "category_id",nullable = false)
-    private Long categoryId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Categories category;
     @Column(name = "create_at")
     private LocalDateTime createAt;
     @ManyToOne(fetch = FetchType.LAZY)

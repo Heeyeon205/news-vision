@@ -222,7 +222,6 @@ $RECYCLE.BIN/
 
 # Environment files
 .env
-.env.*
 application-*.yml
 
 # Gradle

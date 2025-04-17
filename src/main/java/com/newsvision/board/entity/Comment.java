@@ -23,6 +23,8 @@ public class Comment {
     @Column(name = "is_reported")
     private Boolean isReported;
 
+    @Column(nullable = false, length = 100)
+    private String content;
 
     //Board 엔티티와의 관계 설정
     @ManyToOne(fetch = FetchType.LAZY)

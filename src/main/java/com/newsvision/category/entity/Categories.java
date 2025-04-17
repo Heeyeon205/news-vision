@@ -1,7 +1,10 @@
 package com.newsvision.category.entity;
 
+import com.newsvision.board.entity.Board;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -15,4 +18,7 @@ public class Categories {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Board> boards;
 }
