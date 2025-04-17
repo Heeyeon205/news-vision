@@ -22,6 +22,7 @@ public class NewsResponse {
     private boolean liked;
     private boolean scraped;
 
+    //상세보기 등의 화면에서 news 전체 정보 가져와 담아주는 response
     public static NewsResponse of(News news, int likeCount, boolean liked, boolean scraped) {
         return NewsResponse.builder()
                 .id(news.getId())

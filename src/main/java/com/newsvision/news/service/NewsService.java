@@ -12,7 +12,9 @@ import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
 import com.newsvision.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +28,15 @@ public class NewsService {
     private final NewsLikeRepository newsLikeRepository;
     private final ScrapRepository scrapRepository;
 
-    public List<NewsSummaryResponse> getTop10RecentNews() {
+    //
+    public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
-        List<News> topNews = newsRepository.findTopNewsAfterDate(threeDaysAgo, PageRequest.of(0, 10));
-
+        List<News> topNews = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
         return topNews.stream()
                 .map(NewsSummaryResponse::from)
                 .toList();
     }
+
     @Transactional
     public NewsResponse getNewsDetail(Long newsId, User loginUser) {
         News news = newsRepository.findById(newsId)
@@ -88,6 +91,18 @@ public class NewsService {
         return scrapRepository.findAllByUser(user).stream()
                 .map(scrap -> NewsSummaryResponse.from(scrap.getNews()))
                 .toList();
+    }
+
+    public List<NewsSummaryResponse> getCreatorNewsList() {
+        return newsRepository.findAllByCreatorOrderByCreatedAtDesc()
+                .stream()
+                .map(NewsSummaryResponse::from)
+                .toList();
+    }
+
+    public Page<NewsSummaryResponse> getNewsListByCreatedAt(Pageable pageable) {
+        return newsRepository.findAllByOrderByCreatedAtDesc(pageable)
+                .map(NewsSummaryResponse::from);
     }
 
 }

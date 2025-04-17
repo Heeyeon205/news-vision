@@ -8,6 +8,10 @@ import com.newsvision.news.service.NewsService;
 import com.newsvision.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +27,9 @@ public class NewsController {
 
     @GetMapping("/main")
     public ApiResponse<List<NewsSummaryResponse>> getMainNews() {
-        return ApiResponse.success(newsService.getTop10RecentNews());
+        return ApiResponse.success(newsService.getTop10RecentNewsOnlyByAdmin());
     }
+
 
     @GetMapping("/news/{newsId}")
     public ApiResponse<NewsResponse> getNewsDetail(
@@ -64,5 +69,17 @@ public class NewsController {
         return ApiResponse.success(newsService.getMyScrapList(loginUser));
     }
 
+
+    @GetMapping("/editorials")
+    public ApiResponse<List<NewsSummaryResponse>> getCreatorNewsList() {
+        return ApiResponse.success(newsService.getCreatorNewsList());
+    }
+
+    @GetMapping("/news")
+    public ApiResponse<Page<NewsSummaryResponse>> getAllNewsPaged(
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        return ApiResponse.success(newsService.getNewsListByCreatedAt(pageable));
+    }
 
 }
