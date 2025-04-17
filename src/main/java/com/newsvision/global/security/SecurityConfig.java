@@ -20,6 +20,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
 
+
+
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -40,7 +42,7 @@ public class SecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/join", "/api/auth/**").permitAll()
+                .requestMatchers("/api/join", "/api/auth/**", "/users", "/users/**").permitAll()
                 .anyRequest().authenticated()
         );
 

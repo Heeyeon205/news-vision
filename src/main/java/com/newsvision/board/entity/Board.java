@@ -58,4 +58,6 @@ public class Board {
         this.view = this.view == null ? 0 : this.view; // view 초기값 설정 (null이면 0으로)
         this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
     }
+
+
 }

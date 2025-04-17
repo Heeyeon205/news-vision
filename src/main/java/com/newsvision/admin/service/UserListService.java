@@ -8,27 +8,39 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class UserListService {
     private final UserRepository userRepository;
-    private final UserRepository userListRepository;
 
     public List<UserListResponse> getAllUsers() {
-        return userListRepository.findAll().stream()
+        return userRepository.findAll().stream()
                 .map(UserListResponse::new)
                 .collect(Collectors.toList());
     }
 
-    public UserListResponse saveUser(UserListResponse userListResponse) {
-        User userListEntity = User.builder()
-                .username(userListResponse.getUsername())
-                .nickname(userListResponse.getNickname())
-                .role(userListResponse.getRole() != null ? User.Role.valueOf(userListResponse.getRole()) : User.Role.USER)
-                .isPaid(userListResponse.getIsPaid() != null ? userListResponse.getIsPaid() : false)
-                .createAt(userListResponse.getCreated_at())
-                .build();
-        User savedEntity = userListRepository.save(userListEntity);
-        return new UserListResponse(savedEntity);
+    public UserListResponse saveUser(UserListResponse dto) {
+        try {
+            User.Role role = User.Role.valueOf(dto.getRole());
+
+            User user = User.builder()
+                    .username(dto.getUsername())
+                    .nickname(dto.getNickname())
+                    .password(dto.getPassword())
+                    .role(role)
+                    .isPaid(dto.getIsPaid())
+                    .createAt(dto.getCreate_at())
+                    .introduce(dto.getIntroduce())
+                    .image(dto.getImage())
+                    .providerId(dto.getProviderId())
+                    .build();
+
+            return new UserListResponse(userRepository.save(user));
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 서버 로그에 예외 표시
+            throw new RuntimeException("사용자 저장 중 오류 발생: " + e.getMessage());
+        }
     }
 }
