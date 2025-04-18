@@ -3,12 +3,14 @@ package com.newsvision.board.controller.response;
 import com.newsvision.board.entity.Board;
 import com.newsvision.category.entity.Categories;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
+
 public class BoardResponse {
     private String title;
     private String content;
@@ -35,4 +37,6 @@ public class BoardResponse {
         this.likeCount = likeCount;
         this.commentCount = commentCount;
     }
+
+
 }

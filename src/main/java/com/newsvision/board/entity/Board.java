@@ -2,6 +2,7 @@ package com.newsvision.board.entity;
 
 import com.newsvision.category.entity.Categories;
 import com.newsvision.user.entity.User;
+import com.nimbusds.oauth2.sdk.TokenIntrospectionSuccessResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -53,6 +54,8 @@ public class Board {
     // BoardReport 엔티티와 관계 설정
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardReport> boardReports;
+
+
 
     @PrePersist // 엔티티가 persist 되기 전에 실행
     public void prePersist() {
