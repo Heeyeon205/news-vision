@@ -43,11 +43,11 @@ public class Board {
     private Boolean isReported;
 
     //BoardLike 엔티티와 관계 설정
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BoardLike> boardLikes;
 
     //Comment 엔티티와 관계 설정
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
     // BoardReport 엔티티와 관계 설정

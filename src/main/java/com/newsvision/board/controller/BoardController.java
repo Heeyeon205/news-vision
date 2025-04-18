@@ -1,6 +1,8 @@
 package com.newsvision.board.controller;
 
 
+import com.newsvision.board.controller.request.BoardCreateRequest;
+import com.newsvision.board.controller.request.BoardUpdateRequest;
 import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
@@ -39,10 +41,36 @@ public class BoardController {
         BoardDetailResponse boardDetail = boardService.getBoardDetail(boardId);
         return new ResponseEntity<>(boardDetail, HttpStatus.OK);
     }
+    @PostMapping // 게시글 작성 API
+    public ResponseEntity<BoardDetailResponse> createBoard(
+            @RequestParam Long userId,
+            @RequestBody BoardCreateRequest request // 요청 body로 게시글 정보 받기
+    ) {
+        BoardDetailResponse createdBoard = boardService.createBoard(userId, request);
+        return new ResponseEntity<>(createdBoard, HttpStatus.CREATED);
+    }
+    @PutMapping("/{boardId}") // 게시글 수정 API
+    public ResponseEntity<BoardDetailResponse> updateBoard(
+            @PathVariable Long boardId,
+            @RequestParam Long userId,
+            @RequestBody BoardUpdateRequest request // 요청 body로 수정할 게시글 정보 받기
+    ) {
+        BoardDetailResponse updatedBoard = boardService.updateBoard(boardId, userId, request);
+        return new ResponseEntity<>(updatedBoard, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{boardId}") // 게시글 삭제 API
+    public ResponseEntity<Void> deleteBoard(
+            @PathVariable Long boardId,
+            @RequestParam Long userId
+    ) {
+        boardService.deleteBoard(boardId, userId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<Void> likeBoard(@PathVariable Long boardId, @RequestParam Long userId) {
-        log.info("BoardController.likeBoard 메서드 호출됨! boardId: {}, userId: {}", boardId, userId); // 로그 추가
+        log.info("BoardController.likeBoard 메서드 호출됨! boardId: {}, userId: {}", boardId, userId);
         boardService.likeBoard(boardId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
