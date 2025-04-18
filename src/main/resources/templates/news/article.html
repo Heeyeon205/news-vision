@@ -1,51 +1,14 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="title">
     <title>아티클</title>
     <link rel="stylesheet" href="/css/common.css">
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style>
-        #article-list {
-            margin-top: 20px;
-            padding: 10px;
-        }
-
-        .news-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            border: 1px solid #ccc;
-            padding: 16px;
-            margin-bottom: 12px;
-            background-color: #fdfdfd;
-            border-radius: 8px;
-            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
-        }
-
-        .news-item img {
-            width: 120px;
-            height: auto;
-            object-fit: cover;
-            border-radius: 4px;
-        }
-
-        .news-item h3 {
-            margin: 0;
-            font-size: 18px;
-        }
-
-        .news-item span {
-            display: block;
-            font-size: 13px;
-            color: #666;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/article.css">
 </head>
-<body>
 
-<header>
+<div th:fragment="content" class="main-body">
     <nav>
-        <button onclick="location.href='/'">로고</button>
+        <button class="logo-btn" onclick="location.href='/'">로고</button>
         <button class="active">아티클</button>
         <button>AI 요약</button>
         <button>커뮤니티</button>
@@ -54,106 +17,23 @@
         <button th:text="${nickname}">닉네임</button>
         <button>로그인</button>
     </nav>
-</header>
 
-<main>
-    <h2>아티클</h2>
-    <p>{어드민 & 크리에이터 뉴스 | 카테고리 페이지}</p>
+    <main>
+        <h2>아티클</h2>
+        <p>{어드민 & 크리에이터 뉴스 | 카테고리 페이지}</p>
 
-    <!-- 필터 -->
-    <div class="filter-bar">
-        <button onclick="changeType('recent')">전체</button>
-        <button onclick="changeType('popular')">인기순</button>
-        <button onclick="changeType('follow')">팔로우</button>
-        <button onclick="changeCategory(1)">카테 1</button>
-        <button onclick="changeCategory(2)">카테 2</button>
-        <button onclick="changeCategory(3)">카테 3</button>
-    </div>
+        <!-- 필터 -->
+        <div class="filter-bar">
+            <button onclick="changeType('recent')">전체</button>
+            <button onclick="changeType('popular')">인기순</button>
+            <button onclick="changeType('follow')">팔로우</button>
+            <button onclick="changeCategory(1)">카테 1</button>
+            <button onclick="changeCategory(2)">카테 2</button>
+            <button onclick="changeCategory(3)">카테 3</button>
+        </div>
 
-    <!-- 뉴스 리스트 -->
-    <div id="article-list"></div>
-</main>
+        <!-- 뉴스 리스트 -->
+        <div id="article-list"></div>
+    </main>
 
-<footer>
-    <p>푸터</p>
-</footer>
-
-<script>
-    let page = 0;
-    let isLoading = false;
-    let currentType = 'recent';
-    let currentCategoryId = null;
-
-    function loadArticles() {
-        if (isLoading) return;
-        isLoading = true;
-
-        let url = `/api/article?type=${currentType}&page=${page}`;
-        if (currentType === 'category' && currentCategoryId) {
-            url += `&id=${currentCategoryId}`;
-        }
-
-        fetch(url)
-            .then(res => res.json())
-            .then(result => {
-                console.log("🚀 응답 확인:", result.data);
-                if (result.success && result.data.content.length > 0) {
-                    const list = document.getElementById("article-list");
-                    result.data.content.forEach(news => {
-                        const item = document.createElement("div");
-                        item.classList.add("news-item");
-                        item.innerHTML = `
-                  <img src="${news.image}" alt="썸네일">
-                  <div>
-                      <span>${news.category}</span>
-                      <h3>${news.title}</h3>
-                      <div>
-                          <span>${news.author}</span>
-                          <span>${new Date(news.createdAt).toLocaleDateString()}</span>
-                      </div>
-                  </div>
-              `;
-                        list.appendChild(item);
-                    });
-
-                    if (!result.data.last) {
-                        page++;
-                        isLoading = false;
-                    }
-                } else {
-                    // 빈 목록 처리
-                    document.getElementById("article-list").innerHTML = "<p>표시할 뉴스가 없습니다.</p>";
-                }
-            });
-
-    }
-
-    function changeType(type) {
-        page = 0;
-        currentType = type;
-        currentCategoryId = null;
-        document.getElementById("article-list").innerHTML = "";
-        loadArticles();
-    }
-
-    function changeCategory(id) {
-        page = 0;
-        currentType = 'category';
-        currentCategoryId = id;
-        document.getElementById("article-list").innerHTML = "";
-        loadArticles();
-    }
-
-    // 무한스크롤
-    window.addEventListener('scroll', () => {
-        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
-            loadArticles();
-        }
-    });
-
-    // 초기 로딩
-    document.addEventListener('DOMContentLoaded', loadArticles);
-</script>
-
-</body>
-</html>
+</div>

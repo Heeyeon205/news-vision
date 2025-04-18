@@ -23,7 +23,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/news")
 public class NewsController {
 
     private final NewsService newsService;
@@ -34,7 +34,7 @@ public class NewsController {
         return ResponseEntity.ok(ApiResponse.success(newsService.getTop10RecentNewsOnlyByAdmin()));
     }
 
-    @GetMapping("/news/{newsId}")
+    @GetMapping("/{newsId}")
     public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(
             @PathVariable Long newsId,
             @AuthenticationPrincipal User loginUser
@@ -50,7 +50,7 @@ public class NewsController {
 //        newsService.addLike(newsId, loginUser);
 //        return ResponseEntity.ok(ApiResponse.success("좋아요를 추가했습니다."));
 //    }
-@PostMapping("/news/{newsId}/like")
+@PostMapping("/{newsId}/like")
 public ResponseEntity<ApiResponse<String>> addLike(
         @PathVariable Long newsId
         //@AuthenticationPrincipal User loginUser
@@ -72,7 +72,7 @@ public ResponseEntity<ApiResponse<String>> addLike(
 //        newsService.removeLike(newsId, loginUser);
 //        return ResponseEntity.ok(ApiResponse.success("좋아요를 취소했습니다."));
 //    }
-@DeleteMapping("/news/{newsId}/like")
+@DeleteMapping("/{newsId}/like")
 public ResponseEntity<ApiResponse<String>> removeLike(
         @PathVariable Long newsId
         //@AuthenticationPrincipal User loginUser
@@ -84,7 +84,7 @@ public ResponseEntity<ApiResponse<String>> removeLike(
     return ResponseEntity.ok(ApiResponse.success("좋아요를 취소했습니다."));
 }
 
-    @PostMapping("/news/{newsId}/scrap")
+    @PostMapping("/{newsId}/scrap")
     public ResponseEntity<ApiResponse<String>> addScrap(
             @PathVariable Long newsId,
             @AuthenticationPrincipal User loginUser
@@ -93,7 +93,7 @@ public ResponseEntity<ApiResponse<String>> removeLike(
         return ResponseEntity.ok(ApiResponse.success("스크랩을 추가했습니다."));
     }
 
-    @DeleteMapping("/news/{newsId}/scrap")
+    @DeleteMapping("/{newsId}/scrap")
     public ResponseEntity<ApiResponse<String>> removeScrap(
             @PathVariable Long newsId,
             @AuthenticationPrincipal User loginUser
@@ -115,7 +115,7 @@ public ResponseEntity<ApiResponse<String>> removeLike(
         return ResponseEntity.ok(ApiResponse.success(newsService.getCreatorNewsList()));
     }
 
-    @GetMapping("/news")
+    @GetMapping("/all")
     public ResponseEntity<ApiResponse<Page<NewsSummaryResponse>>> getAllNewsPaged(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
