@@ -1,5 +1,6 @@
 package com.newsvision.board.service;
 
+import com.newsvision.admin.controller.response.UserListResponse;
 import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -99,6 +101,7 @@ public class BoardService {
         board.setView(board.getView() + 1);
         boardRepository.save(board);
     }
+
 
 
 }
