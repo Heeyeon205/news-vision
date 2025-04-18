@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/admin/boards")
 @RequiredArgsConstructor // Marks this class as a Spring service component
 public class BoardListController {
     private final BoardService boardService;
@@ -32,9 +32,11 @@ public class BoardListController {
     @GetMapping
     public ResponseEntity<List<BoardResponse>> getBoardList(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(required = false) Long categoryId
+            ){
 
-        List<BoardResponse> boardList = boardService.getBoardsList(page, size);
+        List<BoardResponse> boardList = boardService.getBoardsList(page, size, categoryId);
         return ResponseEntity.ok(boardList);
     }
 
