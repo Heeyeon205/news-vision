@@ -1,6 +1,8 @@
 package com.newsvision.global.security;
 
 import com.newsvision.global.jwt.JwtAuthorizationFilter;
+import com.newsvision.global.security.oauth.CustomOAuth2UserService;
+import com.newsvision.global.security.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +22,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -43,23 +48,25 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                         // 기본
-                        "/", "/user/login", "/user/join",
+                        "/", "/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**",
                         // 일단 개발용 풀 개방
-                        "/api/**", "/news/**", "/board/**", "/admin/**",
+                        "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**",
                         // auth
                         "/api/auth/login", "/api/user/join",
                         // 정적 파일
-                        "/css/**", "/js/**", "/images/**", "/static/**"
+                        "/css/**", "/js/**", "/images/**", "/static/**", "/oauth2/**"
                 ).permitAll()
                 .requestMatchers("???").hasAnyRole("ADMIN", "CREATOR", "USER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );
 
-//        http.oauth2Login(oauth2 -> oauth2
-//                .loginPage("/login-form") // 보여줄 소셜 로그인 폼
-//                .permitAll()
-//        );
+        http.oauth2Login(oauth2 -> oauth2
+                .userInfoEndpoint(userInfo -> userInfo
+                        .userService(customOAuth2UserService)
+                )
+                .successHandler(oAuth2SuccessHandler)
+        );
 
         http.addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
 

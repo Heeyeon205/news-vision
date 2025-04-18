@@ -23,10 +23,12 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
-    public void existsByNickname(String nickname) {
-         if(userRepository.existsByNickname(nickname)){
-             throw new CustomException(ErrorCode.DUPLICATE_NICKNAME);
-         }
+    public boolean existsByUsername(String username) {
+       return userRepository.existsByUsername(username);
+    }
+
+    public boolean existsByNickname(String nickname) {
+         return userRepository.existsByNickname(nickname);
     }
 
     @Transactional

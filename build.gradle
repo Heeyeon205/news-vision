@@ -39,6 +39,7 @@ dependencies {
 
     // Mail
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'software.amazon.awssdk:ses:2.21.12'
 
     // Security
     implementation 'org.springframework.boot:spring-boot-starter-security'

@@ -19,18 +19,20 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true, length = 50)
+    @Column(nullable = false, unique = true)
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column(nullable = false, unique = true, length = 12)
+    @Column()
+    private String email;
+    @Column(nullable = false, unique = true)
     private String nickname;
     @Column(name = "create_at")
     private LocalDateTime createAt;
     private String introduce;
     private String image;
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private Role role;
     @Enumerated(EnumType.STRING)
     private Provider provider;
@@ -42,13 +44,13 @@ public class User {
     @PrePersist
     public void prePersist() {
         this.createAt = this.createAt == null ? LocalDateTime.now() : this.createAt;
-        this.role = this.role == null ? Role.USER : this.role;
+        this.role = this.role == null ? Role.ROLE_USER : this.role;
         this.provider = this.provider == null ? Provider.LOCAL : this.provider;
         this.isPaid = this.isPaid == null ? false : this.isPaid;
     }
 
     public enum Role {
-        USER, CREATOR, ADMIN
+        ROLE_USER, ROLE_CREATOR, ROLE_ADMIN
     }
     public enum Provider {
         LOCAL, GOOGLE, KAKAO, NAVER

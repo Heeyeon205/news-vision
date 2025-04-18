@@ -1,11 +1,12 @@
-package com.newsvision.user.dto.oauth2;
+package com.newsvision.global.security.oauth;
 
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class GoogleResponse implements OAuth2Response {
+public class GoogleUserInfo implements OAuth2UserInfo {
     private final Map<String, Object> attributes;
 
     @Override
@@ -15,16 +16,16 @@ public class GoogleResponse implements OAuth2Response {
 
     @Override
     public String getProviderId() {
-        return attributes.get("sub").toString();
+        return (String) attributes.get("sub");
     }
 
     @Override
     public String getEmail() {
-        return attributes.get("email").toString();
+        return (String) attributes.get("email");
     }
 
     @Override
     public String getName() {
-        return "";
+        return (String) attributes.get("name");
     }
 }

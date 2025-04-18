@@ -1,8 +1,13 @@
 package com.newsvision.user.controller;
 
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.response.ApiResponse;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdateUserRequest;
+import com.newsvision.user.dto.response.CheckUserNicknameResponse;
+import com.newsvision.user.dto.response.CheckUserUsernameResponse;
+import com.newsvision.user.service.EmailService;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,10 +19,20 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserService userService;
 
+    @GetMapping("/check-username")
+    public ResponseEntity<ApiResponse<CheckUserUsernameResponse>> checkUsername(@RequestParam String username) {
+        boolean exists = userService.existsByUsername(username);
+        return ResponseEntity.ok(ApiResponse.success(new CheckUserUsernameResponse(exists)));
+    }
+
+    @GetMapping("/check-nickname")
+    public ResponseEntity<ApiResponse<CheckUserNicknameResponse>> checkNickname(@RequestParam String nickname) {
+        boolean exists = userService.existsByNickname(nickname);
+        return ResponseEntity.ok(ApiResponse.success(new CheckUserNicknameResponse(exists)));
+    }
+
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<JoinUserRequest>> join(@RequestBody JoinUserRequest request) {
-        System.out.println("회원가입 요청: " + request);
-        userService.existsByNickname(request.getNickname());
         userService.save(request);
         return ResponseEntity.ok(ApiResponse.success(request));
     }

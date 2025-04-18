@@ -1,27 +1,38 @@
-<!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+<head th:fragment="title">
     <title>회원가입</title>
 </head>
 
-<body>
-<div th:replace="~{fragments/header :: header}"></div>
+<div th:fragment="content" class="join-body">
+    <h1>회원가입</h1>
+    <input type="text" id="username" placeholder="Login Id">
+    <span id="username-msg"></span>
 
-<div th:fragment="content">
-        <h1>회원가입</h1>
-        <form id="join-form">
-            <input type="text" name="username" placeholder="Email">
-            <input type="password" name="password" placeholder="Password">
-            <input type="text" name="nickname" placeholder="nickname">
-            <button type="submit">회원가입</button>
-        </form>
+    <input type="password" id="password" placeholder="Password">
+    <span id="password-msg"></span>
+
+    <input type="email" id="email" placeholder="Email">
+    <button type="button" id="send-code-btn">인증 코드 발송</button>
+    <span id="email-msg"></span>
+
+    <input type="text" id="code" placeholder="인증 코드 입력">
+    <button type="button" id="verify-code-btn">코드 확인</button>
+    <span id="code-msg"></span>
+
+    <input type="text" id="nickname" placeholder="Nickname">
+    <span id="nickname-msg"></span>
+
+    <button type="button" id="join-btn">회원가입</button>
+
+    <div class="social-login">
+        <a href="/oauth2/authorization/google">
+            <img th:src="@{/images/google_login_btn.png}" alt="구글 로그인">
+        </a>
+        <a href="/oauth2/authorization/naver">
+            <img th:src="@{/images/naver_login_btn.png}" alt="네이버 로그인" width="183" height="40">
+        </a>
+        <a href="/oauth2/authorization/kakao">
+            <img th:src="@{/images/kakao_login_btn.png}" alt="카카오 로그인">
+        </a>
+    </div>
 </div>
 
-<div th:replace="~{fragments/footer :: footer}"></div>
-</body>
-</html>

@@ -15,6 +15,8 @@ public class EmailController {
 
     @PostMapping("/send-code")
     public ResponseEntity<ApiResponse<?>> sendCode(@RequestParam String email) {
+        System.out.println("여기 넘어옴?");
+        System.out.println("email = " + email);
         emailService.sendVerificationCode(email);
         return ResponseEntity.ok(ApiResponse.success("인증 메일이 발송되었습니다.", null));
     }

@@ -1,2 +1,2 @@
-INSERT INTO users (username, password, nickname)
-VALUES ('qwer', '1234', '홍길동');
+INSERT INTO users (username, password, nickname, role) VALUES
+('admin', 'admin', '뉴션', 'ROLE_ADMIN');
