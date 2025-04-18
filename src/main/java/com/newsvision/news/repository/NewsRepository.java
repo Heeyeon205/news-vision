@@ -18,7 +18,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     @Query("""
     SELECT n FROM News n
     WHERE n.createdAt >= :fromDate
-    AND n.user.role = 'ADMIN'
+    AND n.user.role = 'ROLE_ADMIN'
     ORDER BY (SELECT COUNT(nl) FROM NewsLike nl WHERE nl.news = n) DESC
 """)
     List<News> findTopNewsByAdminOnly(LocalDateTime fromDate, Pageable pageable);
@@ -26,7 +26,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     // 크리에이터가 작성한 사설 등록일순으로 보여주기
     @Query("""
     SELECT n FROM News n
-    WHERE n.user.role = 'CREATOR'
+    WHERE n.user.role = 'ROLE_CREATOR'
     ORDER BY n.createdAt DESC
 """)
     List<News> findAllByCreatorOrderByCreatedAtDesc();
@@ -39,7 +39,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     @Query("""
     SELECT n FROM News n
-    WHERE n.user.role IN ('ADMIN', 'CREATOR')
+    WHERE n.user.role IN ('ROLE_ADMIN', 'ROLE_CREATOR')
     ORDER BY (SELECT COUNT(nl) FROM NewsLike nl WHERE nl.news = n) DESC
 """)
     Page<News> findAllOrderByLikeCountDesc(Pageable pageable);

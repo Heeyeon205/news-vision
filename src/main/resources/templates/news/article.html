@@ -4,8 +4,10 @@
     <title>아티클</title>
     <link rel="stylesheet" href="/css/common.css">
     <link rel="stylesheet" href="/css/article.css">
+    <script src="/js/article.js" defer></script>
 </head>
 
+<body>
 <div th:fragment="content" class="main-body">
     <nav>
         <button class="logo-btn" onclick="location.href='/'">로고</button>
@@ -14,8 +16,11 @@
         <button>커뮤니티</button>
         <input type="text" placeholder="검색창">
         <button>알림</button>
-        <button th:text="${nickname}">닉네임</button>
+        <button id="nickname-btn">닉네임</button>
         <button>로그인</button>
+
+        <!-- 작성 버튼을 동적으로 삽입할 위치 -->
+        <div id="write-btn-container" style="display: inline-block;"></div>
     </nav>
 
     <main>
@@ -35,5 +40,6 @@
         <!-- 뉴스 리스트 -->
         <div id="article-list"></div>
     </main>
-
 </div>
+</body>
+</html>
