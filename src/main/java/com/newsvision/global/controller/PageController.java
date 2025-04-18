@@ -1,5 +1,7 @@
 package com.newsvision.global.controller;
 
+import com.newsvision.global.exception.CustomException;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,10 +9,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class PageController {
 
-    @GetMapping({"", "/"})
+    @GetMapping("/")
     public String main(Model model) {
         model.addAttribute("title", "메인페이지");
         model.addAttribute("content", "news/main :: content");
+        model.addAttribute("script", "/js/main.js");
         return "layout";
     }
 
@@ -48,8 +51,18 @@ public class PageController {
     public String article(Model model) {
         model.addAttribute("title", "아티클페이지");
         model.addAttribute("content", "news/article :: content");
+        model.addAttribute("script", "/js/article.js");
         return "layout";
     }
+
+    @GetMapping("/news/write")
+    public String writeNewsPage(Model model) {
+        model.addAttribute("title", "뉴스 작성");
+        model.addAttribute("content", "news/write :: content");
+        model.addAttribute("script", "/js/write.js");
+        return "layout";
+    }
+
 
     @GetMapping("/board/boards")
     public String boards(Model model) {

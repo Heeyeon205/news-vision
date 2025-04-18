@@ -1,15 +1,11 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="title">
     <title>메인페이지</title>
-    <link rel="stylesheet" href="/css/common.css">
 </head>
-<body>
 
-<header>
+<div th:fragment="content" class="main-body">
     <nav>
         <button class="logo-btn">로고</button>
-        <button onclick="location.href='/article'">아티클</button>
+        <button onclick="location.href='/news/article'">아티클</button>
         <button>AI 요약</button>
         <button>커뮤니티</button>
         <input type="text" placeholder="검색창">
@@ -17,30 +13,23 @@
         <button th:text="${nickname}">닉네임</button>
         <button>로그인</button>
     </nav>
-</header>
 
-<main>
-    <h2>메인페이지</h2>
-    <p>{어드민 뉴스 랭킹 10}</p>
+    <main>
+        <h2>메인페이지</h2>
+        <p>{어드민 뉴스 랭킹 10}</p>
 
-    <div class="news-list">
-        <div class="news-item" th:each="news : ${newsList}">
-            <img th:src="@{${news.image}}" alt="썸네일">
-            <div>
-                <span th:text="${news.category}">카테고리</span>
-                <h3 th:text="${news.title}">제목</h3>
+        <div class="news-list">
+            <div class="news-item" th:each="news : ${newsList}">
+                <img th:src="@{${news.image}}" alt="썸네일">
                 <div>
-                    <span th:text="${news.author}">닉네임</span>
-                    <span th:text="${#temporals.format(news.createdAt, 'yyyy-MM-dd')}">시간</span>
+                    <span th:text="${news.category}">카테고리</span>
+                    <h3 th:text="${news.title}">제목</h3>
+                    <div>
+                        <span th:text="${news.author}">닉네임</span>
+                        <span th:text="${#temporals.format(news.createdAt, 'yyyy-MM-dd')}">시간</span>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</main>
-
-<footer>
-    <p>푸터</p>
-</footer>
-
-</body>
-</html>
+    </main>
+</div>
