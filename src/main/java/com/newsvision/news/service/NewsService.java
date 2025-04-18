@@ -123,10 +123,10 @@ public class NewsService {
             case "popular":
                 result = newsRepository.findAllOrderByLikeCountDesc(pageable);
                 break;
-            case "follow":
-                if (user == null) throw new CustomException(ErrorCode.UNAUTHORIZED);
-                result = newsRepository.findByFollowingUsers(user.getId(), pageable);
-                break;
+//            case "follow":
+//                if (user == null) throw new CustomException(ErrorCode.UNAUTHORIZED);
+//                result = newsRepository.findByFollowingUsers(user.getId(), pageable);
+//                break;
             case "category":
                 result = newsRepository.findByCategoryId(categoryId, pageable);
                 break;
