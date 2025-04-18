@@ -31,8 +31,10 @@ public class BoardController {
     @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
     public ResponseEntity<List<BoardResponse>> getBoards(
             @RequestParam(defaultValue = "0") int page, // 페이지 번호 파라미터, 기본값 0
-            @RequestParam(defaultValue = "10") int size) { // 페이지 크기 파라미터, 기본값 10
-        List<BoardResponse> boards = boardService.getBoardsList(page, size);
+            @RequestParam(defaultValue = "10") int size, // 페이지 크기 파라미터, 기본값 10
+            @RequestParam(required = false) Long categoryId
+    ) {
+        List<BoardResponse> boards = boardService.getBoardsList(page, size , categoryId);
         return new ResponseEntity<>(boards, HttpStatus.OK); // 200 OK 상태 코드와 함께 게시글 목록 반환
     }
 

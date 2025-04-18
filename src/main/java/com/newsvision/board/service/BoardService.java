@@ -16,6 +16,7 @@ import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -36,8 +37,21 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
-    public List<BoardResponse> getBoardsList(int page, int size) {
+    public List<BoardResponse> getBoardsList(int page, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Board> boardPage;
+
+        if(categoryId != null){
+            log.info("특정 카테고리 게시글 조회 - categoryId: {}", categoryId);
+            log.info("BoardRepository.findByCategoryId 호출 전 - categoryId: {}, pageable: {}", categoryId, pageable);
+            boardPage = boardRepository.findByCategoryId(categoryId, pageable); // 카테고리 ID로 조회
+            log.info("BoardRepository.findByCategoryId 호출 후 - 반환된 Page 객체: {}", boardPage);
+        }else{
+            log.info("전체 게시글 조회");
+            boardPage = boardRepository.findAll(pageable);
+        }
+
+
         List<Board> boards = boardRepository.findAll(pageable).getContent();
         return boards.stream().map(board -> {
             long likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0; // 좋아요 수 계산
@@ -151,21 +165,47 @@ public class BoardService {
 
 
     @Transactional
-    public void likeBoard(Long boardId, Long userId) { // 좋아요 기능
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        User user = userRepository.findById(userId) // userId로 User 엔티티 조회 (실제 환경에서는 인증 정보에서 userId를 얻어야 함)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    public void likeBoard(Long boardId, Long userId) {
+        log.info("BoardService.likeBoard - 시작: boardId={}, userId={}", boardId, userId);
+        try {
+            log.info("BoardService.likeBoard - id로 Board 가져오는 중: {}", boardId);
+            Board board = boardRepository.findById(boardId)
+                    .orElseThrow(() -> {
+                        log.warn("BoardService.likeBoard - id로 Board를 찾을 수 없음: {}", boardId);
+                        return new CustomException(ErrorCode.NOT_FOUND);
+                    });
+            log.info("BoardService.likeBoard - Board 찾음: {}", board.getId());
 
-        boolean alreadyLiked = boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
+            log.info("BoardService.likeBoard - id로 User 가져오는 중: {}", userId);
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> {
+                        log.warn("BoardService.likeBoard - id로 User를 찾을 수 없음: {}", userId);
+                        return new CustomException(ErrorCode.NOT_FOUND);
+                    });
+            log.info("BoardService.likeBoard - User 찾음: {}", user.getId());
 
-        if (alreadyLiked) { // 이미 좋아요를 눌렀으면 좋아요 취소
-            boardLikeRepository.deleteByBoardIdAndUserId(boardId, userId);
-        } else { // 좋아요를 누르지 않았으면 좋아요 추가
-            BoardLike boardLike = new BoardLike();
-            boardLike.setBoard(board);
-            boardLike.setUser(user);
-            boardLikeRepository.save(boardLike);
+            boolean alreadyLiked = boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
+            log.info("BoardService.likeBoard - 이미 좋아요 눌렀는지 확인: {}", alreadyLiked);
+
+            if (alreadyLiked) {
+                log.info("BoardService.likeBoard - 이미 좋아요 누름, 좋아요 취소");
+                boardLikeRepository.deleteByBoardIdAndUserId(boardId, userId);
+                log.info("BoardService.likeBoard - 좋아요 취소 완료");
+            } else {
+                log.info("BoardService.likeBoard - 아직 좋아요 안 누름, 좋아요 추가");
+                BoardLike boardLike = new BoardLike();
+                boardLike.setBoard(board);
+                boardLike.setUser(user);
+                boardLikeRepository.save(boardLike);
+                log.info("BoardService.likeBoard - 좋아요 추가 완료");
+            }
+            log.info("BoardService.likeBoard - 성공적으로 완료");
+        } catch (CustomException e) {
+            log.error("BoardService.likeBoard - CustomException 발생: {}", e.getErrorCode());
+            throw e; // 예외 다시 던지기
+        } catch (Exception e) {
+            log.error("BoardService.likeBoard - 예기치 않은 예외 발생", e);
+            throw e; // 예외 다시 던지기
         }
     }
     @Transactional
@@ -175,6 +215,7 @@ public class BoardService {
         board.setView(board.getView() + 1);
         boardRepository.save(board);
     }
+
 
 
 }
