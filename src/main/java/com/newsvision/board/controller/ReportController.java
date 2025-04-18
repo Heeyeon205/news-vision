@@ -1,4 +1,4 @@
-package com.newsvision.board.controller.response;
+package com.newsvision.board.controller;
 
 
 import com.newsvision.board.service.ReportService;

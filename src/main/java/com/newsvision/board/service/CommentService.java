@@ -74,4 +74,26 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
+    @Transactional
+    public CommentResponse updateComment (Long commentId, Long userId, String commentContent) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userId) /* && !isAdmin(userId) */) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED); // 권한 없음 에러
+        }
+
+        comment.setContent(commentContent);
+        Comment updatedComment = commentRepository.save(comment);
+
+        return new CommentResponse(
+                updatedComment.getId(),
+                updatedComment.getUser().getId(),
+                updatedComment.getBoard().getId(),
+                updatedComment.getIsReported(),
+                updatedComment.getContent()
+        );
+
+    }
+
 }

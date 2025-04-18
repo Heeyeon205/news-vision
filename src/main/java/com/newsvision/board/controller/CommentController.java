@@ -1,6 +1,7 @@
 package com.newsvision.board.controller;
 
 import com.newsvision.board.controller.request.CommentCreateRequest;
+import com.newsvision.board.controller.request.CommentUpdateRequest;
 import com.newsvision.board.controller.response.CommentResponse;
 import com.newsvision.board.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -38,6 +39,15 @@ public class CommentController {
     public ResponseEntity<Void> deleteComment(@PathVariable Long commentId, @RequestParam Long userId) {
         commentService.deleteComment(commentId, userId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @PutMapping("/{commentId}") // (댓글 수정)
+    public ResponseEntity<CommentResponse> updateComment(
+            @PathVariable Long commentId,
+            @RequestParam Long userId,
+            @RequestBody CommentUpdateRequest request
+    ) {
+        CommentResponse updatedComment = commentService.updateComment(commentId, userId, request.getContent()); // Service의 updateComment 메서드 호출
+        return new ResponseEntity<>(updatedComment, HttpStatus.OK); // 수정 완료 200 OK 상태 코드 반환
     }
 
 }
