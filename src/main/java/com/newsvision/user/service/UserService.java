@@ -31,9 +31,9 @@ public class UserService {
          return userRepository.existsByNickname(nickname);
     }
 
-    public boolean checkRoleUser(String role){
-        return userRepository.findByRole(role);
-    }
+//    public boolean checkRoleUser(String role){
+//        return userRepository.findByRole(role);
+//    }
 
     @Transactional
     public void save(JoinUserRequest request) {
