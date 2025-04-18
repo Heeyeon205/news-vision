@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/news") // Base path for news-related endpoints
+@RequestMapping("/admin/news") // Base path for news-related endpoints
 @RequiredArgsConstructor
 public class NewsListController {
 

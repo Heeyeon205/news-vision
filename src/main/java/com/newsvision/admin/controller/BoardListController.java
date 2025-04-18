@@ -23,7 +23,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping("/admin/boards")
 @RequiredArgsConstructor // Marks this class as a Spring service component
 public class BoardListController {
     private final BoardService boardService;

@@ -16,12 +16,12 @@ import java.util.List;
 public class UserListController {
     private final UserListService userService;
 
-    @GetMapping("/users")
+    @GetMapping("/admin/users")
     public List<UserListResponse> getUserList() {
         return userService.getAllUsers();
     }
 
-    @PostMapping("/users")
+    @PostMapping("/admin/users")
     public UserListResponse createUser(@RequestBody UserListResponse userListResponse) {
         return userService.saveUser(userListResponse);
     }
