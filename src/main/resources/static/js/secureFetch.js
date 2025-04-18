@@ -5,7 +5,7 @@ async function secureFetch(url, options = {}) {
     options.headers = {
         ...options.headers,
         Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application`/json"
+        "Content-Type": "application/json"
     };
 
     let response = await fetch(url, options);

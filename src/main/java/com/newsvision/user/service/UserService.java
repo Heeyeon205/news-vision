@@ -31,12 +31,17 @@ public class UserService {
          return userRepository.existsByNickname(nickname);
     }
 
+    public boolean checkRoleUser(String role){
+        return userRepository.findByRole(role);
+    }
+
     @Transactional
     public void save(JoinUserRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         User user = User.builder()
                 .username(request.getUsername())
                 .password(encodedPassword)
+                .email(request.getEmail())
                 .nickname(request.getNickname())
                 .build();
         userRepository.save(user);

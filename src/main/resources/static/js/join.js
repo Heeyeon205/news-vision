@@ -91,9 +91,11 @@ verifyCodeBtn.addEventListener('click', async () => {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     })
+    if(!response.ok) { alert('서버 오류 발생'); return }
     const result = await response.json();
-    if (result.status !== 200) {
-        alert('메일 인증 실패')
+    if (!result.success) {
+        alert('알 수 없는 오류로 메일 인증에 실패했습니다.')
+        return;
     }
     alert('메일 인증 성공')
     window.emailVerified = true;
@@ -111,10 +113,10 @@ joinBtn.addEventListener('click', async () => {
         return;
     }
 
-    // if (!window.emailVerified) {
-    //     alert('이메일 인증을 완료해 주세요!')
-    //     return;
-    // }
+    if (!window.emailVerified) {
+        alert('이메일 인증을 완료해 주세요!')
+        return;
+    }
 
     const formdata = {username, password, email, nickname}
     try {

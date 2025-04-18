@@ -30,5 +30,4 @@ public class EmailVerification {
     public boolean matchCode(String input) {
         return this.code.equals(input);
     }
-
 }

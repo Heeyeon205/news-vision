@@ -4,10 +4,16 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.EmailVerification;
 import com.newsvision.user.repository.EmailVerificationRepository;
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -21,16 +27,25 @@ public class EmailService {
         EmailVerification verification = new EmailVerification(email, code, 10);
         repository.save(verification);
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setSubject("[NewsVision] 이메일 인증 코드");
-        message.setText("인증 코드는 다음과 같습니다: " + code);
-        mailSender.send(message);
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+
+            helper.setTo(email);
+            helper.setFrom("procross27@gmail.com");
+            helper.setSubject("[NewsVision] 이메일 인증 코드");
+            helper.setText("인증 코드는 다음과 같습니다: " + code, false);
+
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.out.println("메일 전송 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // 인증 코드 생성
     private String generateCode() {
-        return String.valueOf((int)(Math.random() * 900000) + 100000);  // 6자리 숫자
+        return String.valueOf((int) (Math.random() * 900000) + 100000);  // 6자리 숫자
     }
 
     // 입력 코드 검증 -> 성공 시 DB 에서 코드 삭제

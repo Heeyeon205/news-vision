@@ -18,9 +18,10 @@ public class Badge {
     private Long id;
     private String icon;
     private String title;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public enum Role {
-        ADMIN, CREATOR
+        ROLE_ADMIN, ROLE_CREATOR
     }
 }
