@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 public class FollowService {
     private final FollowRepository followRepository;
 
-    public UserFollowCountResponse getFollowCount(Long userId) {
-        int followerCount = followRepository.countByFollowingId(userId);
-        int followingCount = followRepository.countByFollowerId(userId);
-        return new UserFollowCountResponse(followerCount, followingCount);
-    }
+//    public UserFollowCountResponse getFollowCount(Long userId) {
+//        int followerCount = followRepository.countByFollowingId(userId);
+//        int followingCount = followRepository.countByFollowerId(userId);
+//        return new UserFollowCountResponse(followerCount, followingCount);
+//    }
 }
