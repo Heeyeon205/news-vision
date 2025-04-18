@@ -2,6 +2,7 @@ package com.newsvision.news.controller;
 
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
+import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.global.response.ApiResponse;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -28,7 +30,7 @@ public class NewsController {
 
     private final NewsService newsService;
     private final UserRepository userRepository;
-
+    private final JwtTokenProvider jwtTokenProvider;
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMainNews() {
         return ResponseEntity.ok(ApiResponse.success(newsService.getTop10RecentNewsOnlyByAdmin()));
@@ -133,6 +135,31 @@ public ResponseEntity<ApiResponse<String>> removeLike(
                 newsService.getFilteredArticles(type, id, loginUser, pageable)
         ));
     }
+
+//    @PostMapping("/create")
+//    public ResponseEntity<?> createNews(
+//            @RequestHeader("Authorization") String authHeader,
+//            @RequestBody NewsRequestDto requestDto) {
+//
+//        try {
+//            String token = authHeader.replace("Bearer ", "");
+//            String role = jwtTokenProvider.getUserRole(token);
+//            Long userId = jwtTokenProvider.getUserId(token);
+//
+//            if (!role.equals("ROLE_ADMIN") && !role.equals("ROLE_CREATOR")) {
+//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
+//                        .body("작성 권한이 없습니다.");
+//            }
+//
+//            newsService.createNews(requestDto, userId);
+//            return ResponseEntity.ok("뉴스 작성 완료");
+//
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body("뉴스 작성 실패: " + e.getMessage());
+//        }
+//    }
+
 
 
 }

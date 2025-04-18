@@ -140,6 +140,26 @@ public class NewsService {
         return result.map(NewsSummaryResponse::from);
     }
 
+//    @Transactional
+//    public void createNews(NewsRequestDto dto, Long userId) {
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new IllegalArgumentException("사용자 정보 없음"));
+//
+//        Category category = categoryRepository.findById(dto.getCategoryId())
+//                .orElseThrow(() -> new IllegalArgumentException("카테고리 없음"));
+//
+//        News news = News.builder()
+//                .title(dto.getTitle())
+//                .content(dto.getContent())
+//                .image(dto.getImage())
+//                .category(category)
+//                .user(user)
+//                .createdAt(LocalDateTime.now())
+//                .view(0)
+//                .build();
+//
+//        newsRepository.save(news);
+//    }
 
 
 }
