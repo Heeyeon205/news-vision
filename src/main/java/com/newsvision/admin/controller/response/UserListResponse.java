@@ -25,7 +25,7 @@ public class UserListResponse {
     private LocalDateTime create_at;
     private String introduce;
     private String image;
-    private String providerId;
+    private String provider_id;
 
     public UserListResponse(User user) {
         this.id = user.getId();
@@ -37,7 +37,7 @@ public class UserListResponse {
         this.create_at = user.getCreateAt();
         this.introduce = user.getIntroduce();
         this.image = user.getImage();
-        this.providerId = user.getProviderId();
+        this.provider_id = user.getProviderId();
     }
 
 }

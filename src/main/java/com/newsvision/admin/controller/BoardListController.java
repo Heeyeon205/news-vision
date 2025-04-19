@@ -21,7 +21,7 @@ import java.util.List;
 
 
 
-
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin/boards")
 @RequiredArgsConstructor // Marks this class as a Spring service component
