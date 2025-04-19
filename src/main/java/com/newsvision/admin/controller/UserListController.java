@@ -11,8 +11,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
+
 public class UserListController {
     private final UserListService userService;
 

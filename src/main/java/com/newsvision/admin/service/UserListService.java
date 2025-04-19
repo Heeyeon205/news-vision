@@ -33,7 +33,7 @@ public class UserListService {
                     .createAt(dto.getCreate_at())
                     .introduce(dto.getIntroduce())
                     .image(dto.getImage())
-                    .providerId(dto.getProviderId())
+                    .providerId(dto.getProvider_id())
                     .build();
 
             return new UserListResponse(userRepository.save(user));
