@@ -47,4 +47,18 @@ public class News {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = this.createdAt == null ? LocalDateTime.now() : this.createdAt;
+    }
+
+    @Builder
+    public News(String title, String content, User user, Categories category, LocalDateTime createdAt) {
+        this.title = title;
+        this.content = content;
+        this.user = user;
+        this.category = category;
+        this.createdAt = createdAt;
+    }
 }

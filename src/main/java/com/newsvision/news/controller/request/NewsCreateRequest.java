@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewsRequest {
+public class NewsCreateRequest {
     private String title;
     private String content;
     private String image; // 이미지 URL

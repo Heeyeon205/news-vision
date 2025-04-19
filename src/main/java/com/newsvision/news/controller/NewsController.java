@@ -1,14 +1,19 @@
 package com.newsvision.news.controller;
 
+import com.newsvision.category.entity.Categories;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.global.response.ApiResponse;
+import com.newsvision.news.controller.request.NewsCreateRequest;
+import com.newsvision.news.controller.request.NewsUpdateRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.entity.News;
 import com.newsvision.news.service.NewsService;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -136,29 +141,102 @@ public ResponseEntity<ApiResponse<String>> removeLike(
         ));
     }
 
-//    @PostMapping("/create")
-//    public ResponseEntity<?> createNews(
-//            @RequestHeader("Authorization") String authHeader,
-//            @RequestBody NewsRequestDto requestDto) {
-//
-//        try {
-//            String token = authHeader.replace("Bearer ", "");
-//            String role = jwtTokenProvider.getUserRole(token);
-//            Long userId = jwtTokenProvider.getUserId(token);
-//
-//            if (!role.equals("ROLE_ADMIN") && !role.equals("ROLE_CREATOR")) {
-//                return ResponseEntity.status(HttpStatus.FORBIDDEN)
-//                        .body("작성 권한이 없습니다.");
-//            }
-//
-//            newsService.createNews(requestDto, userId);
-//            return ResponseEntity.ok("뉴스 작성 완료");
-//
-//        } catch (Exception e) {
-//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-//                    .body("뉴스 작성 실패: " + e.getMessage());
-//        }
-//    }
+    @PostMapping
+    public ResponseEntity<ApiResponse<?>> createNews(
+            @RequestBody NewsCreateRequest request,
+            HttpServletRequest httpServletRequest
+    ) {
+        String token = extractToken(httpServletRequest);
+        if (!jwtTokenProvider.validateToken(token)) {
+            log.warn("❌ 유효하지 않은 토큰");
+            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.UNAUTHORIZED));
+        }
+
+        Long userId = jwtTokenProvider.getUserId(token);
+        String role = jwtTokenProvider.getUserRole(token);
+
+        log.info("🧾 뉴스 작성 시도 - userId: {}, role: {}, categoryId: {}", userId, role, request.getCategoryId());
+
+        if (!("ROLE_ADMIN".equals(role) || "ROLE_CREATOR".equals(role))) {
+            log.warn("❌ 권한 없음 - userId: {}, role: {}", userId, role);
+            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.UNAUTHORIZED));
+        }
+
+        try {
+            newsService.createNews(userId, request);
+            return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 작성되었습니다.", null));
+        } catch (Exception e) {
+            log.error("🔥 뉴스 작성 중 오류 발생", e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            return header.substring(7);
+        }
+        return null;
+    }
+
+    @PutMapping("/{newsId}")
+    public ResponseEntity<ApiResponse<?>> updateNews(
+            @PathVariable Long newsId,
+            @RequestBody NewsUpdateRequest request,
+            HttpServletRequest httpServletRequest
+    ) {
+        String token = extractToken(httpServletRequest);
+        if (!jwtTokenProvider.validateToken(token)) {
+            log.warn("❌ 유효하지 않은 토큰");
+            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.UNAUTHORIZED));
+        }
+
+        Long userId = jwtTokenProvider.getUserId(token);
+        String role = jwtTokenProvider.getUserRole(token);
+
+        log.info("📝 뉴스 수정 시도 - userId: {}, role: {}, newsId: {}", userId, role, newsId);
+
+        request.setNewsId(newsId); // 🔑 PathVariable → Request로 전달
+
+        try {
+            newsService.updateNews(userId, request);
+            return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 수정되었습니다.", null));
+        } catch (CustomException e) {
+            log.warn("❌ 수정 중 오류 - {}", e.getMessage());
+            return ResponseEntity.status(e.getErrorCode().getStatus())
+                    .body(ApiResponse.fail(e.getErrorCode()));
+        } catch (Exception e) {
+            log.error("🔥 뉴스 수정 중 예외 발생", e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+    @DeleteMapping("/{newsId}")
+    public ResponseEntity<ApiResponse<?>> deleteNews(
+            @PathVariable Long newsId,
+            HttpServletRequest httpServletRequest
+    ) {
+        String token = extractToken(httpServletRequest);
+        if (!jwtTokenProvider.validateToken(token)) {
+            log.warn("❌ 유효하지 않은 토큰");
+            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.UNAUTHORIZED));
+        }
+
+        Long userId = jwtTokenProvider.getUserId(token);
+        log.info("🧹 뉴스 삭제 시도 - userId: {}, newsId: {}", userId, newsId);
+
+        try {
+            newsService.deleteNews(userId, newsId);
+            return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 삭제되었습니다.", null));
+        } catch (CustomException e) {
+            log.warn("❌ 삭제 중 오류 - {}", e.getMessage());
+            return ResponseEntity.status(e.getErrorCode().getStatus())
+                    .body(ApiResponse.fail(e.getErrorCode()));
+        } catch (Exception e) {
+            log.error("🔥 뉴스 삭제 중 예외 발생", e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
+        }
+    }
 
 
 
