@@ -1,24 +1,28 @@
 package com.newsvision.mypage.controller;
 
 import com.newsvision.global.response.ApiResponse;
-import com.newsvision.mypage.dto.response.PortionUserResponse;
-import com.newsvision.user.entity.User;
-import com.newsvision.user.service.UserService;
+import com.newsvision.global.security.CustomUserDetails;
+import com.newsvision.mypage.dto.response.MypageInfoResponse;
+import com.newsvision.mypage.service.MypageService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController("/api/user")
+@Slf4j
+@RestController
+@RequestMapping("/api/mypage")
 @RequiredArgsConstructor
 public class MyPageController {
-    private final UserService userService;
+    private final MypageService mypageService;
 
-    @GetMapping("{id}")
-    public ResponseEntity<ApiResponse<PortionUserResponse>> userInfo(@PathVariable Long id) {
-        User user = userService.findByUserId(id);
-        PortionUserResponse response = new PortionUserResponse(user);
+    @GetMapping({"", "/"})
+    public ResponseEntity<ApiResponse<MypageInfoResponse>> userInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getId();
+        MypageInfoResponse response = mypageService.getPortionUser(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

@@ -13,19 +13,18 @@ loginBtn.addEventListener('click', async () => {
         });
 
         if (response.status !== 200) {
-            throw new Error('로그인 실패' + (response.status));
+            alert('아이디 또는 비밀번호를 확인해주세요.')
         }
-
         const result = await response.json();
+
         const accessToken = result.data.accessToken;
-        console.log(accessToken)
         const refreshToken = result.data.refreshToken;
-        console.log(refreshToken)
+
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken)
+
         alert('로그인 성공');
         window.location.href = "/";
-
     } catch (error) {
         alert(error.message);
     }

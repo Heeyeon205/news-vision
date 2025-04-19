@@ -41,9 +41,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 .orElseGet(() -> userRepository.save(User.builder()
                         .username(username)
                         .password("SOCIAL_LOGIN_PASSWORD")
+                        .email(email)
                         .nickname(nickname)
                         .provider(User.Provider.valueOf(registrationId.toUpperCase()))
                         .providerId(providerId)
+                        .image("/images/default-profile.png")
                         .role(User.Role.ROLE_USER)
                         .build()));
 

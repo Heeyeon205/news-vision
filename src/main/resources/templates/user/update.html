@@ -1,0 +1,22 @@
+<head th:fragment="title">
+    <title>프로필 편집</title>
+</head>
+
+<div th:fragment="content" class="join-body">
+    <form id="profile-form" enctype="multipart/form-data" method="post">
+        <h1>프로필 편집</h1>
+        <input type="file" name="image" accept="image/*" width="80px" height="80px">
+        <img id="profile-preview" src="" alt="프로필이미지"> <br>
+
+        <p>닉네임</p>
+        <input type="text" id="nickname" placeholder="Login Id">
+        <span id="nickname-msg"></span> <br>
+
+        <p>소개</p>
+        <p>나누고 싶은 지식이나 내 관심사를 소개해 주세요</p>
+        <textarea id="introduce" placeholder="예) 사회 이슈에 대한 다양한 관점이 궁금해요."></textarea>
+        <span id="password-msg"></span> <br>
+
+        <button type="button" id="update-btn">완료</button>
+    </form>
+</div>

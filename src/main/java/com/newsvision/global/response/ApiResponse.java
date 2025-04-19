@@ -12,6 +12,10 @@ public class ApiResponse<T> {
     private final String message;
     private final T data;
 
+    public static <T> ApiResponse<T> success() {
+        return new ApiResponse<>(true, 200, "요청에 성공했습니다.", null);
+    }
+
     public static <T> ApiResponse<T> success(T data) {
         return new ApiResponse<>(true, 200, "요청에 성공했습니다.", data);
     }

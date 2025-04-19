@@ -9,13 +9,12 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "follows") // 오타 수정
+@Table(name = "follows")
 @Getter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class Follow {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

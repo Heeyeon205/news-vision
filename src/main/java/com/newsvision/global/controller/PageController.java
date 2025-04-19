@@ -21,7 +21,7 @@ public class PageController {
     public String joinForm(Model model) {
         model.addAttribute("title", "회원가입");
         model.addAttribute("content", "user/join :: content");
-        model.addAttribute("script", "/js/join.js");
+        model.addAttribute("script", "/js/user/join.js");
         return "layout";
     }
 
@@ -29,14 +29,7 @@ public class PageController {
     public String loginPage(Model model) {
         model.addAttribute("title", "로그인");
         model.addAttribute("content", "user/login :: content");
-        model.addAttribute("script", "/js/login.js");
-        return "layout";
-    }
-
-    @GetMapping("/user/mypage")
-    public String mypage(Model model) {
-        model.addAttribute("title", "마이페이지");
-        model.addAttribute("content", "user/mypage :: content");
+        model.addAttribute("script", "/js/user/login.js");
         return "layout";
     }
 
@@ -68,6 +61,22 @@ public class PageController {
     public String boards(Model model) {
         model.addAttribute("title", "커뮤니티");
         model.addAttribute("content", "board/boards :: content");
+        return "layout";
+    }
+
+    @GetMapping("/user/mypage")
+    public String myPage(Model model) {
+        model.addAttribute("title", "마이페이지");
+        model.addAttribute("content", "user/mypage :: content");
+        model.addAttribute("script", "/js/user/mypage.js");
+        return "layout";
+    }
+
+    @GetMapping("/user/update")
+    public String userUpdate(Model model) {
+        model.addAttribute("title", "프로필편집");
+        model.addAttribute("content", "user/update :: content");
+        model.addAttribute("script", "/js/user/update.js");
         return "layout";
     }
 }

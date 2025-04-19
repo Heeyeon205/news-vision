@@ -5,8 +5,6 @@ import com.newsvision.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FollowRepository extends JpaRepository<Follow, Long> {
-
-    int countByFollowingId(Long userId);
-
-    int countByFollowerId(Long userId);
+    int countByFollowing(User following);
+    int countByFollower(User follower);
 }

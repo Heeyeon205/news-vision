@@ -9,14 +9,12 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class UpdateUserRequest {
-    private Long id;
     private String image;
     private String nickname;
     private String introduce;
 
     public User toEntity(){
         return User.builder()
-                .id(this.id)
                 .image(this.image)
                 .nickname(this.nickname)
                 .introduce(this.introduce)

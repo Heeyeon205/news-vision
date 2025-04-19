@@ -6,9 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Entity
 @Table(name = "users")
 @Getter
@@ -30,7 +32,7 @@ public class User {
     @Column(name = "create_at")
     private LocalDateTime createAt;
     private String introduce;
-    private String image;
+    private String image = "/images/default-profile.png";
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
@@ -56,9 +58,15 @@ public class User {
         LOCAL, GOOGLE, KAKAO, NAVER
     }
 
-    public void update(UpdateUserRequest request){
-        this.image = request.getImage();
-        this.nickname = request.getNickname();
-        this.introduce = request.getIntroduce();
+    public void updateImage(String image) {
+        log.warn("업데이트할 이미지 URL: {}", image);
+        this.image = image;
     }
+    public void updateNickname(String nickname) {
+        this.nickname = nickname;
+    }
+    public void updateIntroduce(String introduce) {
+        this.introduce = introduce;
+    }
+
 }

@@ -15,10 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
@@ -57,10 +54,10 @@ public class AuthController {
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
-        log.warn("header(헤더) {}", header);
+
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.split(" ")[1];
-            log.warn("token {}", token);
+
             if (jwtTokenProvider.validateToken(token)) {
                 // access token 블랙리스트 등록
                 long expiration = jwtTokenProvider.getExpiration(token);
@@ -98,5 +95,21 @@ public class AuthController {
         // access token 추가 발급
         String newAccessToken = jwtTokenProvider.createToken(user.getId(), username, jwtTokenProvider.getUserRole(refreshToken));
         return ResponseEntity.ok(ApiResponse.success(newAccessToken));
+    }
+
+    @GetMapping("/check")
+    public ResponseEntity<ApiResponse<String>> checkAccessToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if(authHeader == null && !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.ok(ApiResponse.fail(ErrorCode.INVALID_ACCESS_TOKEN));
+        }
+
+        String token = authHeader.split(" ")[1];
+
+        if (!jwtTokenProvider.validateToken(token)) {
+            return ResponseEntity.ok(ApiResponse.fail(ErrorCode.INVALID_ACCESS_TOKEN));
+        }
+        return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 }

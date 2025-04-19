@@ -4,10 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-//@Getter
-//@RequiredArgsConstructor
-//@AllArgsConstructor
+@Getter
+@RequiredArgsConstructor
 public class UserFollowCountResponse {
-//    private final int followerCount;
-//    private final int followingCount;
+    private final int followerCount;
+    private final int followingCount;
 }

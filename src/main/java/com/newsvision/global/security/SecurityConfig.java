@@ -48,7 +48,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                         // 기본
-                        "/", "/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**",
+                        "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**",
                         // 일단 개발용 풀 개방
                         "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**",
                         // auth
@@ -62,6 +62,7 @@ public class SecurityConfig {
         );
 
         http.oauth2Login(oauth2 -> oauth2
+                .loginPage("/user/login")
                 .userInfoEndpoint(userInfo -> userInfo
                         .userService(customOAuth2UserService)
                 )
