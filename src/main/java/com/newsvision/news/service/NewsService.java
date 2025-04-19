@@ -1,7 +1,11 @@
 package com.newsvision.news.service;
 
+import com.newsvision.category.entity.Categories;
+import com.newsvision.category.repository.CategoryRepository;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
+import com.newsvision.news.controller.request.NewsCreateRequest;
+import com.newsvision.news.controller.request.NewsUpdateRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
 import com.newsvision.news.entity.News;
@@ -11,7 +15,9 @@ import com.newsvision.news.repository.NewsLikeRepository;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
 import com.newsvision.user.entity.User;
+import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,12 +27,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NewsService {
     private final NewsRepository newsRepository;
     private final NewsLikeRepository newsLikeRepository;
     private final ScrapRepository scrapRepository;
+    private final CategoryRepository categoryRepository;
+    private final UserRepository userRepository;
 
     //
     public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
@@ -140,26 +149,65 @@ public class NewsService {
         return result.map(NewsSummaryResponse::from);
     }
 
-//    @Transactional
-//    public void createNews(NewsRequestDto dto, Long userId) {
-//        User user = userRepository.findById(userId)
-//                .orElseThrow(() -> new IllegalArgumentException("사용자 정보 없음"));
-//
-//        Category category = categoryRepository.findById(dto.getCategoryId())
-//                .orElseThrow(() -> new IllegalArgumentException("카테고리 없음"));
-//
-//        News news = News.builder()
-//                .title(dto.getTitle())
-//                .content(dto.getContent())
-//                .image(dto.getImage())
-//                .category(category)
-//                .user(user)
-//                .createdAt(LocalDateTime.now())
-//                .view(0)
-//                .build();
-//
-//        newsRepository.save(news);
-//    }
+    @Transactional
+    public void createNews(Long userId, NewsCreateRequest request) {
+        log.info("📌 뉴스 작성 요청 - userId: {}, categoryId: {}", userId, request.getCategoryId());
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        log.info("👤 작성자 정보 - username: {}, role: {}", user.getUsername(), user.getRole());
+
+        Categories category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        log.info("📂 카테고리 정보 - id: {}, name: {}", category.getId(), category.getName());
+
+        News news = News.builder()
+                .title(request.getTitle())
+                .content(request.getContent())
+                .image(request.getImage())
+                .user(user)
+                .category(category)
+                .createdAt(LocalDateTime.now())  // ✅ 꼭 넣어야 함!!
+                .build();
+
+        log.info("📰 News 객체 생성 완료 - title: {}, user: {}, category: {}", news.getTitle(), news.getUser().getUsername(), news.getCategory().getName());
+
+        News saved = newsRepository.save(news);
+    }
+
+    @Transactional
+    public void updateNews(Long userId, NewsUpdateRequest request) {
+        News news = newsRepository.findById(request.getNewsId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        if (!news.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+
+        Categories category = categoryRepository.findById(request.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        log.info("✏️ 뉴스 수정 요청 - newsId: {}, by userId: {}", request.getNewsId(), userId);
+
+        news.setTitle(request.getTitle());
+        news.setContent(request.getContent());
+        news.setImage(request.getImage());
+        news.setCategory(category);
+    }
+
+    @Transactional
+    public void deleteNews(Long userId, Long newsId) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        if (!news.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+
+        log.info("🗑️ 뉴스 삭제 요청 - newsId: {}, by userId: {}", newsId, userId);
+        newsRepository.delete(news);
+    }
+
 
 
 }
