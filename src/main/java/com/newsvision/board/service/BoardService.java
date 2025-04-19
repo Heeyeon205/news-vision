@@ -10,6 +10,7 @@ import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.category.entity.Categories;
 import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.User;
@@ -52,15 +53,15 @@ public class BoardService {
         }
 
 
-        List<Board> boards = boardRepository.findAll(pageable).getContent();
+        List<Board> boards = boardPage.getContent();
         return boards.stream().map(board -> {
             long likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0; // 좋아요 수 계산
             long commentCount = (board.getComments() != null) ? board.getComments().size() : 0; // 댓글 수 계산
             return new BoardResponse(
-                    board.getTitle(),
                     board.getContent(),
                     board.getCategory().getId(),
                     board.getCreateAt(),
+                    TimeUtil.formatRelativeTime(board.getCreateAt()),
                     board.getUser().getId(),
                     board.getImage(),
                     board.getView(),
@@ -82,10 +83,10 @@ public class BoardService {
         long commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
         return new BoardDetailResponse(
                 board.getId(),
-                board.getTitle(),
                 board.getContent(),
                 board.getCategory().getId(),
                 board.getCreateAt(),
+                TimeUtil.formatRelativeTime(board.getCreateAt()),
                 board.getUser().getId(),
                 board.getImage(),
                 board.getView(),
@@ -107,12 +108,10 @@ public class BoardService {
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
             Board board = new Board();
-            board.setTitle(request.getTitle());
             board.setContent(request.getContent());
             board.setCategory(category);
             board.setUser(user);
             board.setImage(request.getImage());
-        log.info("게시글 저장 시도: 제목 - {}", board.getTitle()); // 로그 추가
             Board savedBoard = boardRepository.save(board);
         log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
             return getBoardDetail(savedBoard.getId());
@@ -139,7 +138,6 @@ public class BoardService {
             throw new CustomException(ErrorCode.UNAUTHORIZED); // 권한 없음 에러
         }
 
-        board.setTitle(request.getTitle());
         board.setContent(request.getContent());
         board.setCategory(category);
         board.setImage(request.getImage());

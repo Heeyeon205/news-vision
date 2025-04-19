@@ -5,6 +5,7 @@ import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.Comment;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.board.repository.CommentRepository;
+import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.User;
@@ -34,7 +35,9 @@ public class CommentService {
                         comment.getUser().getId(),
                         comment.getBoard().getId(),
                         comment.getIsReported(),
-                        comment.getContent()
+                        comment.getContent(),
+                        comment.getCreateAt(), // 댓글 작성 시간 전달
+                        TimeUtil.formatRelativeTime(comment.getCreateAt())
 
                 ))
                 .collect(Collectors.toList());
@@ -58,7 +61,9 @@ public class CommentService {
                 savedComment.getUser().getId(),
                 savedComment.getBoard().getId(),
                 savedComment.getIsReported(),
-                savedComment.getContent()
+                savedComment.getContent(),
+                savedComment.getCreateAt(), // 댓글 작성 시간 전달
+                TimeUtil.formatRelativeTime(savedComment.getCreateAt())
         );
     }
     @Transactional
@@ -91,7 +96,9 @@ public class CommentService {
                 updatedComment.getUser().getId(),
                 updatedComment.getBoard().getId(),
                 updatedComment.getIsReported(),
-                updatedComment.getContent()
+                updatedComment.getContent(),
+                updatedComment.getCreateAt(),
+                TimeUtil.formatRelativeTime(updatedComment.getCreateAt())
         );
 
     }

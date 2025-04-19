@@ -12,10 +12,10 @@ import java.time.LocalDateTime;
 @Setter
 
 public class BoardResponse {
-    private String title;
     private String content;
     private Long categoryId;
     private LocalDateTime createdAt;
+    private String relativeCreatedAt;
     private Long userId;
     private String image;
     private Long view;
@@ -24,11 +24,11 @@ public class BoardResponse {
     private Long likeCount;
     private Long commentCount;
 
-    public BoardResponse(String title, String content, Long categoryId, LocalDateTime createdAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
-        this.title = title;
+    public BoardResponse(String content, Long categoryId, LocalDateTime createdAt,String relativeCreatedAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
         this.content = content;
         this.categoryId = categoryId;
         this.createdAt = createdAt;
+        this.relativeCreatedAt = relativeCreatedAt;
         this.userId = userId;
         this.image = image;
         this.view = view;

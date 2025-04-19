@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -35,8 +36,12 @@ public class Comment {
     @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CommentReport> commentReports;
 
+    @Column(name = "create_at")
+    private LocalDateTime createAt;
+
     @PrePersist // 엔티티가 persist 되기 전에 실행
     public void prePersist() {
         this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
+        this.createAt = LocalDateTime.now();
     }
 }
