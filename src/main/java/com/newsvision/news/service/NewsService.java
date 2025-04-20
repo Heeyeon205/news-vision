@@ -132,10 +132,10 @@ public class NewsService {
             case "popular":
                 result = newsRepository.findAllOrderByLikeCountDesc(pageable);
                 break;
-//            case "follow":
-//                if (user == null) throw new CustomException(ErrorCode.UNAUTHORIZED);
-//                result = newsRepository.findByFollowingUsers(user.getId(), pageable);
-//                break;
+            case "follow":
+                if (user == null) throw new CustomException(ErrorCode.UNAUTHORIZED);
+                result = newsRepository.findByFollowingUsers(user.getId(), pageable);
+                break;
             case "category":
                 result = newsRepository.findByCategoryId(categoryId, pageable);
                 break;
@@ -205,7 +205,18 @@ public class NewsService {
         }
 
         log.info("🗑️ 뉴스 삭제 요청 - newsId: {}, by userId: {}", newsId, userId);
+
+        // 💡 좋아요 먼저 삭제
+        newsLikeRepository.deleteAllByNews(news);
+        log.info("👍 관련된 좋아요 삭제 완료");
+
+        // 💡 스크랩도 삭제
+        scrapRepository.deleteAllByNews(news);
+        log.info("📌 관련된 스크랩 삭제 완료");
+
+        // 💡 뉴스 삭제
         newsRepository.delete(news);
+        log.info("📰 뉴스 삭제 완료");
     }
 
 
