@@ -1,62 +1,62 @@
 package com.newsvision.admin.controller;
-import com.newsvision.admin.service.NewsListService;
-import com.newsvision.global.exception.CustomException; // Assuming you have this
-import com.newsvision.global.exception.ErrorCode;     // Assuming you have this
-import com.newsvision.news.controller.response.NewsResponse;
-import com.newsvision.news.controller.response.NewsSummaryResponse; // Assuming you have this response class
-import com.newsvision.news.service.NewsService;
-import com.newsvision.user.entity.User; // Assuming this is your User entity
 
+import com.newsvision.admin.service.NewsListService;
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
+import com.newsvision.news.controller.response.NewsResponse;
+import com.newsvision.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal; // Import for getting logged-in user
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @RestController
-@RequestMapping("/admin/news")
+@RequestMapping("/admin/news") // 관리자용 뉴스 경로
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class NewsListController {
 
-    private final NewsListService newsService;
+    private final NewsListService newsListService; // 목록 조회용 서비스
+    private final NewsService newsService;       // 개별 뉴스 처리용 서비스
+    private static final Logger log = LoggerFactory.getLogger(NewsListController.class); // 클래스 이름 일치
 
-
+    /**
+     * 관리자용 뉴스 목록 조회
+     */
     @GetMapping
     public ResponseEntity<List<NewsResponse>> getNewsList() {
-        List<NewsResponse> newsList = newsService.getAllNews();
-        return ResponseEntity.ok(newsList);
+        log.info("[GET /admin/news] Fetching all news for admin.");
+        try {
+            List<NewsResponse> newsList = newsListService.getAllNews();
+            return ResponseEntity.ok(newsList);
+        } catch (Exception e) {
+            log.error("[GET /admin/news] Error fetching news list.", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(List.of()); // 오류 시 빈 리스트 또는 에러 객체 반환 고려
+        }
+    }
+    @ResponseBody
+    @DeleteMapping("/{newsId}")
+    public ResponseEntity deleteMemberAjax(@PathVariable Long userId, @PathVariable Long newsid) {
+        log.info("Deleting member with id: {}", userId);
+        log.info("Deleting member with id: {}", newsid);
+        try {
+            newsService.deleteNews(userId, newsid);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+
+            return  ResponseEntity.noContent().build();
+        }
     }
 
-//
-//   @GetMapping("/top10-admin")
-//   public ResponseEntity<List<NewsSummaryResponse>> getTop10AdminNews() {
-//       List<NewsSummaryResponse> topNews = newsService.getTop10RecentNewsOnlyByAdmin();
-//       return ResponseEntity.ok(topNews);
-//   }
-//
-//
-//   @GetMapping("/creator")
-//   public ResponseEntity<List<NewsSummaryResponse>> getCreatorNews() {
-//       List<NewsSummaryResponse> creatorNews = newsService.getCreatorNewsList();
-//       return ResponseEntity.ok(creatorNews);
-//   }
-//
-//
-//  @GetMapping("/scraps/me")
-//  public ResponseEntity<List<NewsSummaryResponse>> getMyScraps(
-//          @AuthenticationPrincipal User loginUser) {
-//
-//      if (loginUser == null) {
-//
-//           throw new CustomException(ErrorCode.UNAUTHORIZED);
-//      }
-//       List<NewsSummaryResponse> scrapList = newsService.getMyScrapList(loginUser);
-//      return ResponseEntity.ok(scrapList);
-//    }
 
 
 }
