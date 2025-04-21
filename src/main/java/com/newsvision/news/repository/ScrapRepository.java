@@ -17,5 +17,7 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
 
     //특정 유저가 스크랩 한 뉴스 목록 찾기
     List<Scrap> findAllByUser(User user);
+
+    void deleteAllByNews(News news);
 }
 

@@ -44,14 +44,14 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 """)
     Page<News> findAllOrderByLikeCountDesc(Pageable pageable);
 
-//    @Query("""
-//    SELECT n FROM News n
-//    WHERE n.user.id IN (
-//        SELECT f.followingId FROM Follow f WHERE f.followerId = :userId
-//    )
-//    ORDER BY n.createdAt DESC
-//""")
-//    Page<News> findByFollowingUsers(@Param("userId") Long userId, Pageable pageable);
+    @Query("""
+    SELECT n FROM News n
+    WHERE n.user.id IN (
+        SELECT f.following.id FROM Follow f WHERE f.follower.id = :userId
+    )
+""")
+    Page<News> findByFollowingUsers(@Param("userId") Long userId, Pageable pageable);
+
 
 
     @Query("""

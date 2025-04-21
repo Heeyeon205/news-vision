@@ -15,4 +15,6 @@ public interface NewsLikeRepository extends JpaRepository<NewsLike, Long> {
 
     //news 좋아요 개수 체크
     int countByNews(News news);
+
+    void deleteAllByNews(News news);
 }
