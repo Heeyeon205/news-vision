@@ -4,7 +4,7 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.global.jwt.RefreshTokenRepository;
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.user.dto.request.LoginUserRequest;
 import com.newsvision.user.dto.response.LoginTokenUserResponse;
 import com.newsvision.user.entity.User;
@@ -39,14 +39,14 @@ public class AuthController {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
 
-        // token 발급
+        // token발급
         String accessToken = jwtTokenProvider.createToken(user.getId(), user.getUsername(), user.getRole().name());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
 
-        // redis 에 refresh token 저장
+        // redis에 refresh token저장
         refreshTokenRepository.save(user.getUsername(), refreshToken);
 
-        // access token 은 프론트에 전달
+        // access token은 프론트에 전달
         LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
@@ -63,7 +63,7 @@ public class AuthController {
                 long expiration = jwtTokenProvider.getExpiration(token);
                 tokenBlacklistService.blacklistToken(token, expiration);
 
-                // 식별자 추출 후 redis 에서 refresh token 삭제
+                // 식별자 추출 후 redis에서 refresh token 삭제
                 String username = jwtTokenProvider.getUsername(token);
                 refreshTokenRepository.delete(username);
             }

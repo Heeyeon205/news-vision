@@ -14,4 +14,5 @@ public class NewsCreateRequest {
     private String content;
     private String image; // 이미지 URL
     private Long categoryId;
+    private Long naverNewsId;
 }

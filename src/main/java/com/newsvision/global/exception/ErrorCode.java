@@ -10,6 +10,7 @@ public enum ErrorCode {
     // 400
     INVALID_INPUT(400, "입력값이 올바르지 않습니다."),
     INVALID_VERIFICATION_CODE(400, "인증 코드가 일치하지 않습니다."),
+    BADGE_REQUIRED(400, "뱃지가 필요합니다."),
     // 401
     UNAUTHORIZED(401, "인증이 필요합니다."),
     INVALID_ACCESS_TOKEN(401, "유효하지 않은 Access Token입니다."),
@@ -23,6 +24,7 @@ public enum ErrorCode {
     // 409
     DUPLICATE_USERNAME(409, "사용중인 아이디입니다."),
     DUPLICATE_NICKNAME(409, "사용중인 닉네임입니다."),
+    DUPLICATE_NAVER_NEWS(409, "저장된 네이버 뉴스입니다."),
     // 410
     VERIFICATION_EXPIRED(410, "인증 코드가 만료되었습니다."),
     // 500

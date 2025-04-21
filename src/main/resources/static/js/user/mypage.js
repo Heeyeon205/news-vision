@@ -17,29 +17,31 @@ window.addEventListener("DOMContentLoaded", async () => {
             document.getElementById('follower-count').textContent = data.followerCount;
             document.getElementById('following-count').textContent = data.followingCount;
         }
-    }catch(error){
+    } catch (error) {
         errorEvent(error);
     }
 });
 
 const editBtn = document.getElementById('edit-btn');
 editBtn.addEventListener('click', async () => {
-   try {
-       const response = await secureFetch('/api/auth/check', {method: 'get'});
-       const result = await response.json();
-       if (!result.success) {
-           alert('서버와 통신 중 문제가 발생했습니다.')
-       }
-       window.location.href='/user/update';
-   }catch(error){
-       errorEvent(error);
-   }
+    try {
+        const response = await secureFetch('/api/auth/check', {method: 'get'});
+        const result = await response.json();
+        if (!result.success) {
+            alert('서버와 통신 중 문제가 발생했습니다.')
+        }
+        window.location.href = '/user/update';
+    } catch (error) {
+        errorEvent(error);
+    }
 })
 
 const deleteBtn = document.getElementById('delete-btn');
 deleteBtn.addEventListener('click', async (e) => {
     const check = confirm('회원을 탈퇴하시겠습니까?');
-    if(!check) { return }
+    if (!check) {
+        return
+    }
     try {
         const response = await secureFetch('/api/user/delete', {method: 'delete'});
         const result = await response.json();
@@ -50,8 +52,36 @@ deleteBtn.addEventListener('click', async (e) => {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         alert('회원 탈퇴 완료');
-        window.location.href="/"
-    }catch(error){
+        window.location.href = "/"
+    } catch (error) {
+        errorEvent(error);
+    }
+})
+
+document.getElementById('follower-count').addEventListener('click', async () => {
+    try {
+        const response = await secureFetch('/api/auth/check', {method: 'get'});
+        const result = await response.json();
+        if (!result.success) {
+            alert('서버와 통신 중 문제가 발생했습니다.')
+            return
+        }
+        window.location.href = "/user/follow?type=foollower"
+    } catch (error) {
+        errorEvent(error);
+    }
+})
+
+document.getElementById('following-count').addEventListener('click', async () => {
+    try {
+        const response = await secureFetch('/api/auth/check', {method: 'get'});
+        const result = await response.json();
+        if (!result.success) {
+            alert('서버와 통신 중 문제가 발생했습니다.')
+            return
+        }
+        window.location.href = "/user/follow?type=foollowing"
+    } catch (error) {
         errorEvent(error);
     }
 })

@@ -1,6 +1,6 @@
 package com.newsvision.user.controller;
 
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.user.dto.request.VerifyEmailRequest;
 import com.newsvision.user.service.EmailService;
 import lombok.RequiredArgsConstructor;
@@ -15,10 +15,8 @@ public class EmailController {
 
     @PostMapping("/send-code")
     public ResponseEntity<ApiResponse<?>> sendCode(@RequestParam String email) {
-        System.out.println("여기 넘어옴?");
-        System.out.println("email = " + email);
         emailService.sendVerificationCode(email);
-        return ResponseEntity.ok(ApiResponse.success("인증 메일이 발송되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("인증 메일이 발송되었습니다."));
     }
 
     @PostMapping("/verify")

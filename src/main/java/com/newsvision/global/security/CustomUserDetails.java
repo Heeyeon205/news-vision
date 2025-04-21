@@ -20,6 +20,7 @@ public class CustomUserDetails implements UserDetails {
     }
 
     public Long getId() {return user.getId();}
+    public String getRole() {return user.getRole().name();}
 
     @Override
     public String getPassword() {

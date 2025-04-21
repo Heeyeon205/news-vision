@@ -45,6 +45,10 @@ public class News {
     private String image;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "naver_news_id")
+    private NaverNews naverNews;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 

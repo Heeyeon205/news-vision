@@ -1,6 +1,5 @@
-package com.newsvision.global.response;
+package com.newsvision.global.exception;
 
-import com.newsvision.global.exception.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -79,4 +79,12 @@ public class PageController {
         model.addAttribute("script", "/js/user/update.js");
         return "layout";
     }
+
+    @GetMapping("/user/follow")
+    public String follow(Model model) {
+        model.addAttribute("title", "follow");
+        model.addAttribute("content", "user/follow :: content");
+        model.addAttribute("script", "/js/user/follow.js");
+        return "layout";
+    }
 }

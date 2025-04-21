@@ -1,5 +1,6 @@
 package com.newsvision.news.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -19,6 +20,7 @@ public class Scrap {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference("user-scraps")
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)

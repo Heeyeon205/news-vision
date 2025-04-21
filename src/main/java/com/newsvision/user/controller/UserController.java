@@ -1,12 +1,10 @@
 package com.newsvision.user.controller;
 
 import com.newsvision.global.aws.S3Uploader;
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.user.dto.request.JoinUserRequest;
-import com.newsvision.user.dto.response.CheckUserNicknameResponse;
-import com.newsvision.user.dto.response.CheckUserUsernameResponse;
-import com.newsvision.user.dto.response.UpdateUserResponse;
+import com.newsvision.user.dto.response.*;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -66,5 +66,29 @@ public class UserController {
         Long id = userDetails.getId();
         userService.updateUserProfile(id, image, nickname, introduce);
         return ResponseEntity.ok(ApiResponse.success());
+    }
+
+    @GetMapping("/board")
+    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long id = customUserDetails.getId();
+        List<UserBoardListResponse> response = userService.getMypageBoardList(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/news")
+    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getMypageNewsList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long id = customUserDetails.getId();
+        List<UserNewsListResponse> response = userService.getMypageNewsList(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/scrap")
+    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getMypageScrapList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    Long id = customUserDetails.getId();
+    List<UserScrapListResponse> response = userService.getMypageScrapList(id);
+    return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

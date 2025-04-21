@@ -8,14 +8,17 @@ import com.newsvision.news.controller.request.NewsCreateRequest;
 import com.newsvision.news.controller.request.NewsUpdateRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.entity.NaverNews;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.NewsLike;
 import com.newsvision.news.entity.Scrap;
+import com.newsvision.news.repository.NaverNewsRepository;
 import com.newsvision.news.repository.NewsLikeRepository;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
+import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -36,6 +39,7 @@ public class NewsService {
     private final ScrapRepository scrapRepository;
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
+    private final NaverNewsRepository naverNewsRepository;
 
     //
     public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
@@ -151,28 +155,21 @@ public class NewsService {
 
     @Transactional
     public void createNews(Long userId, NewsCreateRequest request) {
-        log.info("📌 뉴스 작성 요청 - userId: {}, categoryId: {}", userId, request.getCategoryId());
-
-        User user = userRepository.findById(userId)
+        // 네이버 누스 도입으로 수정 - 종현
+       User user = userRepository.findById(userId)
+               .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+       Categories category = categoryRepository.findById(request.getCategoryId())
+               .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+       NaverNews naverNews = naverNewsRepository.findById(request.getNaverNewsId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        log.info("👤 작성자 정보 - username: {}, role: {}", user.getUsername(), user.getRole());
-
-        Categories category = categoryRepository.findById(request.getCategoryId())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        log.info("📂 카테고리 정보 - id: {}, name: {}", category.getId(), category.getName());
-
-        News news = News.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .image(request.getImage())
-                .user(user)
-                .category(category)
-                .createdAt(LocalDateTime.now())  // ✅ 꼭 넣어야 함!!
-                .build();
-
-        log.info("📰 News 객체 생성 완료 - title: {}, user: {}, category: {}", news.getTitle(), news.getUser().getUsername(), news.getCategory().getName());
-
-        News saved = newsRepository.save(news);
+       News news = News.builder()
+               .title(request.getTitle())
+               .content(request.getContent())
+               .user(user)
+               .category(category)
+               .naverNews(naverNews)
+               .build();
+        newsRepository.save(news);
     }
 
     @Transactional
@@ -207,7 +204,4 @@ public class NewsService {
         log.info("🗑️ 뉴스 삭제 요청 - newsId: {}, by userId: {}", newsId, userId);
         newsRepository.delete(news);
     }
-
-
-
 }

@@ -13,7 +13,9 @@
         <datasource-mapping>
           <factory-entry name="entityManagerFactory" value="9c060b44-6f16-42b0-9447-6ea50401c23b" />
         </datasource-mapping>
-        <naming-strategy-map />
+        <naming-strategy-map>
+          <unit-entry name="entityManagerFactory" />
+        </naming-strategy-map>
       </configuration>
     </facet>
   </component>

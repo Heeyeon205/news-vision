@@ -1,5 +1,6 @@
 package com.newsvision.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,10 +22,12 @@ public class Follow {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "follower_id", nullable = false)
+    @JsonBackReference("user-followers")
     private User follower;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "following_id", nullable = false)
+    @JsonBackReference("user-followings")
     private User following;
 
     private LocalDateTime createdAt;

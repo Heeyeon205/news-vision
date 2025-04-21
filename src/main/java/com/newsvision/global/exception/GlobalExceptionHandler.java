@@ -1,6 +1,5 @@
 package com.newsvision.global.exception;
 
-import com.newsvision.global.response.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
