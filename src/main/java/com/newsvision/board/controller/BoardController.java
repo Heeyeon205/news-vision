@@ -7,7 +7,7 @@ import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.service.BoardService;
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -2,6 +2,7 @@ package com.newsvision.news.service;
 
 import com.newsvision.category.entity.Categories;
 import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.request.NewsCreateRequest;
@@ -40,6 +41,7 @@ public class NewsService {
     private final CategoryRepository categoryRepository;
     private final UserRepository userRepository;
     private final NaverNewsRepository naverNewsRepository;
+    private final NewsSearchService newsSearchService;
 
     //
     public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
@@ -169,7 +171,10 @@ public class NewsService {
                .category(category)
                .naverNews(naverNews)
                .build();
-        newsRepository.save(news);
+       News saved = newsRepository.save(news);
+
+        // ✅ Elasticsearch에 저장
+        newsSearchService.saveNews(saved);
     }
 
     @Transactional
@@ -190,6 +195,9 @@ public class NewsService {
         news.setContent(request.getContent());
         news.setImage(request.getImage());
         news.setCategory(category);
+
+        // ✅ Elasticsearch에 업데이트
+        newsSearchService.saveNews(news);
     }
 
     @Transactional
@@ -214,5 +222,8 @@ public class NewsService {
         // 💡 뉴스 삭제
         newsRepository.delete(news);
         log.info("📰 뉴스 삭제 완료");
+
+        // ✅ Elasticsearch에서도 제거
+        newsSearchService.deleteNews(newsId);
     }
 }

@@ -10,6 +10,7 @@ import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.category.entity.Categories;
 import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
@@ -37,6 +38,7 @@ public class BoardService {
     private final BoardLikeRepository boardLikeRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final BoardSearchService boardSearchService;
 
     public List<BoardResponse> getBoardsList(int page, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
@@ -113,6 +115,7 @@ public class BoardService {
             board.setUser(user);
             board.setImage(request.getImage());
             Board savedBoard = boardRepository.save(board);
+            boardSearchService.saveBoard(board);
         log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
             return getBoardDetail(savedBoard.getId());
         }catch (Exception e) {
@@ -143,6 +146,7 @@ public class BoardService {
         board.setImage(request.getImage());
 
         Board updatedBoard = boardRepository.save(board);
+        boardSearchService.saveBoard(board);
         return getBoardDetail(updatedBoard.getId());
     }
     @Transactional
@@ -158,6 +162,7 @@ public class BoardService {
         }
 
         boardRepository.delete(board); // 게시글 삭제
+        boardSearchService.deleteBoard(boardId);
     }
 
 

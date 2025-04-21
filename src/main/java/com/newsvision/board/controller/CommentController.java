@@ -4,7 +4,7 @@ import com.newsvision.board.controller.request.CommentCreateRequest;
 import com.newsvision.board.controller.request.CommentUpdateRequest;
 import com.newsvision.board.controller.response.CommentResponse;
 import com.newsvision.board.service.CommentService;
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

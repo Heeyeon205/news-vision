@@ -2,7 +2,7 @@ package com.newsvision.board.controller;
 
 
 import com.newsvision.board.service.ReportService;
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
