@@ -21,7 +21,9 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' } // 결제
 }
+
 
 dependencies {
     // Spring
@@ -73,6 +75,9 @@ dependencies {
 
     // ElasticSearch
     implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
+
+    // 포트원(아임포트) 라이브러리
+    implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'
 }
 
 tasks.named('test') {
