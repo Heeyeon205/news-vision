@@ -53,6 +53,44 @@
             padding: 8px;
             text-align: center;
         }
+
+
+
+
+
+
+        .toptab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+        }
+
+        .toptab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 17px;
+        }
+
+        .toptab button:hover {
+            background-color: #ddd;
+        }
+
+        .toptab button.active {
+            background-color: #ccc;
+        }
+
+        .topcontent {
+            display: none;
+            padding: 6px 12px;
+            border: 1px solid #ccc;
+            border-top: none;
+        }
+
     </style>
 </head>
 <body>
@@ -95,6 +133,9 @@
 <!--  회원 관리 -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+        const tbody = document.querySelector("#userTable tbody");
+
+        // 데이터 가져오기
         fetch("http://localhost:8080/admin/users")
             .then(response => {
                 if (!response.ok) {
@@ -103,38 +144,60 @@
                 return response.json();
             })
             .then(data => {
-
-                const tbody = document.querySelector("#userTable tbody");
                 tbody.innerHTML = "";
 
                 data.forEach(user => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-
-            <td>${user.username}</td>
-            <td>${user.password}</td>
-            <td>${user.nickname}</td>
-
-            <td>${user.create_at}</td>
-            <td>${user.image}</td>
-            <td>${user.introduce}</td>
-
-            <td>${user.provider_id}</td>
-             <td><button>삭제</button></td>
-
-        `;
+                        <td>${user.username}</td>
+                        <td>${user.password}</td>
+                        <td>${user.nickname}</td>
+                        <td>${user.create_at}</td>
+                        <td>${user.image}</td>
+                        <td>${user.introduce}</td>
+                         <td>${user.provider}</td>
+                        <td>${user.provider_id}</td>
+                          <td>${user.role}</td>
+                        <td><button class="delete-user" data-id="${user.id}">삭제</button></td>
+                    `;
                     tbody.appendChild(row);
                 });
             })
             .catch(error => {
-                console.error("카테고리 불러오기 실패:", error);
-
+                console.error("회원 정보 불러오기 실패:", error);
             });
+
+
+        tbody.addEventListener("click", function (event) {
+            if (event.target.classList.contains("delete-user")) {
+                const userId = event.target.getAttribute("data-id");
+
+                if (confirm("정말 삭제하시겠습니까?")) {
+
+                    fetch(`http://localhost:8080/admin/{id}`, {
+                        method: "DELETE"
+                    })
+                        .then(response => {
+
+                            if (response.status === 204 || response.ok) {
+                                event.target.closest("tr").remove();
+                                alert("삭제되었습니다.");
+                            } else {
+                                // Try to get more info from the response if possible
+                                return response.text().then(text => {
+                                    throw new Error(`삭제 실패: ${response.status} ${response.statusText} - ${text || 'No details'}`);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error("삭제 오류:", error);
+                            alert(`삭제 중 오류가 발생했습니다: ${error.message}`);
+                        });
+                }
+            }
+        })
     });
 </script>
-
-
-
 
 
 
@@ -199,12 +262,6 @@
             });
     });
 </script>
-
-
-
-
-
-
 
 
 
@@ -279,15 +336,186 @@
 
 
 
-
 <!-- 카테고리 관리 -->
 <div id="categorylist" class="tabcontent">
     <h3>카테고리 관리</h3>
+    <input id="categoryNameInput" placeholder="새 카테고리 이름">
+    <button id="addCategoryButton">추가</button>
     <table id="categoryTable">
         <thead>
         <tr>
             <th>ID</th>
             <th>이름</th>
+            <th>삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+<!-- 카테고리 관리 -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const tbody = document.querySelector("#categoryTable tbody");
+        const nameInput = document.querySelector("#categoryNameInput");
+        const addButton = document.querySelector("#addCategoryButton");
+        const categoryApiUrl = "http://localhost:8080/admin/categories";
+
+        function addCategoryToTable(category) {
+            if (!category || typeof category.id === 'undefined' || typeof category.name === 'undefined') {
+                console.error("Invalid category data provided to addCategoryToTable:", category);
+                return; // Don't add if data is invalid
+            }
+            const row = document.createElement("tr");
+
+            row.setAttribute('data-row-id', category.id);
+            row.innerHTML = `
+                <td>${category.id}</td>
+                <td>${category.name}</td>
+                <td><button class="delete-category" data-id="${category.id}">삭제</button></td>
+            `;
+            tbody.appendChild(row);
+        }
+
+        function fetchAndRenderCategories() {
+            fetch(categoryApiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`서버 오류 발생: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    tbody.innerHTML = ""; // Clear existing rows
+
+                    if (!data || data.length === 0) {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `<td colspan="3" style="text-align: center;">표시할 카테고리가 없습니다.</td>`;
+                        tbody.appendChild(row);
+                        return;
+                    }
+
+                    data.forEach(category => {
+                        addCategoryToTable(category);
+                    });
+                })
+                .catch(error => {
+                    console.error("카테고리 불러오기 실패:", error);
+                    tbody.innerHTML = "";
+                    const row = document.createElement("tr");
+                    row.innerHTML = `<td colspan="3" style="text-align: center; color: red;">카테고리 목록 로딩 중 오류: ${error.message}</td>`;
+                    tbody.appendChild(row);
+                });
+        }
+
+        fetchAndRenderCategories();
+
+        addButton.addEventListener("click", function() {
+            const categoryName = nameInput.value.trim();
+
+            if (!categoryName) {
+                alert("카테고리 이름을 입력해주세요.");
+                nameInput.focus();
+                return;
+            }
+
+            addButton.disabled = true;
+            addButton.textContent = '추가 중...';
+
+            fetch(categoryApiUrl, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: categoryName })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            throw new Error(`추가 실패: ${response.status} ${response.statusText} - ${text || '서버 응답 없음'}`);
+                        });
+                    }
+                    // No need to parse response JSON if we're refreshing the list
+                    return response;
+                })
+                .then(() => {
+                    nameInput.value = "";
+                    alert("카테고리가 성공적으로 추가되었습니다.");
+                    // Refresh the entire category list
+                    fetchAndRenderCategories();
+                })
+                .catch(error => {
+                    console.error("카테고리 추가 오류:", error);
+                    alert(`카테고리 추가 중 오류가 발생했습니다: ${error.message}`);
+                })
+                .finally(() => {
+                    addButton.disabled = false;
+                    addButton.textContent = '추가';
+                });
+        });
+
+        tbody.addEventListener('click', function(event) {
+            if (event.target.classList.contains('delete-category')) {
+                const deleteButton = event.target;
+                const categoryId = deleteButton.getAttribute('data-id');
+
+                if (!categoryId) {
+                    console.error("Delete button clicked, but data-id attribute is missing or invalid.");
+                    alert("삭제할 카테고리 ID를 찾을 수 없습니다.");
+                    return;
+                }
+
+                if (confirm(`카테고리 ID [${categoryId}] 를 정말 삭제하시겠습니까?`)) {
+                    // Disable button during request
+                    deleteButton.disabled = true;
+                    deleteButton.textContent = '삭제 중...';
+
+                    fetch(`${categoryApiUrl}/${categoryId}`, {
+                        method: 'DELETE',
+                    })
+                        .then(response => {
+                            if (response.ok || response.status === 204) {
+                                // Remove the table row visually
+                                deleteButton.closest('tr').remove();
+                                alert('카테고리가 삭제되었습니다.');
+
+                                if (tbody.rows.length === 0) {
+                                    const row = document.createElement("tr");
+                                    row.innerHTML = `<td colspan="3" style="text-align: center;">표시할 카테고리가 없습니다.</td>`;
+                                    tbody.appendChild(row);
+                                }
+                            } else {
+                                // Try get error details from response
+                                return response.text().then(text => {
+                                    throw new Error(`삭제 실패: ${response.status} ${response.statusText} - ${text || '서버 응답 없음'}`);
+                                });
+                            }
+                        })
+                        .catch(error => {
+                            console.error('카테고리 삭제 오류:', error);
+                            alert(`카테고리 삭제 중 오류 발생: ${error.message}`);
+                            // Re-enable button on failure
+                            deleteButton.disabled = false;
+                            deleteButton.textContent = '삭제';
+                        });
+                }
+            }
+        });
+    });
+</script>
+
+<!-- 카테고리 관리 -->
+<div id="polllist" class="tabcontent">
+    <h3>투표 관리</h3>
+    <table id="pollTable">
+
+        <thead>
+        <tr>
+            <th>제목</th>
+            <th>내용</th>
+            <th>생성일</th>
+            <th>종료일</th>
+            <th>작성자</th>
             <th>수정</th>
             <th>삭제</th>
         </tr>
@@ -297,10 +525,10 @@
         </tbody>
     </table>
 </div>
-<!-- 카테고리 관리 -->
+<!-- 투표 관리 -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        fetch("http://localhost:8080/admin/categories")
+        fetch("http://localhost:8080/admin/polls")
             .then(response => {
                 if (!response.ok) {
                     throw new Error("서버 오류 발생");
@@ -309,14 +537,18 @@
             })
             .then(data => {
 
-                const tbody = document.querySelector("#categoryTable tbody");
+                const tbody = document.querySelector("#pollTable tbody");
                 tbody.innerHTML = "";
 
-                data.forEach(category => {
+                data.forEach(poll => {
                     const row = document.createElement("tr");
                     row.innerHTML = `
-            <td>${category.id}</td>
-            <td>${category.name}</td>
+            <td>${poll.title}</td>
+            <td>${poll.content}</td>
+            <td>${poll.createdAt}</td>
+              <td>${poll.expiredAt}</td>
+                <td>${poll.authorNickname}</td>
+
             <td><button>수정</button></td>
              <td><button>삭제</button></td>
 
@@ -333,6 +565,122 @@
 
 
 
+<!-- 신고 관리 -->
+<div id="reportlist" class="tabcontent">
+    <h3>신고 관리</h3>
+    <div class="toptab">
+        <button class="toptablinks" id="defaultToptabOpen" onclick="openToptab(event, 'boardreport')">게시판 신고관리</button>
+        <button class="toptablinks" onclick="openToptab(event, 'commentreport')">댓글 신고관리</button>
+    </div>
+
+    <div id="boardreport" class="toptabcontent">
+        <table id="boardreportTable">
+
+            <thead>
+            <tr>
+
+
+                <th>ID</th>
+                <th>회원 아이디</th>
+                <th>커뮤니티 아이디</th>
+
+                <th>승인</th>
+                <th>거절</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch("http://localhost:8080/admin/boardreports")
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("서버 오류 발생");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+
+                    const tbody = document.querySelector("#boardreportTable tbody");
+                    tbody.innerHTML = "";
+
+                    data.forEach(boardreport => {
+                        const row = document.createElement("tr");
+                        row.innerHTML = `
+            <td>${boardreport.id}</td>
+            <td>${boardreport.user}</td>
+            <td>${boardreport.board}</td>
+
+            <td><button>수정</button></td>
+             <td><button>삭제</button></td>
+
+        `;
+                        tbody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error("카테고리 불러오기 실패:", error);
+
+                });
+        });
+    </script>
+    <div id="commentreport" class="toptabcontent">
+        <table id="commentreportTable">
+
+            <thead>
+            <tr>
+
+                <th>ID</th>
+                <th>댓글 아이디</th>
+                <th>회원 아이디</th>
+
+                <th>수정</th>
+                <th>삭제</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("http://localhost:8080/admin/commentreports")
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("서버 오류 발생");
+                }
+                return response.json();
+            })
+            .then(data => {
+
+                const tbody = document.querySelector("#commentreportTable tbody");
+                tbody.innerHTML = "";
+
+                data.forEach(commentreport => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+            <td>${commentreport.id}</td>
+            <td>${commentreport.commentContent}</td>
+            <td>${commentreport.reporterNickname}</td>
+
+            <td><button>수정</button></td>
+             <td><button>삭제</button></td>
+
+        `;
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("카테고리 불러오기 실패:", error);
+
+            });
+    });
+</script>
 
 
 
@@ -357,6 +705,23 @@
 
 
 
+<script>
+    function openToptab(evt, tabName) {
+        const contents = document.getElementsByClassName("toptabcontent");
+        for (let i = 0; i < contents.length; i++) {
+            contents[i].style.display = "none";
+        }
 
+        const links = document.getElementsByClassName("toptablinks");
+        for (let i = 0; i < links.length; i++) {
+            links[i].classList.remove("active");
+        }
 
+        document.getElementById(tabName).style.display = "block";
+        evt.currentTarget.classList.add("active");
+    }
 
+    window.onload = function () {
+        document.getElementById("defaultToptabOpen").click();
+    }
+</script>
