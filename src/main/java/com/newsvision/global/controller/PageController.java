@@ -87,4 +87,12 @@ public class PageController {
         model.addAttribute("script", "/js/user/follow.js");
         return "layout";
     }
+
+    @GetMapping("/payment/payments")
+    public String payments(Model model) {
+        model.addAttribute("title","결제");
+        model.addAttribute("content", "payment/payments :: content");
+        model.addAttribute("script", "/js/payments.js");
+        return "layout";
+    }
 }

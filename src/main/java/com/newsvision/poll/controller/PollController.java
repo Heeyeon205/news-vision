@@ -1,6 +1,7 @@
 package com.newsvision.poll.controller;
 
-import com.newsvision.global.response.ApiResponse;
+
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.poll.controller.request.CreatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;

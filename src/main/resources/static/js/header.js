@@ -10,6 +10,7 @@ if (accessToken) {
           <a href="/admin/manage">관리자 페이지</a>
            <button onclick="moveToMypage()">마이페이지</button>
            <button onclick="logout()">로그아웃</button>
+          <a href="/payment/payments">결제</a>
  `;
 } else {
     authArea.innerHTML = `
