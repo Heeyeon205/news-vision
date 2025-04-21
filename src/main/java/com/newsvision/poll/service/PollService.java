@@ -30,8 +30,8 @@ public class PollService {
     private final UserRepository userRepository;
 
     @Transactional
-    public PollResponse createPoll(CreatePollRequest request, String username) {
-            User user = userRepository.findByUsername(username)
+    public PollResponse createPoll(CreatePollRequest request, Long userId) {
+            User user = userRepository.findById(userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
             Poll poll = new Poll();
@@ -58,11 +58,19 @@ public class PollService {
     }
 
     @Transactional
-    public void vote(VoteRequest request, String username) {
-        User user = userRepository.findByUsername(username)
+    public void vote(VoteRequest request, Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
         PollOption pollOption = pollOptionRepository.findById(request.getOptionId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+        Poll poll = pollOption.getPoll();
+
+        //중복투표 방지
+        if(pollVoteRepository.existsByUserIdAndPollOption_Poll_Id(user.getId(), poll.getId())){
+            throw new CustomException(ErrorCode.DUPLICATE_VOTE);
+
+        }
 
         PollVote pollVote = new PollVote();
         pollVote.setUser(user);

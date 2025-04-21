@@ -3,5 +3,8 @@ package com.newsvision.poll.repository;
 import com.newsvision.poll.entity.PollVote;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface PollVoteRepository extends JpaRepository<PollVote, Long> {
+    boolean existsByUserIdAndPollOption_Poll_Id(Long userId, Long pollId);
 }
