@@ -1,5 +1,7 @@
 package com.newsvision.poll.controller;
 
+import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.poll.controller.request.CreatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;
 import com.newsvision.poll.controller.response.PollResponse;
@@ -18,20 +20,29 @@ public class PollController {
     private final PollService pollService;
 
     @PostMapping
-    public ResponseEntity<PollResponse> createPoll(@RequestBody CreatePollRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        PollResponse response = pollService.createPoll(request, userDetails.getUsername());
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    public ResponseEntity<ApiResponse<PollResponse>> createPoll(
+            @RequestBody CreatePollRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getId();
+        PollResponse response = pollService.createPoll(request,userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
     }
 
     @PostMapping("/{pollId}/vote")
-    public ResponseEntity<Void> vote(@PathVariable Long pollId, @RequestBody VoteRequest request, @AuthenticationPrincipal UserDetails userDetails) {
-        pollService.vote(request, userDetails.getUsername());
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<ApiResponse<Void>> vote(
+            @PathVariable Long pollId,
+            @RequestBody VoteRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails.getId();
+        pollService.vote(request, userId);
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
     @GetMapping("/{pollId}")
-    public ResponseEntity<PollResponse> getPoll(@PathVariable Long pollId) {
+    public ResponseEntity<ApiResponse<PollResponse>> getPoll(@PathVariable Long pollId) {
         PollResponse response = pollService.getPoll(pollId);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

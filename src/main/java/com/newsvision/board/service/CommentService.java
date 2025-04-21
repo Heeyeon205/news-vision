@@ -71,7 +71,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        // 본인 댓글 또는 관리자 권한 체크 로직 추가 (예시)
+        // 본인 댓글 또는 관리자 권한 체크 로직 (예시)
         if (!comment.getUser().getId().equals(userId) /* && !isAdmin(userId) */) {
             throw new CustomException(ErrorCode.UNAUTHORIZED); // 권한 없음 에러
         }

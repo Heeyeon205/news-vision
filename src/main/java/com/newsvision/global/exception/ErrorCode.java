@@ -10,6 +10,7 @@ public enum ErrorCode {
     // 400
     INVALID_INPUT(400, "입력값이 올바르지 않습니다."),
     INVALID_VERIFICATION_CODE(400, "인증 코드가 일치하지 않습니다."),
+    DUPLICATE_VOTE(400, "이미 투표에 참여했습니다."),
     // 401
     UNAUTHORIZED(401, "인증이 필요합니다."),
     INVALID_ACCESS_TOKEN(401, "유효하지 않은 Access Token입니다."),
