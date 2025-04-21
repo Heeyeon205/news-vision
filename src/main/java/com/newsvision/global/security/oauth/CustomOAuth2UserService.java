@@ -1,8 +1,10 @@
 package com.newsvision.global.security.oauth;
 
+
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -15,6 +17,8 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
+    @Value("${custom.default-image-url}")
+    private String defaultProfileImage;
 
     private final UserRepository userRepository;
 
@@ -45,7 +49,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         .nickname(nickname)
                         .provider(User.Provider.valueOf(registrationId.toUpperCase()))
                         .providerId(providerId)
-                        .image("/images/default-profile.png")
+                        .image(defaultProfileImage)
                         .role(User.Role.ROLE_USER)
                         .build()));
 

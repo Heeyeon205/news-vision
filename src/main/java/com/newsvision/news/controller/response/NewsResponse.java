@@ -1,5 +1,6 @@
 package com.newsvision.news.controller.response;
 
+import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,7 +17,7 @@ public class NewsResponse {
     private String image;
     private int likeCount;
     private int view;
-    private LocalDateTime createdAt;
+    private String createdAt;
     private String author;
     private String category;
     private boolean liked;
@@ -31,7 +32,7 @@ public class NewsResponse {
                 .image(news.getImage())
                 .likeCount(likeCount)
                 .view(news.getView())
-                .createdAt(news.getCreatedAt())
+                .createdAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
                 .author(news.getUser().getNickname())
                 .category(news.getCategory().getName())
                 .liked(liked)

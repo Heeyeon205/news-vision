@@ -9,6 +9,8 @@ import com.newsvision.news.controller.request.NewsCreateRequest;
 import com.newsvision.news.controller.request.NewsUpdateRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.entity.NaverNews;
+import com.newsvision.news.service.NaverNewsService;
 import com.newsvision.news.service.NewsService;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
@@ -35,6 +37,7 @@ public class NewsController {
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final NaverNewsService naverNewsService;
 
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMainNews() {
@@ -147,7 +150,6 @@ public class NewsController {
             @RequestBody NewsCreateRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        // 권한 확인 및 책임분리 수정 - 종현
         Long userId = userDetails.getId();
         String role = userDetails.getRole();
         userService.validateRole(role);

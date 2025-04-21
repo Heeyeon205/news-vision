@@ -4,10 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.request.NaverNewsSaveRequest;
+import com.newsvision.news.controller.request.NewsCreateRequest;
 import com.newsvision.news.dto.response.NaverNewsInfoResponse;
 import com.newsvision.news.dto.response.NaverNewsSearchResponse;
 import com.newsvision.news.entity.NaverNews;
+import com.newsvision.news.entity.News;
 import com.newsvision.news.repository.NaverNewsRepository;
+import com.newsvision.news.repository.NewsRepository;
+import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +40,8 @@ public class NaverNewsService {
     private String clientSecret;
 
     private final NaverNewsRepository naverNewsRepository;
+    private final UserRepository userRepository;
+    private final NewsRepository newsRepository;
 
     // 스프링 기본 HTTP 클라이언트
     private final RestTemplate restTemplate = new RestTemplate();
@@ -83,5 +89,4 @@ public class NaverNewsService {
                 .build();
         return naverNewsRepository.save(news).getId();
     }
-
 }

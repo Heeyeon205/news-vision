@@ -6,6 +6,7 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
+import com.newsvision.notice.Notice;
 import com.newsvision.user.dto.request.UpdateUserRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -40,7 +41,7 @@ public class User {
     @Column(name = "create_at")
     private LocalDateTime createAt;
     private String introduce;
-    private String image = "/images/default-profile.png";
+    private String image;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
@@ -105,4 +106,8 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-scraps")
     private List<Scrap> scrapList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Notice> noticeList = new ArrayList<>();
+
 }

@@ -87,8 +87,17 @@ public class UserController {
     @GetMapping("/scrap")
     public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getMypageScrapList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-    Long id = customUserDetails.getId();
-    List<UserScrapListResponse> response = userService.getMypageScrapList(id);
-    return ResponseEntity.ok(ApiResponse.success(response));
+        Long id = customUserDetails.getId();
+        List<UserScrapListResponse> response = userService.getMypageScrapList(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/notice-list")
+    public ResponseEntity<ApiResponse<List<UserNoticeListResponse>>> getMyNoticeList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ) {
+        Long id = customUserDetails.getId();
+        List<UserNoticeListResponse> response = userService.getMyPageNoticeList(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

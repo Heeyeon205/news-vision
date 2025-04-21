@@ -1,7 +1,12 @@
 package com.newsvision.news.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.newsvision.news.entity.GptNews;
+import com.newsvision.news.repository.GptNewsRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
@@ -18,29 +23,51 @@ public class GptSummaryService {
     private String openAiApiKey;
 
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
+    private final GptNewsRepository gptNewsRepository;
 
-    public String summarize(String originalText) {
+    public String createSummary(Long newsId, String title, String content) {
+        return gptNewsRepository.findByNewsId(newsId)
+                .map(GptNews::getSummary)
+                .orElseGet(() -> {
+                    try {
+                        String summary = useChatGptSummary(content);
+                        GptNews gptNews = GptNews.builder()
+                                .newsId(newsId)
+                                .title(title)
+                                .summary(summary)
+                                .build();
+                        gptNewsRepository.save(gptNews);
+                        return summary;
+                    } catch (Exception e) {
+                        log.error("요약 실패", e);
+                        return "요약 실패";
+                    }
+                });
+    }
+
+    private String useChatGptSummary(String content) throws IOException {
         OkHttpClient client = new OkHttpClient();
 
-        // 프롬프트
-        String requestJson = """
-            {
-              "model": "gpt-3.5-turbo",
-              "messages": [
-                { "role": "system", "content": "뉴스 본문을 3줄로 요약해줘. 핵심 내용만 포함시켜줘." },
-                { "role": "user", "content": "%s" }
-              ],
-              "temperature": 0.7
-            }
-            """.formatted(originalText);
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectNode requestJson = objectMapper.createObjectNode();
+        requestJson.put("model", "gpt-3.5-turbo");
+        requestJson.put("temperature", 0.7);
 
-        // HTTP 요청 생성
+        ArrayNode messages = objectMapper.createArrayNode();
+        messages.add(objectMapper.createObjectNode()
+                .put("role", "system")
+                .put("content", "아래 뉴스 본문을 150자 이내로 요약해줘. 핵심 정보만 뽑아주고, 불필요한 배경 설명은 생략해."));
+        messages.add(objectMapper.createObjectNode()
+                .put("role", "user")
+                .put("content", content));
+
+        requestJson.set("messages", messages);
+
         RequestBody body = RequestBody.create(
-                requestJson,
+                objectMapper.writeValueAsString(requestJson),
                 MediaType.parse("application/json")
         );
 
-        // 헤더 셋팅
         Request request = new Request.Builder()
                 .url(API_URL)
                 .post(body)
@@ -48,23 +75,13 @@ public class GptSummaryService {
                 .addHeader("Content-Type", "application/json")
                 .build();
 
-        // 응답 처리
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                log.error("API 호출 실패 {}", response.code());
                 throw new IOException("API 호출 실패: " + response.code());
             }
-
-            // 응답 파싱
             String responseBody = response.body().string();
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode root = objectMapper.readTree(responseBody);
             return root.get("choices").get(0).get("message").get("content").asText().trim();
-
-        } catch (Exception e) {
-            log.error("API 요약 실패");
-            e.printStackTrace();
-            return "요약 실패";
         }
     }
 }

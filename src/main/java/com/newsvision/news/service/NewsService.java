@@ -155,7 +155,6 @@ public class NewsService {
 
     @Transactional
     public void createNews(Long userId, NewsCreateRequest request) {
-        // 네이버 누스 도입으로 수정 - 종현
        User user = userRepository.findById(userId)
                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
        Categories category = categoryRepository.findById(request.getCategoryId())

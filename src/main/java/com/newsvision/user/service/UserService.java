@@ -12,16 +12,15 @@ import com.newsvision.mypage.dto.response.MypageInfoResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
 import com.newsvision.news.repository.NewsLikeRepository;
+import com.newsvision.notice.Notice;
 import com.newsvision.user.dto.request.JoinUserRequest;
-import com.newsvision.user.dto.response.UpdateUserResponse;
-import com.newsvision.user.dto.response.UserBoardListResponse;
-import com.newsvision.user.dto.response.UserNewsListResponse;
-import com.newsvision.user.dto.response.UserScrapListResponse;
+import com.newsvision.user.dto.response.*;
 import com.newsvision.user.entity.Badge;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +34,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
+    @Value("${custom.default-image-url}")
+    private String defaultProfileImage;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
@@ -62,7 +63,7 @@ public class UserService {
                 .username(request.getUsername())
                 .password(encodedPassword)
                 .email(request.getEmail())
-                .image("/images/default-profile.png")
+                .image(defaultProfileImage)
                 .nickname(request.getNickname())
                 .build();
         userRepository.save(user);
@@ -83,8 +84,8 @@ public class UserService {
     public void updateUserProfile(Long id, MultipartFile image, String nickname, String introduce) {
         User user = findByUserId(id);
         if (image != null && !image.isEmpty()) {
-            String keyNmae = "profile/" + user.getId() + "_" + UUID.randomUUID();
-            String imageUrl = s3Uploader.upload(image, keyNmae);
+            String keyName = "profile/" + user.getId() + "_" + UUID.randomUUID();
+            String imageUrl = s3Uploader.upload(image, keyName);
             user.updateImage(imageUrl);
         }
         if (nickname != null && !nickname.equals(user.getNickname())) {
@@ -128,5 +129,12 @@ public class UserService {
         if (!("ROLE_ADMIN".equals(role) || "ROLE_CREATOR".equals(role))) {
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
+    }
+
+    public List<UserNoticeListResponse> getMyPageNoticeList(Long id) {
+        User user = findByUserId(id);
+        List<Notice> noticeList = user.getNoticeList();
+        return noticeList.stream()
+                .map(UserNoticeListResponse::from).toList();
     }
 }

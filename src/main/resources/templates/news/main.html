@@ -3,17 +3,6 @@
 </head>
 
 <div th:fragment="content" class="main-body">
-    <nav>
-        <button class="logo-btn">로고</button>
-        <button onclick="location.href='/news/article'">아티클</button>
-        <button>AI 요약</button>
-        <button>커뮤니티</button>
-        <input type="text" placeholder="검색창">
-        <button>알림</button>
-        <button th:text="${nickname}">닉네임</button>
-        <button>로그인</button>
-    </nav>
-
     <main>
         <h2>메인페이지</h2>
         <p>{어드민 뉴스 랭킹 10}</p>

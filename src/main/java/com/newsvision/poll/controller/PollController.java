@@ -1,6 +1,6 @@
 package com.newsvision.poll.controller;
 
-import com.newsvision.global.response.ApiResponse;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.poll.controller.request.CreatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
