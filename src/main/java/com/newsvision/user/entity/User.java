@@ -86,6 +86,9 @@ public class User {
             throw new CustomException(ErrorCode.BADGE_REQUIRED);
         }
     }
+    public void updateIsPaid(Boolean isPaid) {// 결제된 사용자인지 확인 명보가 추가
+        this.isPaid = isPaid;
+    }
 
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-follwers")

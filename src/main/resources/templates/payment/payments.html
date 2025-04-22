@@ -1,15 +1,16 @@
 <head th:fragment="title">
     <title>Payment Page</title>
     <!-- jQuery CDN 추가 -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
 
 </head>
 <div th:fragment="content" class="payments-body" th:data-imp-code="${@environment.getProperty('imp.code')}">
     <body>
     <!-- 버튼들 -->
     <button id="cardPay">카드 결제</button>
-    <button id="kakaoPay">카카오페이 결제</button>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <!-- 아임포트 스크립트 추가 -->
+
     <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
     <script defer th:src="@{/js/payments.js}"></script>
     </body>

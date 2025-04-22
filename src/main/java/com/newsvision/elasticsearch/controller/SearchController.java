@@ -38,8 +38,8 @@ public class SearchController {
         }
     }
 
-    @GetMapping("/board")
-    public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String query) {
-        return ResponseEntity.ok(ApiResponse.success(boardSearchService.searchBoard(query)));
-    }
+//    @GetMapping("/board")
+//    public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String query) {
+//        return ResponseEntity.ok(ApiResponse.success(boardSearchService.searchBoard(query)));
+//    }
 }

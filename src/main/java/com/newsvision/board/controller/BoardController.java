@@ -5,6 +5,7 @@ import com.newsvision.board.controller.request.BoardCreateRequest;
 import com.newsvision.board.controller.request.BoardUpdateRequest;
 import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.entity.Board;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
@@ -36,7 +37,8 @@ public class BoardController {
 
     @GetMapping("/{boardId}")
     public ResponseEntity<ApiResponse<BoardDetailResponse>> getBoardDetail(@PathVariable Long boardId) {
-        BoardDetailResponse boardDetail = boardService.getBoardDetail(boardId);
+        Board board = boardService.findById(boardId);
+        BoardDetailResponse boardDetail = boardService.getBoardDetail(board);
         return ResponseEntity.ok(ApiResponse.success(boardDetail));
     }
     @PostMapping // 게시글 작성 API
@@ -55,7 +57,8 @@ public class BoardController {
             @RequestBody BoardUpdateRequest request // 요청 body로 수정할 게시글 정보 받기
     ) {
         Long userId = userDetails.getId();
-        BoardDetailResponse updatedBoard = boardService.updateBoard(boardId, userId, request);
+        Board board = boardService.findById(boardId);
+        BoardDetailResponse updatedBoard = boardService.updateBoard(board, userId, request);
         return ResponseEntity.ok(ApiResponse.success(updatedBoard));
     }
 
@@ -72,14 +75,17 @@ public class BoardController {
     @PostMapping("/{boardId}/likes")
     public ResponseEntity<ApiResponse<Void>> likeBoard(@PathVariable Long boardId,@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
+        Board board = boardService.findById(boardId);
         log.info("BoardController.likeBoard 메서드 호출됨! boardId: {}, userId: {}", boardId, userId);
-        boardService.likeBoard(boardId, userId);
+
+        boardService.likeBoard(board, userId);
         return ResponseEntity.ok(ApiResponse.success());
     }
 
     @PostMapping("/{boardId}/views")
     public ResponseEntity<ApiResponse<Void>> incrementViewCount(@PathVariable Long boardId) {
-        boardService.incrementViewCount(boardId);
+        Board board = boardService.findById(boardId);
+        boardService.incrementViewCount(board);
         return ResponseEntity.ok(ApiResponse.success());
     }
 }
