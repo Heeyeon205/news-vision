@@ -32,6 +32,10 @@ public class CustomUserDetails implements UserDetails {
         return user.getUsername();
     }
 
+    public User getUser() { // 명보가 추가
+        return user;
+    }
+
     // 계정 상태 설정
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }

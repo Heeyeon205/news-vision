@@ -1,5 +1,6 @@
 package com.newsvision.global.payment.domain;
 
+import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,4 +21,10 @@ public class Order {
     int quantity;
     String impUid;
     String merchantUid;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", referencedColumnName = "id") // user_id 외래 키 설정
+    private User user;
+    @Column(name = "username")
+    private String username;
+
 }

@@ -16,6 +16,7 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -39,6 +40,14 @@ public class BoardService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final BoardSearchService boardSearchService;
+    private final UserService userService;
+
+    public Board findById(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+
+    }
+
 
     public List<BoardResponse> getBoardsList(int page, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
@@ -57,28 +66,14 @@ public class BoardService {
 
         List<Board> boards = boardPage.getContent();
         return boards.stream().map(board -> {
-            long likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0; // 좋아요 수 계산
-            long commentCount = (board.getComments() != null) ? board.getComments().size() : 0; // 댓글 수 계산
-            return new BoardResponse(
-                    board.getContent(),
-                    board.getCategory().getId(),
-                    board.getCreateAt(),
-                    TimeUtil.formatRelativeTime(board.getCreateAt()),
-                    board.getUser().getId(),
-                    board.getImage(),
-                    board.getView(),
-                    board.getNewsId(),
-                    board.getIsReported(),
-                    likeCount,
-                    commentCount
-            );
+            int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
+            int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+            return new BoardResponse(board, likeCount, commentCount);
         }).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public BoardDetailResponse getBoardDetail(Long boardId) { // 게시글 상세 조회
-        Board board = boardRepository.findById(boardId) // findById 사용으로 변경
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    public BoardDetailResponse getBoardDetail(Board board) { // 게시글 상세 조회
         // 좋아요 수 계산 - null 체크 추가
         long likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
         // 댓글 수 계산 - null 체크 추가
@@ -103,9 +98,8 @@ public class BoardService {
     public BoardDetailResponse createBoard(Long userId, BoardCreateRequest request) { // 게시글 작성
         try {
         log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
-        User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        log.info("사용자 찾음: 사용자 이름 - {}", user.getUsername()); // 로그 추가
+        User user = userService.findByUserId(userId);
+        log.info("사용자 찾음: 사용자 이름 - {}", user.getUsername());
         Categories category = categoryRepository.findById(request.getCategoryId())
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
@@ -117,7 +111,7 @@ public class BoardService {
             Board savedBoard = boardRepository.save(board);
             boardSearchService.saveBoard(board);
         log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
-            return getBoardDetail(savedBoard.getId());
+            return getBoardDetail(savedBoard);
         }catch (Exception e) {
             System.out.println("ERROR 발생!!!: " + e.getMessage());  // System.out.println 추가
             e.printStackTrace();
@@ -127,11 +121,8 @@ public class BoardService {
 
     }
     @Transactional
-    public BoardDetailResponse updateBoard(Long boardId, Long userId, BoardUpdateRequest request) { // 게시글 수정
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    public BoardDetailResponse updateBoard(Board board, Long userId, BoardUpdateRequest request) { // 게시글 수정
+        User user = userService.findByUserId(userId);
         log.info("카테고리 ID {} 로 카테고리 찾기 시도", request.getCategoryId());
         Categories category = categoryRepository.findById(request.getCategoryId()) // 카테고리 ID로 카테고리 조회
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
@@ -147,14 +138,12 @@ public class BoardService {
 
         Board updatedBoard = boardRepository.save(board);
         boardSearchService.saveBoard(board);
-        return getBoardDetail(updatedBoard.getId());
+        return getBoardDetail(updatedBoard);
     }
     @Transactional
     public void deleteBoard(Long boardId, Long userId) { // 게시글 삭제
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        Board board = findById(boardId);
+        User user = userService.findByUserId(userId);
 
         // 게시글 작성자 본인 또는 관리자만 삭제 가능하도록 권한 체크 (isAdminUser()는 관리자 권한 체크 함수)
         if (!Objects.equals(board.getUser().getId(), userId) /* && !isAdminUser(userId) */) {
@@ -168,31 +157,22 @@ public class BoardService {
 
 
     @Transactional
-    public void likeBoard(Long boardId, Long userId) {
-        log.info("BoardService.likeBoard - 시작: boardId={}, userId={}", boardId, userId);
+    public void likeBoard(Board board, Long userId) {
+        log.info("BoardService.likeBoard - 시작: boardId={}, userId={}", board.getId(), userId);
         try {
-            log.info("BoardService.likeBoard - id로 Board 가져오는 중: {}", boardId);
-            Board board = boardRepository.findById(boardId)
-                    .orElseThrow(() -> {
-                        log.warn("BoardService.likeBoard - id로 Board를 찾을 수 없음: {}", boardId);
-                        return new CustomException(ErrorCode.NOT_FOUND);
-                    });
+            log.info("BoardService.likeBoard - id로 Board 가져오는 중: {}", board.getId());
             log.info("BoardService.likeBoard - Board 찾음: {}", board.getId());
 
             log.info("BoardService.likeBoard - id로 User 가져오는 중: {}", userId);
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> {
-                        log.warn("BoardService.likeBoard - id로 User를 찾을 수 없음: {}", userId);
-                        return new CustomException(ErrorCode.NOT_FOUND);
-                    });
+            User user = userService.findByUserId(userId);
             log.info("BoardService.likeBoard - User 찾음: {}", user.getId());
 
-            boolean alreadyLiked = boardLikeRepository.existsByBoardIdAndUserId(boardId, userId);
+            boolean alreadyLiked = boardLikeRepository.existsByBoardIdAndUserId(board.getId(), userId);
             log.info("BoardService.likeBoard - 이미 좋아요 눌렀는지 확인: {}", alreadyLiked);
 
             if (alreadyLiked) {
                 log.info("BoardService.likeBoard - 이미 좋아요 누름, 좋아요 취소");
-                boardLikeRepository.deleteByBoardIdAndUserId(boardId, userId);
+                boardLikeRepository.deleteByBoardIdAndUserId(board.getId(), userId);
                 log.info("BoardService.likeBoard - 좋아요 취소 완료");
             } else {
                 log.info("BoardService.likeBoard - 아직 좋아요 안 누름, 좋아요 추가");
@@ -212,9 +192,7 @@ public class BoardService {
         }
     }
     @Transactional
-    public void incrementViewCount(Long boardId) { // 조회수 증가 기능
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    public void incrementViewCount(Board board) { // 조회수 증가 기능
         board.setView(board.getView() + 1);
         boardRepository.save(board);
     }

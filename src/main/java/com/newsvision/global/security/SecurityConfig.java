@@ -69,7 +69,7 @@ public class SecurityConfig {
                         // 기본
                         "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**",
                         // 일단 개발용 풀 개방
-                        "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**", "/payment/payments",
+                        "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**", "/payment/payments","/api/v1/payment/validation/**",
                         // auth
                         "/api/auth/login", "/api/user/join",
                         // 정적 파일
