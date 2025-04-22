@@ -52,7 +52,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(HttpServletRequest request) {
+    public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
         String header = request.getHeader("Authorization");
 
         if (header != null && header.startsWith("Bearer ")) {
@@ -68,7 +68,7 @@ public class AuthController {
                 refreshTokenRepository.delete(username);
             }
         }
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.success("로그아웃 성공"));
     }
 
     @PostMapping("/refresh")

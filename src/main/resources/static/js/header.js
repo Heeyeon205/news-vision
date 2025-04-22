@@ -24,7 +24,6 @@ if (accessToken) {
 function logout() {
     const accessToken = localStorage.getItem("accessToken");
     const refreshToken = localStorage.getItem("refreshToken");
-    localStorage.removeItem("refreshToken");
 
     fetch("/api/auth/logout", {
         method: "POST",
