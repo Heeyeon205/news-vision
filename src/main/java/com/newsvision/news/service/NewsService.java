@@ -159,10 +159,13 @@ public class NewsService {
     public void createNews(Long userId, NewsCreateRequest request) {
        User user = userRepository.findById(userId)
                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        log.info("Creating new news for {}", userId);
        Categories category = categoryRepository.findById(request.getCategoryId())
                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+       log.info("Creating new news for category {}", category.getId());
        NaverNews naverNews = naverNewsRepository.findById(request.getNaverNewsId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+       log.info("Creating new news for naver news {}", naverNews.getId());
        News news = News.builder()
                .title(request.getTitle())
                .content(request.getContent())
@@ -170,10 +173,18 @@ public class NewsService {
                .category(category)
                .naverNews(naverNews)
                .build();
+       log.info("빌드완료");
        News saved = newsRepository.save(news);
+       log.info("뉴스 저장완료");
 
         // ✅ Elasticsearch에 저장
-        newsSearchService.saveNews(saved);
+        try {
+            System.out.println("createdAt: " + news.getCreatedAt());
+            newsSearchService.saveNews(saved);
+            log.info("뉴스검색 db 저장완료");
+        } catch (Exception e) {
+            log.error("❌ Elasticsearch 저장 실패", e);
+        }
     }
 
     @Transactional
