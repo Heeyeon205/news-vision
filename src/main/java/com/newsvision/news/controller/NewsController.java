@@ -152,8 +152,11 @@ public class NewsController {
     ) {
         Long userId = userDetails.getId();
         String role = userDetails.getRole();
+        log.info("컨트롤러 진입완료");
         userService.validateRole(role);
+        log.info("역할 검증 완료");
         newsService.createNews(userId, request);
+        log.info("createNews 완료");
         return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 작성되었습니다."));
     }
 
