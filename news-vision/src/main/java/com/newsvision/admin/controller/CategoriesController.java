@@ -23,22 +23,27 @@ public class CategoriesController {
         return ResponseEntity.ok(categoriesService.getAllCategories());
     }
 
-    // 카테고리 추가 (name만 param으로)
+
+    @GetMapping("/max")
+    public ResponseEntity<List<CategoriesResponse>> getMaxCategories() {
+        return ResponseEntity.ok(categoriesService.getMaxAllCategories());
+    }
+
     @PostMapping
     public ResponseEntity<Categories> addCategory(@RequestParam String name) {
         return ResponseEntity.ok(categoryService.addCategory(name));
     }
 
-    // 카테고리 수정
+
     @PutMapping("/{id}")
     public ResponseEntity<Categories> updateCategory(@PathVariable Long id, @RequestParam String name) {
         return ResponseEntity.ok(categoryService.updateCategory(id, name));
     }
 
-    // 카테고리 삭제
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        categoryService.deleteCategory(id);
+        categoriesService.deleteCategory(id);
         return ResponseEntity.noContent().build();
     }
 }

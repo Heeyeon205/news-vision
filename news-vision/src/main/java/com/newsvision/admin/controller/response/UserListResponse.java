@@ -26,7 +26,7 @@ public class UserListResponse {
     private String introduce;
     private String image;
     private String provider_id;
-
+    private User.Provider provider;
     public UserListResponse(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
@@ -38,6 +38,7 @@ public class UserListResponse {
         this.introduce = user.getIntroduce();
         this.image = user.getImage();
         this.provider_id = user.getProviderId();
+        this.provider=user.getProvider();
     }
 
 }
