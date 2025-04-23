@@ -36,8 +36,20 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success(new CheckUserNicknameResponse(exists)));
     }
 
+    @GetMapping("/match-password")
+    public ResponseEntity<ApiResponse<CheckUserPasswordResponse>> checkNickname(
+            @RequestParam String password,
+            @RequestParam String checkPassword
+    ) {
+        boolean exists = userService.checkPassword(password, checkPassword);
+        return ResponseEntity.ok(ApiResponse.success(new CheckUserPasswordResponse(exists)));
+    }
+
     @PostMapping("/join")
     public ResponseEntity<ApiResponse<JoinUserRequest>> join(@RequestBody JoinUserRequest request) {
+        log.warn("request.getUsername() = {}", request.getUsername());
+        log.warn("request.getPassword() = {}", request.getPassword());
+        log.warn("request.getEmail() = {}", request.getEmail());
         userService.save(request);
         return ResponseEntity.ok(ApiResponse.success(request));
     }
@@ -61,10 +73,11 @@ public class UserController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "nickname", required = false) String nickname,
+            @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "introduce", required = false) String introduce
     ) {
         Long id = userDetails.getId();
-        userService.updateUserProfile(id, image, nickname, introduce);
+        userService.updateUserProfile(id, image, nickname, email, introduce);
         return ResponseEntity.ok(ApiResponse.success());
     }
 

@@ -47,7 +47,7 @@ public class AuthController {
         refreshTokenRepository.save(user.getUsername(), refreshToken);
 
         // access token은 프론트에 전달
-        LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken);
+        LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken, user.getUsername());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

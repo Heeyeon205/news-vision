@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class VerifyEmailRequest {
+public class EmailRequest {
     private String email;
-    private String emailCode;
 }

@@ -56,15 +56,24 @@ public class UserService {
         return userRepository.existsByNickname(nickname);
     }
 
+    public boolean existsByEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public boolean checkPassword(String password, String checkPassword) {
+        return password.equals(checkPassword);
+    }
+
     @Transactional
     public void save(JoinUserRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
+        String nickname = "Newsion_User_" + UUID.randomUUID().toString().substring(0, 6);
         User user = User.builder()
                 .username(request.getUsername())
                 .password(encodedPassword)
                 .email(request.getEmail())
                 .image(defaultProfileImage)
-                .nickname(request.getNickname())
+                .nickname(nickname)
                 .build();
         userRepository.save(user);
     }
@@ -77,11 +86,11 @@ public class UserService {
     public UpdateUserResponse userInfo(Long id) {
         User user = findByUserId(id);
         log.warn(user.toString());
-        return new UpdateUserResponse(user.getImage(), user.getNickname(), user.getIntroduce());
+        return new UpdateUserResponse(user.getImage(), user.getNickname(), user.getEmail(), user.getIntroduce());
     }
 
     @Transactional
-    public void updateUserProfile(Long id, MultipartFile image, String nickname, String introduce) {
+    public void updateUserProfile(Long id, MultipartFile image, String nickname, String email, String introduce) {
         User user = findByUserId(id);
         if (image != null && !image.isEmpty()) {
             String keyName = "profile/" + user.getId() + "_" + UUID.randomUUID();
@@ -90,6 +99,9 @@ public class UserService {
         }
         if (nickname != null && !nickname.equals(user.getNickname())) {
             user.updateNickname(nickname);
+        }
+        if (email != null && !email.equals(user.getEmail())) {
+            user.updateEmail(email);
         }
         if (introduce != null && !introduce.equals(user.getIntroduce())) {
             user.updateIntroduce(introduce);

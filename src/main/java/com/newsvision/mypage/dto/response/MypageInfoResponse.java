@@ -14,6 +14,7 @@ public class MypageInfoResponse {
     private final int followingCount;
     private String icon;
     private String title;
+    private Boolean role;
 
     public MypageInfoResponse(User user, int followerCount, int followingCount, Badge badge) {
         this.userId = user.getId();
@@ -25,6 +26,9 @@ public class MypageInfoResponse {
         if (badge != null) {
             this.icon = badge.getIcon();
             this.title = badge.getTitle();
+        }
+        if(user.getRole().equals("ROLE_ADMIN") || user.getRole().equals("ROLE_CREATOR")) {
+            this.role = true;
         }
     }
 }

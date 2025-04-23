@@ -5,6 +5,7 @@ import com.newsvision.global.payment.domain.OrderRepository;
 import com.newsvision.global.payment.dto.OrderDto;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.UserService;
 import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.request.CancelData;
 import com.siot.IamportRestClient.response.IamportResponse;
@@ -23,7 +24,6 @@ public class PaymentService {
     private final IamportClient iamportClient;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
-
     // 임시 주문 데이터를 저장할 Map
     private final Map<String, OrderDto> pendingOrders = new HashMap<>();
 

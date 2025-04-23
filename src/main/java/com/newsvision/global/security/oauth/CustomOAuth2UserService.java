@@ -38,7 +38,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         String providerId = userInfo.getProviderId();
         String username = registrationId + "_" + providerId;
-        String nickname = "social_User_" + UUID.randomUUID().toString().substring(0, 6);
+        String nickname = "Social_User_" + UUID.randomUUID().toString().substring(0, 6);
         String email = userInfo.getEmail();
 
         User user = userRepository.findByUsername(username)

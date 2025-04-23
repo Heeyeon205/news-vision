@@ -70,13 +70,11 @@ public class User {
         LOCAL, GOOGLE, KAKAO, NAVER
     }
 
-    public void updateImage(String image) {
-        log.warn("업데이트할 이미지 URL: {}", image);
-        this.image = image;
-    }
+    public void updateImage(String image) { this.image = image; }
     public void updateNickname(String nickname) {
         this.nickname = nickname;
     }
+    public void updateEmail(String email) { this.email = email; }
     public void updateIntroduce(String introduce) {
         this.introduce = introduce;
     }
