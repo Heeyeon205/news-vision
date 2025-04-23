@@ -1,8 +1,12 @@
 package com.newsvision.elasticsearch.controller;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.elasticsearch.document.NewsDocument;
 import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.elasticsearch.service.NewsSearchService;
+import com.newsvision.global.Utils.JasoUtils;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
@@ -52,12 +56,12 @@ public class SearchController {
     }
 
     @GetMapping("/news/autocomplete")
-    public ResponseEntity<ApiResponse<List<String>>> autocompleteNewsTitle(@RequestParam String keyword) {
+    public ResponseEntity<ApiResponse<List<String>>> autocompleteNews(@RequestParam String keyword) {
         try {
-            List<String> suggestions = newsSearchService.autocompleteTitle(keyword);
-            return ResponseEntity.ok(ApiResponse.success(suggestions));
+            List<String> result = newsSearchService.autocompleteTitle(keyword);
+            return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
-            log.error("자동완성 오류", e);
+            log.error("❌ 자동완성 중 오류 발생", e);
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }

@@ -28,8 +28,11 @@ public class NewsDocument {
             })
     private String title;
 
-    @Field(type = FieldType.Text, analyzer = "autocomplete_ja_analyzer", searchAnalyzer = "standard")
-    private String titleAutocomplete;
+    @Field(type = FieldType.Text, analyzer = "autocomplete_jaso_analyzer", searchAnalyzer = "standard")
+    private String titleJaso;
+
+    @Field(type = FieldType.Text, analyzer = "autocomplete_jaso_analyzer", searchAnalyzer = "standard")
+    private String titleChosung;
 
 
     @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "standard"),

@@ -6,6 +6,7 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.newsvision.elasticsearch.document.NewsDocument;
 import com.newsvision.elasticsearch.repository.NewsSearchRepository;
+import com.newsvision.global.Utils.JasoUtils;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
 import com.newsvision.news.entity.News;
 import lombok.RequiredArgsConstructor;
@@ -32,12 +33,13 @@ public class NewsSearchService {
         NewsDocument doc = NewsDocument.builder()
                 .id(news.getId())
                 .title(news.getTitle())
-                .titleAutocomplete(news.getTitle())
+                .titleJaso(JasoUtils.splitJaso(news.getTitle())) // 추가
+                .titleChosung(JasoUtils.extractChosung(news.getTitle()))
                 .content(news.getContent())
                 .categoryName(news.getCategory().getName())
                 .username(news.getUser().getUsername())
                 .image(news.getImage())
-                .createdAt(news.getCreatedAt().format(formatter)) // ⭐ 포맷 처리
+                .createdAt(news.getCreatedAt().format(formatter))
                 .build();
 
         newsSearchRepository.save(doc);
@@ -93,13 +95,20 @@ public class NewsSearchService {
         return "eng";
     }
     public List<String> autocompleteTitle(String keyword) throws Exception {
+        String jasoQuery = JasoUtils.splitJaso(keyword);     // 자소 분리
+        String chosungQuery = JasoUtils.extractChosung(keyword); // 초성 추출
+
         SearchResponse<NewsDocument> response = elasticsearchClient.search(s -> s
                         .index("news")
-                        .size(10)
+                        .size(20)
                         .query(q -> q
-                                .match(m -> m
-                                        .field("title.autocomplete")
-                                        .query(keyword)
+                                .bool(b -> b
+                                        .should(m -> m.match(mm -> mm
+                                                .field("titleJaso")
+                                                .query(jasoQuery)))
+                                        .should(m -> m.match(mm -> mm
+                                                .field("titleChosung")
+                                                .query(chosungQuery)))
                                 )
                         ),
                 NewsDocument.class
@@ -107,9 +116,20 @@ public class NewsSearchService {
 
         return response.hits().hits().stream()
                 .map(hit -> hit.source().getTitle())
+                .flatMap(title -> {
+                    log.info("🔎 title: {}, jaso: {}, chosung: {}", title, JasoUtils.splitJaso(title), JasoUtils.extractChosung(title));
+                    return List.of(title.split(" ")).stream()
+                            .filter(word ->
+                                    JasoUtils.splitJaso(word).contains(jasoQuery) ||
+                                            JasoUtils.extractChosung(word).contains(chosungQuery)
+                            );
+                })
                 .distinct()
+                .limit(10)
                 .toList();
     }
+
+
 
 
 }
