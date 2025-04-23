@@ -38,8 +38,16 @@ public class SearchController {
         }
     }
 
-//    @GetMapping("/board")
-//    public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String query) {
-//        return ResponseEntity.ok(ApiResponse.success(boardSearchService.searchBoard(query)));
-//    }
+    @GetMapping("/board")
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String keyword) {
+        log.info("🔍 게시글 검색 요청 - keyword: {}", keyword);
+        try {
+            List<BoardResponse> result = boardSearchService.searchBoard(keyword);
+            log.info("게시글 검색 결과 수: {}", result.size());
+            return ResponseEntity.ok(ApiResponse.success(result));
+        } catch (Exception e) {
+            log.error("❌ 게시글 검색 중 오류 발생", e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
+        }
+    }
 }

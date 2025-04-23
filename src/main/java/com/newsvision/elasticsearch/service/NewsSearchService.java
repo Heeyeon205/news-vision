@@ -77,7 +77,7 @@ public class NewsSearchService {
                         .image(doc.getImage())
                         .category(doc.getCategoryName())
                         .author(doc.getUsername())
-                        .createdAt(LocalDateTime.parse(doc.getCreatedAt(), formatter))
+                        .createdAt(String.valueOf(LocalDateTime.parse(doc.getCreatedAt(), formatter)))
                         .build())
                 .toList();
     }
