@@ -23,9 +23,16 @@ public class PolllistController {
     public ResponseEntity<List<PollResponse>> getPollList() {
         return ResponseEntity.ok(pollService.getAllPolls());
     }
+
+    @GetMapping("/max")
+    public ResponseEntity<List<PollResponse>> getMaxPollList() {
+        return ResponseEntity.ok(pollService.getMaxAllPolls());
+    }
+
+
     // 카테고리 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deletePoll(@PathVariable Long id) {
         pollService.deletePoll(id);
         return ResponseEntity.noContent().build();
     }

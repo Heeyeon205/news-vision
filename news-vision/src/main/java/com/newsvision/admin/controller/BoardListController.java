@@ -3,9 +3,13 @@ package com.newsvision.admin.controller;
 // ... (other imports)
 
 
+import com.newsvision.admin.service.BoardListService;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.service.BoardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BoardListController {
     private final BoardService boardService;
-
+    private final BoardListService boardListService;
 
     @GetMapping
    public ResponseEntity<List<BoardResponse>> getBoardList(
@@ -29,7 +33,18 @@ public class BoardListController {
         List<BoardResponse> boardList = boardService.getBoardsList(page, size, categoryId);
         return ResponseEntity.ok(boardList);
     }
-    @DeleteMapping("/{boardId}")
+
+    @GetMapping("/max")
+    public ResponseEntity<Page<BoardResponse>> getBoardList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createAt").ascending());
+        Page<BoardResponse> boardList = boardListService.getBoardList(pageRequest);
+        return ResponseEntity.ok(boardList);
+    }
+
+
+    @DeleteMapping("/delete/{boardId}")
     public ResponseEntity<Void> deleteBoard(
             @PathVariable Long boardId,
             @RequestParam Long userId) {

@@ -34,16 +34,24 @@ public class UserListController {
         return userListService.getAllUsers();
     }
 
+
+    @GetMapping("/max")
+    public ResponseEntity<List<UserListResponse>> getMaxAllUsers() {
+        List<UserListResponse> users = userListService.getMaxAllUsers();
+        return ResponseEntity.ok(users);
+    }
+
+
     @PostMapping
     public UserListResponse createUser(@RequestBody UserListResponse userListResponse) {
         return userListService.saveUser(userListResponse);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         try {
-            userService.delete(id); // UserService의 삭제 메서드 호출 (가정)
-            return ResponseEntity.noContent().build(); // 성공적으로 삭제됨을 응답 (HTTP 204)
+            userService.delete(id);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
             log.error("사용자 삭제 실패 (ID: {}): {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 서버 오류 응답 (HTTP 500)

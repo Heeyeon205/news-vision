@@ -1,13 +1,21 @@
 package com.newsvision.admin.service;
 
+import com.newsvision.admin.controller.response.NaverNewsResponse;
 import com.newsvision.admin.controller.response.UserListResponse;
+import com.newsvision.board.entity.Board;
+import com.newsvision.board.entity.BoardReport;
 import com.newsvision.news.controller.response.NewsResponse;
+import com.newsvision.news.entity.NaverNews;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,4 +37,20 @@ public class NewsListService {
                 ))
                 .collect(Collectors.toList());
     }
+
+    public List<NewsResponse> getMaxAllNews() {
+        List<News> newsList = newsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+
+        return newsList.stream()
+                .map(news -> NewsResponse.of(
+                        news,
+                        0,       // likeCount → 좋아요 연관 관계 없으므로 기본값
+                        false,   // liked → 인증 없이 false
+                        false    // scraped → 인증 없이 false
+                ))
+                .collect(Collectors.toList());
+    }
+
+
+
 }
