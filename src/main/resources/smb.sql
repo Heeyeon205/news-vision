@@ -1,1 +1,2 @@
-INSERT INTO categories (name) VALUES ('카테고리1'), ('카테고리2'), ('카테고리3'), ('카테고리4'), ('카테고리5'), ('카테고리6'), ('카테고리7'), ('카테고리8'), ('카테고리9'), ('카테고리10');
+insert into users (username,password,nickname,image,role,create_at,is_paid,badge_id)
+values('admin','admin','뉴션','https://example.com/images/admin.jpg','ROLE_ADMIN',NOW(),false,1);

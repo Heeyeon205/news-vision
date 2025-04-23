@@ -149,4 +149,10 @@ public class UserService {
         return noticeList.stream()
                 .map(UserNoticeListResponse::from).toList();
     }
+
+    @Transactional
+    public void updateIsPaidOrUser(User user){
+        user.updateIsPaid(true);
+        userRepository.save(user);
+    }
 }

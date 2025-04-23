@@ -12,4 +12,6 @@ public class PaymentInitRequest {
     private String productName;
     private int price;
     private int quantity;
+
+    private Integer subcriptionPeriod;
 }

@@ -45,6 +45,7 @@ public class PaymentController {
             response.put("amount", request.getPrice());
             response.put("buyer_name", userDetails.getUsername());
             response.put("isPaid", userDetails.getUser().getIsPaid());
+            response.put("subscription_period",request.getSubcriptionPeriod()); // 구독기간
 
             OrderDto orderDto = new OrderDto();
             orderDto.setProductId(request.getProductId());
@@ -52,6 +53,7 @@ public class PaymentController {
             orderDto.setPrice(request.getPrice());
             orderDto.setQuantity(request.getQuantity());
             orderDto.setMerchantUid((String) response.get("merchant_uid"));
+            orderDto.setSubscriptionPeriod(request.getSubcriptionPeriod());
 
             log.info("임시 주문 저장: userId={}, orderDto={}", userDetails.getId(), orderDto);
             paymentService.storePendingOrder(userDetails.getId(), orderDto);
@@ -92,4 +94,31 @@ public class PaymentController {
         log.info("Cancel payment: {}, userId: {}", imp_uid, userDetails.getId());
         return paymentService.cancelPayment(imp_uid);
     }
+
+    // 환불 요청 api
+    @PostMapping("/refund/request/{imp_uid}")
+    public ResponseEntity<String> requestRefund(
+            @PathVariable String imp_uid,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+        }
+        log.info("환불 요청: imp_uid={}, userId={}", imp_uid, userDetails.getId());
+        return ResponseEntity.ok(paymentService.requestRefund(userDetails.getId(), imp_uid));
+    }
+
+    @PostMapping("/refund/approve/{imp_uid}")
+    public ResponseEntity<String> approveRefund(
+            @PathVariable("imp_uid") String impUid,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body("관리자 권한이 필요합니다.");
+        }
+        log.info("환불 승인 요청: imp_uid={}, userId={}", impUid, userDetails.getId());
+        return ResponseEntity.ok(paymentService.approveRefund(userDetails.getId(), impUid));
+    }
+
 }
