@@ -5,6 +5,8 @@ import com.newsvision.user.entity.User;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 public class OrderDto {
@@ -15,6 +17,8 @@ public class OrderDto {
     String impUid;
     String merchantUid;
 
+    Integer subscriptionPeriod;
+
     public Order toEntity(User user) {
         return Order.builder()
                 .productId(productId)
@@ -23,6 +27,8 @@ public class OrderDto {
                 .quantity(quantity)
                 .impUid(impUid)
                 .merchantUid(merchantUid)
+                .subscriptionPeriod(subscriptionPeriod)
+                .paymentDate(LocalDateTime.now()) // 결제 날짜 설정
                 .user(user)
                 .username(user.getUsername())
                 .build();

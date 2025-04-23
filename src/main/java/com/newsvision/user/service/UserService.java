@@ -59,14 +59,17 @@ public class UserService {
     @Transactional
     public void save(JoinUserRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(encodedPassword)
-                .email(request.getEmail())
-                .image(defaultProfileImage)
-                .nickname(request.getNickname())
-                .build();
-        userRepository.save(user);
+        if(request.getUsername().equals("admin")){
+            User user = User.builder()
+                    .username(request.getUsername())
+                    .password(encodedPassword)
+                    .email(request.getEmail())
+                    .image(defaultProfileImage)
+                    .nickname(request.getNickname())
+                    .role(User.Role.ROLE_ADMIN)
+                    .build();
+            userRepository.save(user);
+        }
     }
 
     @Transactional
@@ -136,5 +139,11 @@ public class UserService {
         List<Notice> noticeList = user.getNoticeList();
         return noticeList.stream()
                 .map(UserNoticeListResponse::from).toList();
+    }
+
+    @Transactional
+    public void updateIsPaidOrUser(User user){
+        user.updateIsPaid(true);
+        userRepository.save(user);
     }
 }

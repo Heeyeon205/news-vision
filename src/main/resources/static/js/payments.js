@@ -1,32 +1,28 @@
-// 스크립트가 여러 번 로드되지 않도록 방지
 if (!window.paymentScriptLoaded) {
     window.paymentScriptLoaded = true;
 
     document.addEventListener('DOMContentLoaded', function () {
         const paymentBody = document.querySelector('.payments-body');
         const impCode = paymentBody.dataset.impCode;
-        const cardPayButton = document.getElementById('cardPay');
+        const planButtons = [
+            document.getElementById('plan1Month'),
+            document.getElementById('plan3Month'),
+            document.getElementById('plan6Month')
+        ];
 
-
-        // 디바운싱 플래그 및 시간 기반 디바운싱
         let isProcessing = false;
-        const debounceDelay = 500; // 500ms 디바운싱
+        const debounceDelay = 500;
 
-
-
-        async function handlePayment(pg, payMethod, event) {
-            // 이벤트 버블링 방지
+        async function handlePayment(pg, payMethod, period, price, productName, event) {
             event.stopPropagation();
             event.preventDefault();
 
-            // 디바운싱: 이미 처리 중이면 중복 실행 방지
             if (isProcessing) {
                 console.log('이미 결제 처리 중입니다.');
                 return;
             }
             isProcessing = true;
 
-            // 시간 기반 디바운싱
             setTimeout(() => {
                 isProcessing = false;
             }, debounceDelay);
@@ -38,14 +34,14 @@ if (!window.paymentScriptLoaded) {
                     return;
                 }
 
-                // 결제 초기화 요청
                 const order = {
                     pg: pg,
                     payMethod: payMethod,
-                    productId: 1,
-                    productName: '프리미엄 구독',
-                    price: 100,
-                    quantity: 1
+                    productId: period, // 예: 1, 3, 6
+                    productName: productName,
+                    price: price,
+                    quantity: 1,
+                    subscriptionPeriod: period // 구독 기간 추가
                 };
 
                 let initResponse = await fetch('/api/v1/payment/init', {
@@ -94,15 +90,6 @@ if (!window.paymentScriptLoaded) {
                     name = initData.name;
                     amount = initData.amount;
                     buyerName = initData.buyer_name;
-                } else if (initData.data) {
-                    success = initData.success;
-                    isPaid = initData.data.isPaid;
-                    pgData = initData.data.pg;
-                    payMethodData = initData.data.pay_method;
-                    merchantUid = initData.data.merchant_uid;
-                    name = initData.data.name;
-                    amount = initData.data.amount;
-                    buyerName = initData.data.buyer_name;
                 } else {
                     alert('서버 응답 형식이 올바르지 않습니다.');
                     return;
@@ -113,13 +100,11 @@ if (!window.paymentScriptLoaded) {
                     return;
                 }
 
-                // 중복 결제 방지
                 if (isPaid) {
-                    alert('이미 프리미엄 구독을 완료하셨습니다. 중복 결제는 허용되지 않습니다.');
+                    alert('이미 구독 중입니다. 중복 결제는 허용되지 않습니다.');
                     return;
                 }
 
-                // 결제창 띄우기
                 IMP.init(impCode);
                 IMP.request_pay(
                     {
@@ -189,7 +174,7 @@ if (!window.paymentScriptLoaded) {
                                     const res = await orderResponse.text();
                                     console.log('주문 저장 결과:', res);
                                     if (res.includes("성공")) {
-                                        alert('결제가 완료되었습니다. 프리미엄 구독이 활성화되었습니다.');
+                                        alert('결제가 완료되었습니다. 구독이 활성화되었습니다.');
                                     } else {
                                         alert('주문 정보 저장에 실패했습니다: ' + res);
                                     }
@@ -212,10 +197,16 @@ if (!window.paymentScriptLoaded) {
             }
         }
 
-        // 이벤트 리스너를 onclick 속성으로 등록 (중복 방지)
-        if (cardPayButton) {
-            cardPayButton.onclick = (event) => handlePayment('html5_inicis.INIpayTest', 'card', event);
-        }
-
+        // 각 버튼에 이벤트 리스너 추가
+        planButtons.forEach(button => {
+            if (button) {
+                button.onclick = (event) => {
+                    const period = parseInt(button.dataset.period);
+                    const price = parseInt(button.dataset.price);
+                    const productName = button.dataset.name;
+                    handlePayment('html5_inicis.INIpayTest', 'card', period, price, productName, event);
+                };
+            }
+        });
     });
 }
