@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.data.elasticsearch.core.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -31,6 +32,7 @@ public class NewsSearchService {
         NewsDocument doc = NewsDocument.builder()
                 .id(news.getId())
                 .title(news.getTitle())
+                .titleAutocomplete(news.getTitle())
                 .content(news.getContent())
                 .categoryName(news.getCategory().getName())
                 .username(news.getUser().getUsername())
@@ -90,4 +92,24 @@ public class NewsSearchService {
         if (hasKor) return "kor";
         return "eng";
     }
+    public List<String> autocompleteTitle(String keyword) throws Exception {
+        SearchResponse<NewsDocument> response = elasticsearchClient.search(s -> s
+                        .index("news")
+                        .size(10)
+                        .query(q -> q
+                                .match(m -> m
+                                        .field("title.autocomplete")
+                                        .query(keyword)
+                                )
+                        ),
+                NewsDocument.class
+        );
+
+        return response.hits().hits().stream()
+                .map(hit -> hit.source().getTitle())
+                .distinct()
+                .toList();
+    }
+
+
 }

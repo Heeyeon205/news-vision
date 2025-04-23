@@ -50,4 +50,17 @@ public class SearchController {
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
+
+    @GetMapping("/news/autocomplete")
+    public ResponseEntity<ApiResponse<List<String>>> autocompleteNewsTitle(@RequestParam String keyword) {
+        try {
+            List<String> suggestions = newsSearchService.autocompleteTitle(keyword);
+            return ResponseEntity.ok(ApiResponse.success(suggestions));
+        } catch (Exception e) {
+            log.error("자동완성 오류", e);
+            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
+        }
+    }
+
+
 }

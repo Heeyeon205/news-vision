@@ -28,6 +28,10 @@ public class NewsDocument {
             })
     private String title;
 
+    @Field(type = FieldType.Text, analyzer = "autocomplete_ja_analyzer", searchAnalyzer = "standard")
+    private String titleAutocomplete;
+
+
     @MultiField(mainField = @Field(type = FieldType.Text, analyzer = "standard"),
             otherFields = {
                     @InnerField(suffix = "kor", type = FieldType.Text, analyzer = "korean_analyzer"),
