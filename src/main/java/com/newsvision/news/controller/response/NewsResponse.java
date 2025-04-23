@@ -5,8 +5,6 @@ import com.newsvision.news.entity.News;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Builder
 public class NewsResponse {
@@ -18,12 +16,12 @@ public class NewsResponse {
     private int likeCount;
     private int view;
     private String createdAt;
-    private String author;
+    private String authorNickname;
+    private String authorBadgeIcon;
     private String category;
     private boolean liked;
     private boolean scraped;
 
-    //상세보기 등의 화면에서 news 전체 정보 가져와 담아주는 response
     public static NewsResponse of(News news, int likeCount, boolean liked, boolean scraped) {
         return NewsResponse.builder()
                 .id(news.getId())
@@ -33,7 +31,8 @@ public class NewsResponse {
                 .likeCount(likeCount)
                 .view(news.getView())
                 .createdAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
-                .author(news.getUser().getNickname())
+                .authorNickname(news.getUser().getNickname())
+                .authorBadgeIcon(news.getUser().getBadge() != null ? news.getUser().getBadge().getIcon() : null)
                 .category(news.getCategory().getName())
                 .liked(liked)
                 .scraped(scraped)

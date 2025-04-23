@@ -109,7 +109,7 @@ public class BoardService {
             board.setUser(user);
             board.setImage(request.getImage());
             Board savedBoard = boardRepository.save(board);
-            boardSearchService.saveBoard(board);
+            boardSearchService.saveBoard(board, 0, 0);
         log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
             return getBoardDetail(savedBoard);
         }catch (Exception e) {
@@ -137,7 +137,7 @@ public class BoardService {
         board.setImage(request.getImage());
 
         Board updatedBoard = boardRepository.save(board);
-        boardSearchService.saveBoard(board);
+        boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
         return getBoardDetail(updatedBoard);
     }
     @Transactional
