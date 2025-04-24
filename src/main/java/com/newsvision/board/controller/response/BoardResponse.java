@@ -36,7 +36,7 @@ public class BoardResponse {
         this.content = board.getContent();
         this.categoryId = board.getCategory() != null ? board.getCategory().getId() : null;
         this.createAt = TimeUtil.formatRelativeTime(board.getCreateAt()); // getCreateAt() -> getCreatedAt()
-//        this.view = board.getView();
+        this.view = board.getView();
         this.newsId = board.getNewsId();
         this.isReported = board.getIsReported();
         this.likeCount = likeCount;

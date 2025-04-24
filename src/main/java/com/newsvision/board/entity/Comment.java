@@ -24,7 +24,7 @@ public class Comment {
     @Column(name = "is_reported")
     private Boolean isReported;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 500,columnDefinition = "TEXT")
     private String content;
 
     //Board 엔티티와의 관계 설정

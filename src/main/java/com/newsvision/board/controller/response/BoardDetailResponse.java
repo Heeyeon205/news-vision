@@ -16,13 +16,13 @@ public class BoardDetailResponse {
     private String relativeCreatedAt;
     private Long userId;
     private String image;
-    private Long view;
+    private int view;
     private Long newsId;
     private Boolean isReported;
-    private Long likeCount;
-    private Long commentCount;
+    private int likeCount;
+    private int commentCount;
 
-    public BoardDetailResponse(Long id, String content, Long categoryId, LocalDateTime createdAt,String relativeCreatedAt, Long userId, String image, Long view, Long newsId, Boolean isReported, Long likeCount, Long commentCount) {
+    public BoardDetailResponse(Long id, String content, Long categoryId, LocalDateTime createdAt,String relativeCreatedAt, Long userId, String image, int view, Long newsId, Boolean isReported, int likeCount, int commentCount) {
         this.id = id;
         this.content = content;
         this.categoryId = categoryId;
