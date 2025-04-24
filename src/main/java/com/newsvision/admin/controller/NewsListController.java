@@ -2,21 +2,16 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.service.NewsListService;
 import com.newsvision.global.exception.CustomException;
-import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-
-import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("/admin/news") // 관리자용 뉴스 경로
@@ -42,21 +37,33 @@ public class NewsListController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(List.of()); // 오류 시 빈 리스트 또는 에러 객체 반환 고려
         }
-    }
-    @ResponseBody
-    @DeleteMapping("/{newsId}")
-    public ResponseEntity deleteMemberAjax(@PathVariable Long userId, @PathVariable Long newsid) {
-        log.info("Deleting member with id: {}", userId);
-        log.info("Deleting member with id: {}", newsid);
-        try {
-            newsService.deleteNews(userId, newsid);
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
 
-            return  ResponseEntity.noContent().build();
+
+
+    }
+    @GetMapping("/max")
+    public ResponseEntity<List<NewsResponse>> getAllNews() {
+        List<NewsResponse> newsList = newsListService.getMaxAllNews();
+        return ResponseEntity.ok(newsList);
+    }
+
+    @DeleteMapping("/delete/{newsId}")
+    public ResponseEntity<?> deleteNews(@PathVariable Long newsId,
+                                        @RequestParam Long userId) {
+        log.info("삭제 요청 - userId: {}, newsId: {}", userId, newsId);
+
+        try {
+            newsService.deleteNews(userId, newsId);
+            return ResponseEntity.ok("뉴스 삭제 완료");
+        } catch (CustomException e) {
+            log.warn("삭제 실패: {}", e.getMessage());
+            return ResponseEntity.status(e.getErrorCode().getStatus())
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            log.error("예상치 못한 오류 발생", e);
+            return ResponseEntity.internalServerError().body("삭제 중 오류 발생");
         }
     }
-
 
 
 }

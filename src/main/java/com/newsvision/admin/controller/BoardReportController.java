@@ -4,10 +4,7 @@ import com.newsvision.admin.controller.response.BoardReportResponse;
 import com.newsvision.admin.service.BoardReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,4 +20,30 @@ public class BoardReportController {
     public ResponseEntity<List<BoardReportResponse>> getAllReports() {
         return ResponseEntity.ok(boardReportService.getAllReports());
     }
+    @GetMapping("/max")
+    public ResponseEntity<List<BoardReportResponse>> getMaxAllReports() {
+        return ResponseEntity.ok(boardReportService.getMaxAllReports());
+    }
+    // 카테고리 삭제
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+        boardReportService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{reportId}/mark")
+    public ResponseEntity<String> markBoardReported(@PathVariable Long reportId) {
+        boardReportService.markBoardAsReported(reportId);
+        return ResponseEntity.ok("해당 게시글의 신고 상태가 true로 변경되었습니다.");
+    }
+
+//    @PutMapping("/{id}")
+//    public ResponseEntity<String> updateReport(
+//            @PathVariable Long id,
+//            @RequestParam(required = false) Long userId,
+//            @RequestParam(required = false) Long boardId) {
+//
+//        boardReportService.updateBoardReport(id, userId, boardId);
+//        return ResponseEntity.ok("신고 정보가 성공적으로 수정되었습니다.");
+//    }
 }

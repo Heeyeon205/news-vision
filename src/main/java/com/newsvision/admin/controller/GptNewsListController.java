@@ -1,7 +1,6 @@
 package com.newsvision.admin.controller;
 
 import com.newsvision.admin.controller.response.GptNewsResponse;
-
 import com.newsvision.admin.service.GptNewsListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +25,7 @@ public class GptNewsListController {
         List<GptNewsResponse> gptNewsResponses = gptNewsService.getMaxAllGptNews();
         return ResponseEntity.ok(gptNewsResponses);
     }
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGptNews(@PathVariable Long id) {
         gptNewsService.deleteGptNews(id);
         return ResponseEntity.noContent().build();
