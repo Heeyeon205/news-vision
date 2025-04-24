@@ -11,8 +11,8 @@ import java.util.UUID;
 public class FileUploaderService {
     private final S3Uploader s3Uploader;
 
-    public String uploadUserProfile(MultipartFile file, Long userId) {
+    public String uploadUserProfile(byte[] imageBytes, Long userId) {
         String keyName = "profiles/" + userId + "/" + UUID.randomUUID();
-        return s3Uploader.upload(file, keyName);
+        return s3Uploader.upload(imageBytes, keyName);
     }
 }

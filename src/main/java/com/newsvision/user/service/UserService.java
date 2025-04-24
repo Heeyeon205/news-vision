@@ -5,6 +5,7 @@ import com.newsvision.board.entity.Board;
 import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.CommentRepository;
 import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.aws.S3Uploader;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
@@ -20,12 +21,15 @@ import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +42,7 @@ public class UserService {
     private String defaultProfileImage;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final S3Uploader s3Uploader;
+    private final FileUploaderService fileUploaderService;
     private final CommentRepository commentRepository;
     private final BoardLikeRepository boardLikeRepository;
     private final NewsLikeRepository newsLikeRepository;
@@ -93,9 +97,14 @@ public class UserService {
     public void updateUserProfile(Long id, MultipartFile image, String nickname, String email, String introduce) {
         User user = findByUserId(id);
         if (image != null && !image.isEmpty()) {
-            String keyName = "profile/" + user.getId() + "_" + UUID.randomUUID();
-            String imageUrl = s3Uploader.upload(image, keyName);
-            user.updateImage(imageUrl);
+            try {
+                byte[] resizedImage = resizeProfileImage(image);
+                String imageUrl = fileUploaderService.uploadUserProfile(resizedImage, user.getId());
+                user.updateImage(imageUrl);
+            } catch (IOException e) {
+                log.error("이미지 처리 실패: {}", e.getMessage());
+                throw new RuntimeException("이미지 처리 실패", e);
+            }
         }
         if (nickname != null && !nickname.equals(user.getNickname())) {
             user.updateNickname(nickname);
@@ -151,8 +160,18 @@ public class UserService {
     }
 
     @Transactional
-    public void updateIsPaidOrUser(User user){
+    public void updateIsPaidOrUser(User user) {
         user.updateIsPaid(true);
         userRepository.save(user);
+    }
+
+    private byte[] resizeProfileImage(MultipartFile file) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Thumbnails.of(file.getInputStream())
+                .size(64, 64)
+                .outputFormat("jpg")
+                .outputQuality(0.9)
+                .toOutputStream(outputStream);
+        return outputStream.toByteArray();
     }
 }
