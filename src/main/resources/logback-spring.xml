@@ -1,0 +1,33 @@
+<configuration>
+
+    <!-- 콘솔 출력 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- logstash 출력 -->
+    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <destination>localhost:5000</destination>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
+        <!-- message에 keyword가 포함되어 있을 때만 전송 -->
+<!--        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">-->
+<!--            <evaluator class="ch.qos.logback.classic.boolex.JaninoEventEvaluator">-->
+<!--                <expression>message.contains("keyword:")</expression>-->
+<!--            </evaluator>-->
+<!--            <OnMismatch>DENY</OnMismatch>-->
+<!--            <OnMatch>ACCEPT</OnMatch>-->
+<!--        </filter>-->
+    </appender>
+
+    <!-- 검색 로그만 logstash로 -->
+    <logger name="com.newsvision.elasticsearch" level="INFO" additivity="false">
+        <appender-ref ref="LOGSTASH"/>
+    </logger>
+
+    <!-- 나머지는 콘솔만 -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

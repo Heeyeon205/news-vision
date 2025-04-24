@@ -5,7 +5,7 @@ services:
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=false  # 보안 비활성화 (개발용)
+      - xpack.security.enabled=false
       - xpack.security.transport.ssl.enabled=false
       - xpack.security.http.ssl.enabled=false
       - bootstrap.memory_lock=true
@@ -30,6 +30,17 @@ services:
     container_name: kibana
     ports:
       - "5601:5601"
+    depends_on:
+      - elasticsearch
+      - logstash  # ✅ 문자열 리스트로 작성
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.18.0
+    container_name: logstash
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./logstash/pipeline:/usr/share/logstash/pipeline
     depends_on:
       - elasticsearch
 

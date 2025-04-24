@@ -3,6 +3,7 @@ package com.newsvision.news.service;
 import com.newsvision.category.entity.Categories;
 import com.newsvision.category.repository.CategoryRepository;
 import com.newsvision.elasticsearch.service.NewsSearchService;
+import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.request.NewsCreateRequest;
@@ -22,12 +23,17 @@ import com.newsvision.user.repository.UserRepository;
 import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -35,6 +41,25 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NewsService {
+
+    @Value("${custom.default-image-news-culture-url}")
+    private String defaultCultureImage;
+    @Value("${custom.default-image-news-book-url}")
+    private String defaultBookImage;
+    @Value("${custom.default-image-news-history-url}")
+    private String defaultHistoryImage;
+    @Value("${custom.default-image-news-art-url}")
+    private String defaultArtImage;
+    @Value("${custom.default-image-news-economy-url}")
+    private String defaultEconomyImage;
+    @Value("${custom.default-image-news-science-url}")
+    private String defaultScienceImage;
+    @Value("${custom.default-image-news-politics-url}")
+    private String defaultPoliticsImage;
+    @Value("${custom.default-image-news-global-url}")
+    private String defaultGlobalImage;
+
+
     private final NewsRepository newsRepository;
     private final NewsLikeRepository newsLikeRepository;
     private final ScrapRepository scrapRepository;
@@ -42,6 +67,7 @@ public class NewsService {
     private final UserRepository userRepository;
     private final NaverNewsRepository naverNewsRepository;
     private final NewsSearchService newsSearchService;
+    private final FileUploaderService fileUploaderService;
 
     //
     public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
@@ -156,57 +182,71 @@ public class NewsService {
     }
 
     @Transactional
-    public void createNews(Long userId, NewsCreateRequest request) {
-       User user = userRepository.findById(userId)
-               .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        log.info("Creating new news for {}", userId);
-       Categories category = categoryRepository.findById(request.getCategoryId())
-               .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-       log.info("Creating new news for category {}", category.getId());
-       NaverNews naverNews = naverNewsRepository.findById(request.getNaverNewsId())
+    public void createNews(Long userId, String title, String content, Long categoryId, Long naverNewsId, MultipartFile image) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-       log.info("Creating new news for naver news {}", naverNews.getId());
-       News news = News.builder()
-               .title(request.getTitle())
-               .content(request.getContent())
-               .user(user)
-               .category(category)
-               .naverNews(naverNews)
-               .build();
-       log.info("빌드완료");
-       News saved = newsRepository.save(news);
-       log.info("뉴스 저장완료");
+        NaverNews naverNews = naverNewsRepository.findById(naverNewsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        // ✅ Elasticsearch에 저장
+        String imageUrl = null;
         try {
-            System.out.println("createdAt: " + news.getCreatedAt());
+            if (image != null && !image.isEmpty()) {
+                byte[] resizedImage = resizeNewsImage(image);
+                imageUrl = fileUploaderService.uploadNewsImage(resizedImage, userId);
+            } else {
+                imageUrl = getDefaultImageForCategoryId(category.getId());
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("이미지 업로드 실패", e);
+        }
+
+        News news = News.builder()
+                .title(title)
+                .content(content)
+                .user(user)
+                .category(category)
+                .naverNews(naverNews)
+                .image(imageUrl)
+                .build();
+
+        News saved = newsRepository.save(news);
+
+        try {
             newsSearchService.saveNews(saved);
-            log.info("뉴스검색 db 저장완료");
         } catch (Exception e) {
             log.error("❌ Elasticsearch 저장 실패", e);
         }
     }
 
     @Transactional
-    public void updateNews(Long userId, NewsUpdateRequest request) {
-        News news = newsRepository.findById(request.getNewsId())
+    public void updateNews(Long newsId, Long userId, String title, String content, Long categoryId, MultipartFile image) {
+        News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
         if (!news.getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
 
-        Categories category = categoryRepository.findById(request.getCategoryId())
+        Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        log.info("✏️ 뉴스 수정 요청 - newsId: {}, by userId: {}", request.getNewsId(), userId);
+        String imageUrl = news.getImage();
+        if (image != null && !image.isEmpty()) {
+            try {
+                byte[] imageBytes = image.getBytes();
+                imageUrl = fileUploaderService.uploadNewsImage(imageBytes, userId);
+            } catch (Exception e) {
+                throw new RuntimeException("이미지 업로드 실패", e);
+            }
+        }
 
-        news.setTitle(request.getTitle());
-        news.setContent(request.getContent());
-        news.setImage(request.getImage());
+        news.setTitle(title);
+        news.setContent(content);
+        news.setImage(imageUrl);
         news.setCategory(category);
 
-        // ✅ Elasticsearch에 업데이트
         newsSearchService.saveNews(news);
     }
 
@@ -235,5 +275,29 @@ public class NewsService {
 
         // ✅ Elasticsearch에서도 제거
         newsSearchService.deleteNews(newsId);
+    }
+
+    private byte[] resizeNewsImage(MultipartFile file) throws IOException {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        Thumbnails.of(file.getInputStream())
+                .size(530, 300)
+                .outputFormat("jpg")
+                .outputQuality(0.9)
+                .toOutputStream(outputStream);
+        return outputStream.toByteArray();
+    }
+
+    private String getDefaultImageForCategoryId(Long categoryId) {
+        return switch (categoryId.intValue()) {
+            case 2 -> defaultEconomyImage; // 경제
+            case 3 -> defaultPoliticsImage; // 정치, 사회
+            case 4 -> defaultCultureImage; // 문화
+            case 5 -> defaultGlobalImage; // 글로벌
+            case 6 -> defaultArtImage; // 예술
+            case 7 -> defaultScienceImage; // 과학기술
+            case 8 -> defaultHistoryImage; // 역사
+            case 9 -> defaultBookImage; // 도서, 문학
+            default -> defaultGlobalImage; // 미분류 또는 기타
+        };
     }
 }

@@ -22,7 +22,7 @@ public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, length = 1000)
+    @Column(nullable = false,columnDefinition = "TEXT")
     private String content;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
@@ -35,7 +35,7 @@ public class Board {
     @Column(name = "image")
     private String image;
     @Column(name = "view")
-    private Long view;
+    private int view;
     @Column(name = "news_id")
     private Long newsId;
     @Column(name = "is_reported")
@@ -58,7 +58,7 @@ public class Board {
     @PrePersist // 엔티티가 persist 되기 전에 실행
     public void prePersist() {
         this.createAt = LocalDateTime.now();
-        this.view = this.view == null ? 0 : this.view; // view 초기값 설정 (null이면 0으로)
+        this.view = this.view == 0 ? 0 : this.view; // view 초기값 설정 (null이면 0으로)
         this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
     }
 
