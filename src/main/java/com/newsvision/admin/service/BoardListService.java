@@ -3,6 +3,7 @@ package com.newsvision.admin.service;
 
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.repository.BoardRepository;
+import com.newsvision.global.Utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,22 +21,12 @@ public class BoardListService {
 
 
     public Page<BoardResponse> getBoardList(Pageable pageable) {
+        // 임시 값 지원이가 만들렴 ,....
+        int likeCount = 1;
+        int commentCount = 1;
         return boardRepository.findAll(pageable)
-                .map(board -> new BoardResponse(
-                        board.getContent(),
-                        board.getCategory().getId(),
-                        board.getCreateAt(),
-                        calculateRelativeTime(board.getCreateAt()),
-                        board.getUser().getId(),
-                        board.getImage(),
-                        board.getView(),
-                        board.getNewsId(),
-                        board.getIsReported(),
-                        (long) board.getBoardLikes().size(),
-                        (long) board.getComments().size()
-                ));
+                .map(board -> new BoardResponse(board, likeCount, commentCount));
     }
-
 
 
     private String calculateRelativeTime(java.time.LocalDateTime createdAt) {

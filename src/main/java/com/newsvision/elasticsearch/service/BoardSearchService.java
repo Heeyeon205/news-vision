@@ -86,7 +86,7 @@ public class BoardSearchService {
                     } else {
                         res.setCreateAt("날짜 없음");
                     }
-                    res.setView(doc.getView());
+//                    res.setView(doc.getView());
                     res.setNewsId(doc.getNewsId());
                     res.setIsReported(doc.getIsReported());
                     res.setLikeCount(doc.getLikeCount());
