@@ -70,3 +70,8 @@ VALUES (20, '크리에이터1 뉴스 1일 전', '본문입니다.', 1, NOW() - I
 INSERT INTO news (news_id, title, content, category_id, created_at, view, image, user_id)
 VALUES (25, '크리에이터2 뉴스 2일 전', '본문입니다.', 1, NOW() - INTERVAL 2 DAY, 12, '/images/news16.jpg', 3),
        (26, '크리에이터2 뉴스 4일 전', '본문입니다.', 2, NOW() - INTERVAL 4 DAY, 16, '/images/news17.jpg', 3)
+
+INSERT INTO news (news_id, title, content, category_id, created_at, view, image, user_id) VALUES
+                                                                                              (25, '크리에이터2 뉴스 2일 전', '본문입니다.', 1, NOW() - INTERVAL 2 DAY, 12, '/images/news16.jpg', 3),
+                                                                                              (26, '크리에이터2 뉴스 4일 전', '본문입니다.', 2, NOW() - INTERVAL 4 DAY, 16, '/images/news17.jpg', 3);
+

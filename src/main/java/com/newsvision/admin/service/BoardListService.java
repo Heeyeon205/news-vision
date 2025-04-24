@@ -2,12 +2,18 @@ package com.newsvision.admin.service;
 
 
 import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.entity.Board;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.global.Utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BoardListService {
@@ -19,28 +25,18 @@ public class BoardListService {
         this.boardRepository = boardRepository;
     }
 
+    public List<BoardResponse> getMaxBoardsList() {
+        int page = 0;
+        int size = 10;
 
-    public Page<BoardResponse> getBoardList(Pageable pageable) {
-        // 임시 값 지원이가 만들렴 ,....
-        int likeCount = 1;
-        int commentCount = 1;
-        return boardRepository.findAll(pageable)
-                .map(board -> new BoardResponse(board, likeCount, commentCount));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Board> boardPage = boardRepository.findAll(pageable);
+
+        return boardPage.getContent().stream().map(board -> {
+            int likeCount = board.getBoardLikes() != null ? board.getBoardLikes().size() : 0;
+            int commentCount = board.getComments() != null ? board.getComments().size() : 0;
+            return new BoardResponse(board, likeCount, commentCount);
+        }).collect(Collectors.toList());
     }
 
-
-    private String calculateRelativeTime(java.time.LocalDateTime createdAt) {
-        // Implement your relative time calculation logic here
-        // This is a simple example
-        java.time.Duration duration = java.time.Duration.between(createdAt, java.time.LocalDateTime.now());
-        long minutes = duration.toMinutes();
-
-        if (minutes < 60) {
-            return minutes + " minutes ago";
-        } else if (minutes < 1440) {
-            return (minutes / 60) + " hours ago";
-        } else {
-            return (minutes / 1440) + " days ago";
-        }
-    }
 }
