@@ -56,11 +56,17 @@ public class CategoriesService {
         return categoriesRepository.save(category);
     }
 
+
     @Transactional
     public void deleteCategory(Long id) {
         Categories category = categoriesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
 
+        // news와 board의 category_id를 1로 업데이트
+        newsRepository.updateCategoryIdToDefault(category.getId(), 1L);
+        boardRepository.updateCategoryIdToDefault(category.getId(), 1L);
+
+        // 카테고리 삭제
         categoriesRepository.delete(category);
     }
 }

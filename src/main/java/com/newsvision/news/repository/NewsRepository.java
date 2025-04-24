@@ -6,6 +6,7 @@ import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
@@ -60,6 +61,9 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     ORDER BY n.createdAt DESC
 """)
     Page<News> findByCategoryId(@Param("categoryId") Long categoryId, Pageable pageable);
+    @Modifying
+    @Query("UPDATE News n SET n.category.id = :defaultId WHERE n.category.id = :categoryId")
+    void updateCategoryIdToDefault(@Param("categoryId") Long categoryId, @Param("defaultId") Long defaultId);
 
 
 }
