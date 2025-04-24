@@ -89,11 +89,11 @@ public class User {
     }
 
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("user-follwers")
+    @JsonManagedReference("user-followers")
     private List<Follow> followerList = new ArrayList<>();
 
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference("user-follwings")
+    @JsonManagedReference("user-followings")
     private List<Follow> followingList = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)

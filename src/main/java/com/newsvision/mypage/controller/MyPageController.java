@@ -6,7 +6,6 @@ import com.newsvision.mypage.dto.response.MypageInfoResponse;
 import com.newsvision.mypage.service.MypageService;
 import com.newsvision.user.dto.response.FollowResponse;
 import com.newsvision.user.service.FollowService;
-import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +21,6 @@ import java.util.List;
 @RequestMapping("/api/mypage")
 @RequiredArgsConstructor
 public class MyPageController {
-    private final UserService userService;
     private final FollowService followService;
     private final MypageService mypageService;
 

@@ -14,13 +14,15 @@ public class FollowResponse {
     private String image;
     private String nickname;
     private String badge;
+    private String introduction;
 
     public static FollowResponse from(User user) {
         return FollowResponse.builder()
                 .id(user.getId())
                 .image(user.getImage())
-                .badge(user.getBadge().getIcon())
                 .nickname(user.getNickname())
+                .badge(user.getBadge() != null ? user.getBadge().getIcon() : "")
+                .introduction(user.getIntroduce() != null ? user.getIntroduce() : "")
                 .build();
     }
 }
