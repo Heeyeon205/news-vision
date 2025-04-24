@@ -15,6 +15,7 @@ import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -244,4 +245,18 @@ public class PaymentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<RefundRequestDto> getMaxRefundRequests() {
+        List<RefundRequest> requests = refundRequestRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+        return requests.stream()
+                .map(request -> RefundRequestDto.builder()
+                        .id(request.getId())
+                        .impUid(request.getImpUid())
+                        .username(request.getUser().getUsername())
+                        .status(request.getStatus().name())
+                        .requestDate(request.getRequestDate())
+                        .processedDate(request.getProcessedDate())
+                        .build())
+                .collect(Collectors.toList());
+    }
 }

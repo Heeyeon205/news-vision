@@ -2,6 +2,7 @@ package com.newsvision.global.payment.controller;
 
 import com.newsvision.global.payment.dto.OrderDto;
 import com.newsvision.global.payment.dto.PaymentInitRequest;
+import com.newsvision.global.payment.dto.RefundRequestDto;
 import com.newsvision.global.payment.service.PaymentService;
 import com.newsvision.global.security.CustomUserDetails;
 import com.siot.IamportRestClient.exception.IamportResponseException;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -98,14 +100,14 @@ public class PaymentController {
     // 환불 요청 api
     @PostMapping("/refund/request/{imp_uid}")
     public ResponseEntity<String> requestRefund(
-            @PathVariable String imp_uid,
+            @PathVariable("imp_uid") String impUid,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         if (userDetails == null) {
             return ResponseEntity.status(401).body("로그인이 필요합니다.");
         }
-        log.info("환불 요청: imp_uid={}, userId={}", imp_uid, userDetails.getId());
-        return ResponseEntity.ok(paymentService.requestRefund(userDetails.getId(), imp_uid));
+        log.info("환불 요청: imp_uid={}, userId={}", impUid, userDetails.getId());
+        return ResponseEntity.ok(paymentService.requestRefund(userDetails.getId(), impUid));
     }
 
     @PostMapping("/refund/approve/{imp_uid}")
@@ -121,4 +123,29 @@ public class PaymentController {
         return ResponseEntity.ok(paymentService.approveRefund(userDetails.getId(), impUid));
     }
 
+    @PostMapping("/refund/reject/{imp_uid}")
+    public ResponseEntity<String> rejectRefund(
+            @PathVariable("imp_uid") String impUid,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        if(userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body("관리자 권한이 필요합니다.");
+        }
+        log.info("환불 거부 요청: imp_uid={}, adminUserId={}", impUid, userDetails.getId());
+        return ResponseEntity.ok(paymentService.rejectRefund(userDetails.getId(), impUid));
+    }
+
+    // 환불 요청 리스트 조회
+    @GetMapping("/refund/requests")
+    public ResponseEntity<List<RefundRequestDto>> getRefundRequests(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+        log.info("환불 요청 리스트 조회: adminUserId={}", userDetails.getId());
+        return ResponseEntity.ok(paymentService.getRefundRequests());
+    }
 }
