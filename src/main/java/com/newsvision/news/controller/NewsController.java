@@ -22,9 +22,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -145,17 +147,23 @@ public class NewsController {
         ));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> createNews(
-            @RequestBody NewsCreateRequest request,
-            @AuthenticationPrincipal CustomUserDetails userDetails
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestPart("title") String title,
+            @RequestPart("content") String content,
+            @RequestPart("categoryId") String categoryIdStr,
+            @RequestPart("naverNewsId") String naverNewsIdStr,
+            @RequestPart(value = "image", required = false) MultipartFile image
     ) {
         Long userId = userDetails.getId();
         String role = userDetails.getRole();
         log.info("컨트롤러 진입완료");
         userService.validateRole(role);
         log.info("역할 검증 완료");
-        newsService.createNews(userId, request);
+        Long categoryId = Long.parseLong(categoryIdStr);
+        Long naverNewsId = Long.parseLong(naverNewsIdStr);
+        newsService.createNews(userId, title, content, categoryId, naverNewsId, image);
         log.info("createNews 완료");
         return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 작성되었습니다."));
     }
@@ -168,10 +176,13 @@ public class NewsController {
         return null;
     }
 
-    @PutMapping("/{newsId}")
+    @PutMapping(value = "/{newsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<?>> updateNews(
             @PathVariable Long newsId,
-            @RequestBody NewsUpdateRequest request,
+            @RequestPart("title") String title,
+            @RequestPart("content") String content,
+            @RequestPart("categoryId") String categoryIdStr,
+            @RequestPart(value = "image", required = false) MultipartFile image,
             HttpServletRequest httpServletRequest
     ) {
         String token = extractToken(httpServletRequest);
@@ -182,13 +193,11 @@ public class NewsController {
 
         Long userId = jwtTokenProvider.getUserId(token);
         String role = jwtTokenProvider.getUserRole(token);
-
+        Long categoryId = Long.parseLong(categoryIdStr);
         log.info("📝 뉴스 수정 시도 - userId: {}, role: {}, newsId: {}", userId, role, newsId);
 
-        request.setNewsId(newsId); // 🔑 PathVariable → Request로 전달
-
         try {
-            newsService.updateNews(userId, request);
+            newsService.updateNews(newsId, userId, title, content, categoryId, image);
             return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 수정되었습니다.", null));
         } catch (CustomException e) {
             log.warn("❌ 수정 중 오류 - {}", e.getMessage());
@@ -199,6 +208,7 @@ public class NewsController {
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
+
 
     @DeleteMapping("/{newsId}")
     public ResponseEntity<ApiResponse<?>> deleteNews(

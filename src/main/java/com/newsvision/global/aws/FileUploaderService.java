@@ -15,4 +15,10 @@ public class FileUploaderService {
         String keyName = "profiles/" + userId + "/" + UUID.randomUUID();
         return s3Uploader.upload(imageBytes, keyName);
     }
+
+    public String uploadNewsImage(byte[] imageBytes, Long newsId) {
+        String keyName = "news/" + newsId + "/" + UUID.randomUUID();
+        return s3Uploader.upload(imageBytes, keyName);
+    }
+
 }

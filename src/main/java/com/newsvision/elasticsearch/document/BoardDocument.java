@@ -41,8 +41,8 @@ public class BoardDocument {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime createdAt;
 
-    @Field(type = FieldType.Long)
-    private Long view;
+    @Field(type = FieldType.Integer)
+    private int view;
 
     @Field(type = FieldType.Long)
     private Long newsId;

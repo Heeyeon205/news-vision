@@ -75,9 +75,9 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardDetailResponse getBoardDetail(Board board) { // 게시글 상세 조회
         // 좋아요 수 계산 - null 체크 추가
-        long likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
+        int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
         // 댓글 수 계산 - null 체크 추가
-        long commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+        int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
         return new BoardDetailResponse(
                 board.getId(),
                 board.getContent(),

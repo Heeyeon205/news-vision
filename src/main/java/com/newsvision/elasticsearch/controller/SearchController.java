@@ -31,7 +31,7 @@ public class SearchController {
 
     @GetMapping("/news")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> searchNews(@RequestParam String keyword) {
-        log.info("🔍 뉴스 검색 요청 - keyword: {}", keyword); // ✅ 로그 추가
+        log.info("keyword: {}", keyword); // 필터에서 정확히 탐지 가능
         try {
             List<NewsSummaryResponse> result = newsSearchService.searchNews(keyword);
             log.info("검색결과: {}", result);
@@ -44,7 +44,7 @@ public class SearchController {
 
     @GetMapping("/board")
     public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String keyword) {
-        log.info("🔍 게시글 검색 요청 - keyword: {}", keyword);
+        log.info("keyword: {}", keyword); // 필터에서 정확히 탐지 가능
         try {
             List<BoardResponse> result = boardSearchService.searchBoard(keyword);
             log.info("게시글 검색 결과 수: {}", result.size());
