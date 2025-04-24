@@ -9,5 +9,4 @@ public class BoardCreateRequest {
     private String content;
     private Long categoryId;
     private String image;
-
 }

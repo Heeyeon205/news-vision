@@ -21,4 +21,8 @@ public class FileUploaderService {
         return s3Uploader.upload(imageBytes, keyName);
     }
 
+    public String uploadBoardImage(byte[] imageBytes, Long userId) {
+        String keyName = "board/" + userId + "/" + UUID.randomUUID();
+        return s3Uploader.upload(imageBytes, keyName);
+    }
 }

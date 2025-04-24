@@ -12,9 +12,11 @@ import com.newsvision.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -41,24 +43,28 @@ public class BoardController {
         BoardDetailResponse boardDetail = boardService.getBoardDetail(board);
         return ResponseEntity.ok(ApiResponse.success(boardDetail));
     }
-    @PostMapping // 게시글 작성 API
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 작성 API
     public ResponseEntity<ApiResponse<BoardDetailResponse>> createBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody BoardCreateRequest request // 요청 body로 게시글 정보 받기
+            @RequestPart(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "content")  String content,
+            @RequestParam(value = "categoryId") Long categoryId
     ) {
         Long userId = userDetails.getId();
-        BoardDetailResponse createdBoard = boardService.createBoard(userId, request);
+        BoardDetailResponse createdBoard = boardService.createBoard(userId,image,content,categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(createdBoard));
     }
-    @PutMapping("/{boardId}") // 게시글 수정 API
+    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 수정 API
     public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(
             @PathVariable Long boardId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody BoardUpdateRequest request // 요청 body로 수정할 게시글 정보 받기
+            @RequestParam(value = "image", required = false) MultipartFile image,
+            @RequestParam(value = "content") String content,
+            @RequestParam(value = "categoryId") Long categoryId
     ) {
         Long userId = userDetails.getId();
         Board board = boardService.findById(boardId);
-        BoardDetailResponse updatedBoard = boardService.updateBoard(board, userId, request);
+        BoardDetailResponse updatedBoard = boardService.updateBoard(board, userId,image, content,categoryId);
         return ResponseEntity.ok(ApiResponse.success(updatedBoard));
     }
 
