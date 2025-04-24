@@ -1,6 +1,7 @@
 
 INSERT INTO users(is_paid, badge_id, create_at, email, image, introduce, nickname, password, provider_id, username, provider) VALUES
-(false,2,NOW(),'expmasdasda@asdad.com','adads.jpg','asdad','asdads','adaasd',null,'cgjk,luyf','KAKAO');
+(false,2,NOW(),'expmasdasda@asdad3.com','dfgag.jpg','asdad','sga','asdasdasda',null,'ㅁㄴㅇㅁㄴㅇㅁㄴㅇ,luyf','KAKAO'),
+(false,2,NOW(),'expmasdasda@asdad4.com','agrew.jpg','asdad','adsasd','asdf',null,'ㅏ숑악쇼아쇼ㅏㅅ요,luyf','KAKAO');
 
 INSERT INTO news (title, content, category_id, created_at, view, user_id)
 VALUES

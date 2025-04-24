@@ -1,6 +1,7 @@
 package com.newsvision.admin.service;
 
 import com.newsvision.admin.controller.response.CategoriesResponse;
+import com.newsvision.board.entity.Board;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.category.entity.Categories;
 import com.newsvision.category.repository.CategoryRepository;
@@ -56,11 +57,17 @@ public class CategoriesService {
         return categoriesRepository.save(category);
     }
 
+
     @Transactional
     public void deleteCategory(Long id) {
         Categories category = categoriesRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Category not found with id: " + id));
 
+        // news와 board의 category_id를 1로 업데이트
+        newsRepository.updateCategoryIdToDefault(category.getId(), 1L);
+        boardRepository.updateCategoryIdToDefault(category.getId(), 1L);
+
+        // 카테고리 삭제
         categoriesRepository.delete(category);
     }
 }

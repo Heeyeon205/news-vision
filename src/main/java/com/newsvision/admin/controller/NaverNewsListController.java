@@ -2,8 +2,6 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.controller.response.NaverNewsResponse;
 import com.newsvision.admin.service.NaverNewsListService;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +31,7 @@ public class NaverNewsListController {
         return ResponseEntity.ok(naverNewsResponses);
     }
 
-   @DeleteMapping("/delete/{id}")
+   @DeleteMapping("/{id}")
    public ResponseEntity<Void> deleteNaverNews(@PathVariable Long id) {
        naverNewsService.deleteNaverNews(id);
        return ResponseEntity.noContent().build();
