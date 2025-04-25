@@ -83,13 +83,14 @@ public class NewsService {
         News news = newsRepository.findById(newsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        news.setView(news.getView() + 1); // 조회수 증가
+        news.increaseView();
 
         int likeCount = newsLikeRepository.countByNews(news);
         boolean liked = loginUser != null && newsLikeRepository.existsByUserAndNews(loginUser, news);
-        boolean scraped = false;//loginUser != null && ScrapRepository.existsByUserAndNews(loginUser, news);
+        boolean scraped = false;
         return NewsResponse.of(news, likeCount, liked, scraped);
     }
+
 
 
     @Transactional
@@ -109,11 +110,18 @@ public class NewsService {
 
     @Transactional
     public void removeLike(Long newsId, User user) {
-        News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
-        newsLikeRepository.deleteByUserAndNews(user, news);
+        try {
+            log.info("🧹 removeLike 호출 - newsId: {}, userId: {}", newsId, user.getId());
+            News news = newsRepository.findById(newsId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+            newsLikeRepository.deleteByUserAndNews(user, news);
+            log.info("✅ 삭제 성공");
+        } catch (Exception e) {
+            log.error("🔥 좋아요 삭제 중 오류 발생", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        }
     }
+
 
     @Transactional
     public void addScrap(Long newsId, User user) {

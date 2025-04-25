@@ -57,6 +57,10 @@ public class News {
         this.createdAt = this.createdAt == null ? LocalDateTime.now() : this.createdAt;
     }
 
+    public void increaseView() {
+        this.view++;
+    }
+
     @Builder
     public News(String title, String content, User user, Categories category, LocalDateTime createdAt) {
         this.title = title;
