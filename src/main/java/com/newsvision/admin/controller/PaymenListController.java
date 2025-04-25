@@ -3,6 +3,7 @@ package com.newsvision.admin.controller;
 import ch.qos.logback.classic.Logger;
 import com.newsvision.admin.controller.response.BoardReportResponse;
 import com.newsvision.admin.service.PayDeleteService;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.payment.dto.RefundRequestDto;
 import com.newsvision.global.payment.service.PaymentService;
 import com.newsvision.global.security.CustomUserDetails;
@@ -29,21 +30,21 @@ public class PaymenListController {
 
     //삭제
     @DeleteMapping("/delete/refund/requests/{id}")
-    public ResponseEntity<Void> deleteRefundRequest(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>>deleteRefundRequest(@PathVariable Long id) {
         payDeleteService.deleteRefundRequest(id);
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
 
     //id 최신순
     @GetMapping("/refund/requests/max")
-    public ResponseEntity<List<RefundRequestDto>> getMaxRefundRequests(
+    public ResponseEntity<ApiResponse<List<RefundRequestDto>>> getMaxRefundRequests(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         if (userDetails == null || !userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
             return ResponseEntity.status(403).body(null);
         }
-        return ResponseEntity.ok(paymentService.getMaxRefundRequests());
+        return ResponseEntity.ok(ApiResponse.success(paymentService.getMaxRefundRequests()));
     }
 }
