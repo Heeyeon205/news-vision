@@ -26,6 +26,8 @@ public class JwtTokenProvider {
     private static final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 30;
     // refresh token 7일
     private static final long REFRESH_TOKEN_VALIDITY = 60 * 60 * 24 * 7;
+    // 임시 토큰 10분
+    private static final long TEMP_TOKEN_VALIDITY = 1000 * 60 * 10;
 
     @PostConstruct
     public void init() {
@@ -74,7 +76,7 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (JwtException | IllegalArgumentException e) {
-            log.warn("Invalid JWT: {}", e.getMessage());
+            log.warn("JWT: {}", e.getMessage());
             return false;
         }
     }
@@ -107,5 +109,21 @@ public class JwtTokenProvider {
     // 모든 token 만료 반환
     public long getExpiration(String token) {
         return parseClaims(token).getExpiration().getTime() - System.currentTimeMillis();
+    }
+
+    // 임시 토큰 생성
+    public String createTempToken(Long userId, String username, String role) {
+        Date now = new Date();
+        Date expiry = new Date(now.getTime() + TEMP_TOKEN_VALIDITY);
+
+        return Jwts.builder()
+                .subject(username)
+                .issuer(jwtProperties.getIssuer())
+                .issuedAt(now)
+                .expiration(expiry)
+                .claim("userId", userId)
+                .claim("role", role)
+                .signWith(key)
+                .compact();
     }
 }

@@ -4,6 +4,8 @@ import com.newsvision.admin.service.CategoriesService;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.CommentRepository;
+import com.newsvision.board.service.BoardService;
+import com.newsvision.board.service.CommentService;
 import com.newsvision.category.repository.CategoryRepository;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.aws.S3Uploader;
@@ -13,8 +15,10 @@ import com.newsvision.mypage.dto.response.MypageInfoResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
 import com.newsvision.news.repository.NewsLikeRepository;
+import com.newsvision.news.service.NewsService;
 import com.newsvision.notice.Notice;
 import com.newsvision.user.dto.request.JoinUserRequest;
+import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
 import com.newsvision.user.entity.Badge;
 import com.newsvision.user.entity.User;
@@ -43,12 +47,19 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final FileUploaderService fileUploaderService;
-    private final CommentRepository commentRepository;
-    private final BoardLikeRepository boardLikeRepository;
-    private final NewsLikeRepository newsLikeRepository;
 
     public User findByUserId(Long userId) {
         return userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    }
+
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
@@ -66,6 +77,12 @@ public class UserService {
 
     public boolean checkPassword(String password, String checkPassword) {
         return password.equals(checkPassword);
+    }
+
+    public void validateRole(String role) {
+        if (!("ROLE_ADMIN".equals(role) || "ROLE_CREATOR".equals(role))) {
+            throw new CustomException(ErrorCode.NOT_FOUND);
+        }
     }
 
     @Transactional
@@ -89,23 +106,29 @@ public class UserService {
 
     public UpdateUserResponse userInfo(Long id) {
         User user = findByUserId(id);
-        log.warn(user.toString());
-        return new UpdateUserResponse(user.getImage(), user.getNickname(), user.getEmail(), user.getIntroduce());
+        return UpdateUserResponse.from(user);
     }
 
     @Transactional
     public void updateUserProfile(Long id, MultipartFile image, String nickname, String email, String introduce) {
         User user = findByUserId(id);
+
         if (image != null && !image.isEmpty()) {
+            String oldImageUrl = user.getImage();
             try {
                 byte[] resizedImage = resizeProfileImage(image);
                 String imageUrl = fileUploaderService.uploadUserProfile(resizedImage, user.getId());
                 user.updateImage(imageUrl);
+
+                if (oldImageUrl != null && !oldImageUrl.isEmpty() && !oldImageUrl.equals("default-profile.png")) {
+                    fileUploaderService.deleteFile(oldImageUrl);
+                }
             } catch (IOException e) {
                 log.error("이미지 처리 실패: {}", e.getMessage());
                 throw new RuntimeException("이미지 처리 실패", e);
             }
         }
+
         if (nickname != null && !nickname.equals(user.getNickname())) {
             user.updateNickname(nickname);
         }
@@ -115,48 +138,6 @@ public class UserService {
         if (introduce != null && !introduce.equals(user.getIntroduce())) {
             user.updateIntroduce(introduce);
         }
-    }
-
-    public List<UserBoardListResponse> getMypageBoardList(Long userId) {
-        User user = findByUserId(userId);
-        List<Board> boardList = user.getBoardList();
-        return boardList.stream()
-                .map(board -> {
-                    int likeCount = boardLikeRepository.countByBoardId(board.getId());
-                    int commentCount = commentRepository.countByBoardId(board.getId());
-                    return UserBoardListResponse.from(board, likeCount, commentCount);
-                }).toList();
-    }
-
-    public List<UserNewsListResponse> getMypageNewsList(Long id) {
-        User user = findByUserId(id);
-        List<News> newsList = user.getNewsList();
-        return newsList.stream()
-                .map(news -> {
-                    int likeCount = newsLikeRepository.countByNews(news);
-                    return UserNewsListResponse.from(news, likeCount);
-                }).toList();
-    }
-
-    public List<UserScrapListResponse> getMypageScrapList(Long id) {
-        User user = findByUserId(id);
-        List<Scrap> scrapList = user.getScrapList();
-        return scrapList.stream()
-                .map(scrap -> UserScrapListResponse.from(scrap.getNews()))
-                .toList();
-    }
-
-    public void validateRole(String role) {
-        if (!("ROLE_ADMIN".equals(role) || "ROLE_CREATOR".equals(role))) {
-            throw new CustomException(ErrorCode.NOT_FOUND);
-        }
-    }
-
-    public List<UserNoticeListResponse> getMyPageNoticeList(Long id) {
-        User user = findByUserId(id);
-        List<Notice> noticeList = user.getNoticeList();
-        return noticeList.stream()
-                .map(UserNoticeListResponse::from).toList();
     }
 
     @Transactional
@@ -173,5 +154,11 @@ public class UserService {
                 .outputQuality(0.9)
                 .toOutputStream(outputStream);
         return outputStream.toByteArray();
+    }
+
+    @Transactional
+    public void updatePassword(User user, UpdatePasswordRequest request) {
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        user.updatePassword(encodedPassword);
     }
 }

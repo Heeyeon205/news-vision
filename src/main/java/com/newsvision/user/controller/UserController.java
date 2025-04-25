@@ -2,10 +2,18 @@ package com.newsvision.user.controller;
 
 import com.newsvision.global.aws.S3Uploader;
 import com.newsvision.global.exception.ApiResponse;
+import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.global.security.CustomUserDetails;
+import com.newsvision.mypage.dto.response.UserBoardListResponse;
+import com.newsvision.mypage.dto.response.UserNewsListResponse;
+import com.newsvision.mypage.dto.response.UserNoticeListResponse;
+import com.newsvision.mypage.dto.response.UserScrapListResponse;
 import com.newsvision.user.dto.request.JoinUserRequest;
+import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
+import com.newsvision.user.entity.User;
 import com.newsvision.user.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -22,7 +30,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final S3Uploader s3Uploader;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthController authController;
 
     @GetMapping("/check-username")
     public ResponseEntity<ApiResponse<CheckUserUsernameResponse>> checkUsername(@RequestParam String username) {
@@ -55,13 +64,13 @@ public class UserController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<ApiResponse<Long>> delete(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long id = customUserDetails.getId();
+    public ResponseEntity<ApiResponse<Long>> delete(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long id = userDetails.getId();
         userService.delete(id);
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @GetMapping("/update")
+    @GetMapping("/info")
     public ResponseEntity<ApiResponse<UpdateUserResponse>> updateInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long id = userDetails.getId();
         UpdateUserResponse response = userService.userInfo(id);
@@ -81,36 +90,28 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @GetMapping("/board")
-    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long id = customUserDetails.getId();
-        List<UserBoardListResponse> response = userService.getMypageBoardList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @GetMapping("/news")
-    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getMypageNewsList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long id = customUserDetails.getId();
-        List<UserNewsListResponse> response = userService.getMypageNewsList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @GetMapping("/scrap")
-    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getMypageScrapList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long id = customUserDetails.getId();
-        List<UserScrapListResponse> response = userService.getMypageScrapList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
-    @GetMapping("/notice-list")
-    public ResponseEntity<ApiResponse<List<UserNoticeListResponse>>> getMyNoticeList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    @GetMapping("/password-load")
+    public ResponseEntity<ApiResponse<UpdateUsernameResponse>> loadData(
+            HttpServletRequest request
     ) {
-        Long id = customUserDetails.getId();
-        List<UserNoticeListResponse> response = userService.getMyPageNoticeList(id);
+        String header = request.getHeader("Authorization");
+        String tempToken = header.split(" ")[1];
+        String username = jwtTokenProvider.getUsername(tempToken);
+        UpdateUsernameResponse response = new UpdateUsernameResponse(username);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @PostMapping("/new-password")
+    public ResponseEntity<ApiResponse<String>> updatePassword(
+            HttpServletRequest request,
+            @RequestBody UpdatePasswordRequest passwordRequestrequest
+    ){
+        String header = request.getHeader("Authorization");
+        String tempToken = header.split(" ")[1];
+        String username = jwtTokenProvider.getUsername(tempToken);
+        User user = userService.findByUsername(username);
+        authController.deleteTempToken(tempToken);
+        userService.updatePassword(user, passwordRequestrequest);
+        return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 }

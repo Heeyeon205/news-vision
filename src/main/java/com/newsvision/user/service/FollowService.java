@@ -1,6 +1,6 @@
 package com.newsvision.user.service;
 
-import com.newsvision.user.dto.response.FollowResponse;
+import com.newsvision.mypage.dto.response.FollowResponse;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,19 +24,5 @@ public class FollowService {
 
     public int getCountFollowing(User user) {
         return followRepository.countByFollower(user);
-    }
-
-   public List<FollowResponse> getFollowers(Long id){
-        User user = userService.findByUserId(id);
-       return user.getFollowerList().stream()
-                .map(follow -> FollowResponse.from(follow.getFollower()))
-                .toList();
-   }
-
-    public List<FollowResponse> getFollowing(Long id){
-        User user = userService.findByUserId(id);
-        return user.getFollowingList().stream()
-                .map(follow -> FollowResponse.from(follow.getFollowing()))
-                .toList();
     }
 }

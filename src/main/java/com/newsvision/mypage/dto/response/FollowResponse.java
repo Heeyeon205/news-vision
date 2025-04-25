@@ -1,6 +1,5 @@
-package com.newsvision.user.dto.response;
+package com.newsvision.mypage.dto.response;
 
-import com.newsvision.user.entity.Follow;
 import com.newsvision.user.entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

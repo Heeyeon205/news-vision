@@ -103,4 +103,7 @@ public class CommentService {
 
     }
 
+    public int countByBoardId(Long id) {
+        return commentRepository.countByBoardId(id);
+    }
 }

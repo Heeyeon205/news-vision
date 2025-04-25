@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 @Slf4j
@@ -44,4 +45,27 @@ public class S3Uploader {
         }
     }
 
+    public void delete(String fileUrl) {
+        String key = extractKeyFromUrl(fileUrl);
+        try {
+            DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+            s3Client.deleteObject(deleteRequest);
+            log.info("S3 삭제 완료: {}", key);
+        } catch (Exception e) {
+            log.error("S3 삭제 실패: {} - {}", key, e.getMessage());
+            throw new RuntimeException("S3 삭제 실패", e);
+        }
+    }
+
+    private String extractKeyFromUrl(String fileUrl) {
+        String prefix = "https://" + bucketName + ".s3." + region + ".amazonaws.com/";
+        if (!fileUrl.startsWith(prefix)) {
+            log.error("S3 URL 형식 오류: " + fileUrl);
+            throw new IllegalArgumentException("S3 URL 형식 오류: " + fileUrl);
+        }
+        return fileUrl.substring(prefix.length());
+    }
 }

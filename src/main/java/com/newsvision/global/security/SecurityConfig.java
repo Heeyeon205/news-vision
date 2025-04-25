@@ -30,7 +30,6 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler oAuth2SuccessHandler;
 
-
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -67,7 +66,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                         // 기본
-                        "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**",
+                        "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**", "/api/auth/**",
                         // 일단 개발용 풀 개방
                         "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**", "/payment/payments","/api/v1/payment/validation/**",
                         // auth

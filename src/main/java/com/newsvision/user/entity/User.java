@@ -7,7 +7,6 @@ import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
 import com.newsvision.notice.Notice;
-import com.newsvision.user.dto.request.UpdateUserRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +33,7 @@ public class User {
     private String username;
     @Column(nullable = false)
     private String password;
-    @Column()
+    @Column(unique = true)
     private String email;
     @Column(nullable = false, unique = true)
     private String nickname;
@@ -78,14 +77,13 @@ public class User {
     public void updateIntroduce(String introduce) {
         this.introduce = introduce;
     }
+    public void updatePassword(String password) { this.password = password; }
+    public void updateIsPaid(Boolean isPaid) { this.isPaid = isPaid; }
 
     public void validateBadgeRequirement() {
         if ((this.role == Role.ROLE_ADMIN || this.role == Role.ROLE_CREATOR) && this.badge == null) {
             throw new CustomException(ErrorCode.BADGE_REQUIRED);
         }
-    }
-    public void updateIsPaid(Boolean isPaid) {// 결제된 사용자인지 확인 명보가 추가
-        this.isPaid = isPaid;
     }
 
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -110,5 +108,4 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notice> noticeList = new ArrayList<>();
-
 }

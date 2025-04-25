@@ -5,11 +5,15 @@ import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.global.jwt.RefreshTokenRepository;
 import com.newsvision.global.exception.ApiResponse;
+import com.newsvision.global.jwt.TempTokenRepository;
 import com.newsvision.user.dto.request.LoginUserRequest;
+import com.newsvision.user.dto.request.VerifyEmailRequest;
 import com.newsvision.user.dto.response.LoginTokenUserResponse;
+import com.newsvision.user.dto.response.TempTokenResponse;
 import com.newsvision.user.entity.User;
-import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.EmailService;
 import com.newsvision.user.service.TokenBlacklistService;
+import com.newsvision.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,17 +26,18 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
 public class AuthController {
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenBlacklistService tokenBlacklistService;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final EmailService emailService;
+    private final TempTokenRepository tempTokenRepository;
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginTokenUserResponse>> login(@RequestBody LoginUserRequest request) {
         log.info("로그인 시도: {}", request.getUsername());
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = userService.findByUsername(request.getUsername());
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("ID or PW 불일치: {}", request.getPassword());
@@ -83,8 +88,7 @@ public class AuthController {
 
         // 유저 식별자 추출
         String username = jwtTokenProvider.getUsername(refreshToken);
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = userService.findByUsername(username);
 
         // redis 에 저장된 refresh token 과 비교
         if (!refreshTokenRepository.exists(username, refreshToken)) {
@@ -112,4 +116,48 @@ public class AuthController {
         }
         return ResponseEntity.ok(ApiResponse.success("ok"));
     }
+
+    @PostMapping("/email-auth")
+    public ResponseEntity<ApiResponse<?>> emailAuth(@RequestBody VerifyEmailRequest request) {
+        emailService.verifyCode(request.getEmail(), request.getEmailCode());
+        User user = userService.findByEmail(request.getEmail());
+
+        String tempToken = jwtTokenProvider.createTempToken(user.getId(), user.getUsername(), user.getRole().name());
+
+        // redis에 임시 토큰 저장
+        tempTokenRepository.save(user.getUsername(), tempToken);
+
+        // 임시 토큰 전달
+        TempTokenResponse response = new TempTokenResponse(user.getUsername(), tempToken);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/temp-check")
+    public ResponseEntity<ApiResponse<String>> checkTempToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.ok(ApiResponse.fail(ErrorCode.INVALID_ACCESS_TOKEN));
+        }
+
+        String tempToken = authHeader.split(" ")[1];
+        log.info("tempToken: {}", tempToken);
+
+        if (!jwtTokenProvider.validateToken(tempToken)) {
+            return ResponseEntity.ok(ApiResponse.fail(ErrorCode.INVALID_ACCESS_TOKEN));
+        }
+        return ResponseEntity.ok(ApiResponse.success("ok"));
+    }
+
+    public void deleteTempToken(String tempToken) {
+        log.info("tempToken: {}", tempToken);
+            if (jwtTokenProvider.validateToken(tempToken)) {
+                long expiration = jwtTokenProvider.getExpiration(tempToken);
+                tokenBlacklistService.blacklistToken(tempToken, expiration);
+                String username = jwtTokenProvider.getUsername(tempToken);
+                refreshTokenRepository.delete(username);
+            }
+        log.info("검증: {}", tempToken == null ? "null" : tempToken);
+        log.info("삭제됨?");
+        }
 }

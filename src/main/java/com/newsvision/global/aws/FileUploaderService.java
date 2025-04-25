@@ -3,6 +3,7 @@ package com.newsvision.global.aws;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 import java.util.UUID;
 
@@ -24,5 +25,9 @@ public class FileUploaderService {
     public String uploadBoardImage(byte[] imageBytes, Long userId) {
         String keyName = "board/" + userId + "/" + UUID.randomUUID();
         return s3Uploader.upload(imageBytes, keyName);
+    }
+
+    public void deleteFile(String fileUrl) {
+        s3Uploader.delete(fileUrl);
     }
 }

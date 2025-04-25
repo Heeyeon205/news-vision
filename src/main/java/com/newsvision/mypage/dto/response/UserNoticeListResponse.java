@@ -1,11 +1,9 @@
-package com.newsvision.user.dto.response;
+package com.newsvision.mypage.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.notice.Notice;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Builder

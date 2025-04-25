@@ -237,6 +237,9 @@ public class BoardService {
     }
 
 
+    public int countByBoardId(Long id) {
+        return boardLikeRepository.countByBoardId(id);
+    }
 }
 
 

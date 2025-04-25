@@ -31,9 +31,13 @@ public class EmailController {
 
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<VerifyEmailRequest>> verifyCode(@RequestBody VerifyEmailRequest request) {
-        log.info("verify email {}", request.getEmail());
-        log.info("verify email code {}", request.getEmailCode());
         emailService.verifyCode(request.getEmail(), request.getEmailCode());
+        return ResponseEntity.ok(ApiResponse.success(request));
+    }
+
+    @PostMapping("/update/send-code")
+    public ResponseEntity<ApiResponse<?>> updateSendCode(@RequestBody EmailRequest request) {
+        emailService.sendVerificationCode(request.getEmail());
         return ResponseEntity.ok(ApiResponse.success(request));
     }
 }

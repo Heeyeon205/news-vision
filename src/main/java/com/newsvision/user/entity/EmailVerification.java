@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 public class EmailVerification {
-
     @Id
     private String email;
     private String code;

@@ -10,8 +10,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+@Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
+    // 명보가 추가
     private final User user;
 
     @Override
@@ -19,7 +21,7 @@ public class CustomUserDetails implements UserDetails {
         return List.of(new SimpleGrantedAuthority(user.getRole().name()));
     }
 
-    public Long getId() {return user.getId();}
+    public Long getId() { return user.getId(); }
     public String getRole() {return user.getRole().name();}
 
     @Override
@@ -30,10 +32,6 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public String getUsername() {
         return user.getUsername();
-    }
-
-    public User getUser() { // 명보가 추가
-        return user;
     }
 
     // 계정 상태 설정

@@ -1,6 +1,5 @@
-package com.newsvision.user.dto.response;
+package com.newsvision.mypage.dto.response;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

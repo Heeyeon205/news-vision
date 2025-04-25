@@ -1,4 +1,4 @@
-package com.newsvision.user.dto.response;
+package com.newsvision.mypage.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;
@@ -8,23 +8,23 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class UserNewsListResponse {
+public class UserScrapListResponse {
     private Long newsId;
     private String image;
+    private String categoryName;
     private String title;
-    private String createAt;
     private String nickname;
-    private int likeCount;
+    private String createAt;
 
-    public static UserNewsListResponse from(News news, int likeCount) {
+    public static UserScrapListResponse from(News news) {
         User user = news.getUser();
-        return UserNewsListResponse.builder()
+        return UserScrapListResponse.builder()
                 .newsId(news.getId())
                 .image(news.getImage())
+                .categoryName(news.getCategory().getName())
                 .title(news.getTitle())
-                .createAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
                 .nickname(user.getNickname())
-                .likeCount(likeCount)
+                .createAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
                 .build();
     }
 }

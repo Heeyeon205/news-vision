@@ -300,4 +300,8 @@ public class NewsService {
             default -> defaultGlobalImage; // 미분류 또는 기타
         };
     }
+
+    public int countByNews(News news) {
+        return newsLikeRepository.countByNews(news);
+    }
 }
