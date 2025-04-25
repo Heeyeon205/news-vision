@@ -60,6 +60,10 @@ public class News {
     public void increaseView() {
         this.view++;
     }
+    public void updateImage(String image) { this.image = image; }
+    public void updateContent(String content){ this.content = content;}
+    public void updateCategory(Categories category) { this.category = category; }
+    public void updateTitle(String title){this.title = title;}
 
     @Builder
     public News(String title, String content, User user, Categories category, LocalDateTime createdAt) {
