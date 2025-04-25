@@ -36,7 +36,7 @@ public class CommentController {
     ) {
         Long userId = userDetails.getId();
         CommentResponse comment = commentService.createComment(boardId, userId, request.getContent()); // request에서 댓글 내용 추출하여 Service에 전달
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(comment));
+        return ResponseEntity.ok(ApiResponse.success(comment));
     }
 
     @DeleteMapping("/{commentId}") // (댓글 삭제)

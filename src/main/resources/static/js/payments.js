@@ -175,6 +175,7 @@ if (!window.paymentScriptLoaded) {
                                     console.log('주문 저장 결과:', res);
                                     if (res.includes("성공")) {
                                         alert('결제가 완료되었습니다. 구독이 활성화되었습니다.');
+                                        window.location.href = '/';
                                     } else {
                                         alert('주문 정보 저장에 실패했습니다: ' + res);
                                     }
