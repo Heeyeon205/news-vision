@@ -25,6 +25,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -54,73 +55,55 @@ public class NewsController {
         return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, loginUser)));
     }
 
-//    @PostMapping("/news/{newsId}/like")
-//    public ResponseEntity<ApiResponse<String>> addLike(
-//            @PathVariable Long newsId,
-//            @AuthenticationPrincipal User loginUser
-//    ) {
-//        newsService.addLike(newsId, loginUser);
-//        return ResponseEntity.ok(ApiResponse.success("좋아요를 추가했습니다."));
-//    }
-
     @PostMapping("/{newsId}/like")
     public ResponseEntity<ApiResponse<String>> addLike(
-            @PathVariable Long newsId
-            //@AuthenticationPrincipal User loginUser
+            @PathVariable Long newsId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        // 💡 테스트용 유저 직접 주입
-        User loginUser = userRepository.findByUsername("user1@test.com")
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        log.info("✅ 인증 객체 등록됨 - username: {}", userDetails.getUsername());
+        log.info("✅ SecurityContext에 등록된 사용자: {}",
+                ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
 
-        newsService.addLike(newsId, loginUser);
-        return ResponseEntity.ok(ApiResponse.success("좋아요 추가됨"));
+        newsService.addLike(newsId, userDetails.getUser());
+
+        return ResponseEntity.ok(ApiResponse.success("좋아요를 추가했습니다."));
     }
 
-//    @DeleteMapping("/news/{newsId}/like")
-//    public ResponseEntity<ApiResponse<String>> removeLike(
-//            @PathVariable Long newsId,
-//            @AuthenticationPrincipal User loginUser
-//    ) {
-//        newsService.removeLike(newsId, loginUser);
-//        return ResponseEntity.ok(ApiResponse.success("좋아요를 취소했습니다."));
-//    }
 
     @DeleteMapping("/{newsId}/like")
     public ResponseEntity<ApiResponse<String>> removeLike(
-            @PathVariable Long newsId
-            //@AuthenticationPrincipal User loginUser
+            @PathVariable Long newsId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        User loginUser = userRepository.findByUsername("user1@test.com")
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
-        newsService.removeLike(newsId, loginUser);
+        newsService.removeLike(newsId, userDetails.getUser());
         return ResponseEntity.ok(ApiResponse.success("좋아요를 취소했습니다."));
     }
+
 
     @PostMapping("/{newsId}/scrap")
     public ResponseEntity<ApiResponse<String>> addScrap(
             @PathVariable Long newsId,
-            @AuthenticationPrincipal User loginUser
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        newsService.addScrap(newsId, loginUser);
+        newsService.addScrap(newsId, userDetails.getUser());
         return ResponseEntity.ok(ApiResponse.success("스크랩을 추가했습니다."));
     }
 
     @DeleteMapping("/{newsId}/scrap")
     public ResponseEntity<ApiResponse<String>> removeScrap(
             @PathVariable Long newsId,
-            @AuthenticationPrincipal User loginUser
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        newsService.removeScrap(newsId, loginUser);
+        newsService.removeScrap(newsId, userDetails.getUser());
         return ResponseEntity.ok(ApiResponse.success("스크랩을 취소했습니다."));
     }
 
 
     @GetMapping("/scraps")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMyScrapList(
-            @AuthenticationPrincipal User loginUser
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return ResponseEntity.ok(ApiResponse.success(newsService.getMyScrapList(loginUser)));
+        return ResponseEntity.ok(ApiResponse.success(newsService.getMyScrapList(userDetails.getUser())));
     }
 
     @GetMapping("/editorials")
@@ -139,11 +122,12 @@ public class NewsController {
     public ResponseEntity<ApiResponse<Page<NewsSummaryResponse>>> getFilteredArticles(
             @RequestParam(defaultValue = "recent") String type,
             @RequestParam(required = false) Long id,
-            @AuthenticationPrincipal User loginUser,
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
+        User user = userDetails != null ? userDetails.getUser() : null;
         return ResponseEntity.ok(ApiResponse.success(
-                newsService.getFilteredArticles(type, id, loginUser, pageable)
+                newsService.getFilteredArticles(type, id, user, pageable)
         ));
     }
 

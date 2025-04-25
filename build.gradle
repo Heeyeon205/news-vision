@@ -83,9 +83,6 @@ dependencies {
 
     // logStash
     implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
-    implementation 'org.codehaus.janino:janino:3.1.11'
-    implementation 'org.codehaus.janino:commons-compiler:3.1.11'
-
 
     // 포트원(아임포트) 라이브러리
     implementation 'com.github.iamport:iamport-rest-client-java:0.2.23'

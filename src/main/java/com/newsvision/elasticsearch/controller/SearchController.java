@@ -1,24 +1,21 @@
 package com.newsvision.elasticsearch.controller;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch.core.SearchResponse;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newsvision.board.controller.response.BoardResponse;
-import com.newsvision.elasticsearch.document.NewsDocument;
 import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.elasticsearch.service.NewsSearchService;
-import com.newsvision.global.Utils.JasoUtils;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -28,23 +25,49 @@ public class SearchController {
 
     private final NewsSearchService newsSearchService;
     private final BoardSearchService boardSearchService;
+    private final ObjectMapper objectMapper; // ✅ ObjectMapper 주입
+    private static final org.slf4j.Logger searchLogger = org.slf4j.LoggerFactory.getLogger("SEARCH_LOGGER");
 
     @GetMapping("/news")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> searchNews(@RequestParam String keyword) {
-        log.info("keyword: {}", keyword); // 필터에서 정확히 탐지 가능
+        log.info("keyword: {}", keyword);
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            Map<String, String> logMap = new HashMap<>();
+            logMap.put("type", "news");
+            logMap.put("keyword", keyword);
+            try {
+                String jsonLog = objectMapper.writeValueAsString(logMap); // ✅ JSON 직렬화
+                searchLogger.info(jsonLog);
+            } catch (JsonProcessingException e) {
+                log.warn("❌ 검색 로그 JSON 직렬화 실패", e);
+            }
+        }
+
         try {
             List<NewsSummaryResponse> result = newsSearchService.searchNews(keyword);
             log.info("검색결과: {}", result);
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
-            log.error("❌ 뉴스 검색 중 오류 발생", e); // ✅ 에러 로그 출력
+            log.error("❌ 뉴스 검색 중 오류 발생", e);
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
 
     @GetMapping("/board")
     public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String keyword) {
-        log.info("keyword: {}", keyword); // 필터에서 정확히 탐지 가능
+        log.info("keyword: {}", keyword);
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            Map<String, String> logMap = new HashMap<>();
+            logMap.put("type", "board");
+            logMap.put("keyword", keyword);
+            try {
+                String jsonLog = objectMapper.writeValueAsString(logMap); // ✅ JSON 직렬화
+                searchLogger.info(jsonLog);
+            } catch (JsonProcessingException e) {
+                log.warn("❌ 검색 로그 JSON 직렬화 실패", e);
+            }
+        }
+
         try {
             List<BoardResponse> result = boardSearchService.searchBoard(keyword);
             log.info("게시글 검색 결과 수: {}", result.size());
@@ -55,6 +78,7 @@ public class SearchController {
         }
     }
 
+    // 자동완성기능 (애매함, 이상한거 검색됨, 안써도됨)
     @GetMapping("/news/autocomplete")
     public ResponseEntity<ApiResponse<List<String>>> autocompleteNews(@RequestParam String keyword) {
         try {
@@ -65,6 +89,4 @@ public class SearchController {
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
-
-
 }
