@@ -1,6 +1,7 @@
 package com.newsvision.admin.controller;
 
 import com.newsvision.admin.service.NewsListService;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.service.NewsService;
@@ -27,43 +28,38 @@ public class NewsListController {
      * 관리자용 뉴스 목록 조회
      */
     @GetMapping
-    public ResponseEntity<List<NewsResponse>> getNewsList() {
+    public ResponseEntity<ApiResponse<List<NewsResponse>>> getNewsList() {
         log.info("[GET /admin/news] Fetching all news for admin.");
         try {
             List<NewsResponse> newsList = newsListService.getAllNews();
-            return ResponseEntity.ok(newsList);
+            return ResponseEntity.ok(ApiResponse.success(newsList));
         } catch (Exception e) {
             log.error("[GET /admin/news] Error fetching news list.", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(List.of()); // 오류 시 빈 리스트 또는 에러 객체 반환 고려
+                    .body((ApiResponse<List<NewsResponse>>) List.of()); // 오류 시 빈 리스트 또는 에러 객체 반환 고려
         }
 
 
 
     }
     @GetMapping("/max")
-    public ResponseEntity<List<NewsResponse>> getAllNews() {
+    public ResponseEntity<ApiResponse<List<NewsResponse>>> getAllNews() {
         List<NewsResponse> newsList = newsListService.getMaxAllNews();
-        return ResponseEntity.ok(newsList);
+        return ResponseEntity.ok(ApiResponse.success((newsList)));
     }
 
     @DeleteMapping("/delete/{newsId}")
-    public ResponseEntity<?> deleteNews(@PathVariable Long newsId,
-                                        @RequestParam Long userId) {
+    public ResponseEntity<ApiResponse<Void>> deleteNews(@PathVariable Long newsId,
+                                                        @RequestParam Long userId) {
         log.info("삭제 요청 - userId: {}, newsId: {}", userId, newsId);
 
-        try {
-            newsService.deleteNews(userId, newsId);
-            return ResponseEntity.ok("뉴스 삭제 완료");
-        } catch (CustomException e) {
-            log.warn("삭제 실패: {}", e.getMessage());
-            return ResponseEntity.status(e.getErrorCode().getStatus())
-                    .body(e.getMessage());
-        } catch (Exception e) {
-            log.error("예상치 못한 오류 발생", e);
-            return ResponseEntity.internalServerError().body("삭제 중 오류 발생");
-        }
+
+        newsService.deleteNews(userId, newsId);
+        return ResponseEntity.ok(ApiResponse.success(null));
+
     }
+
+
 
 
 }

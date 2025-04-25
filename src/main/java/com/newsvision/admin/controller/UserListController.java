@@ -2,6 +2,7 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.controller.response.UserListResponse;
 import com.newsvision.admin.service.UserListService;
+import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -22,16 +23,19 @@ public class UserListController {
 
     private static final Logger log = LoggerFactory.getLogger(UserListController.class);
 
+
+
+
     @GetMapping
-    public List<UserListResponse> getUserList() {
-        return userListService.getAllUsers();
+    public ResponseEntity<ApiResponse<List<UserListResponse>>> getUserList() {
+        List<UserListResponse> users = userListService.getAllUsers();
+        return ResponseEntity.ok(ApiResponse.success(users));
     }
 
-
     @GetMapping("/max")
-    public ResponseEntity<List<UserListResponse>> getMaxAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserListResponse>>> getMaxAllUsers() {
         List<UserListResponse> users = userListService.getMaxAllUsers();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(ApiResponse.success(users));
     }
 
 
@@ -41,13 +45,10 @@ public class UserListController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
-        try {
+    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
+
             userService.delete(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception e) {
-            log.error("사용자 삭제 실패 (ID: {}): {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build(); // 서버 오류 응답 (HTTP 500)
-        }
+           return ResponseEntity.ok(ApiResponse.success());
+
     }
 }

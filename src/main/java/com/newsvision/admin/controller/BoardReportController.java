@@ -2,6 +2,7 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.controller.response.BoardReportResponse;
 import com.newsvision.admin.service.BoardReportService;
+import com.newsvision.global.exception.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,24 +18,26 @@ public class BoardReportController {
     private final BoardReportService boardReportService;
 
     @GetMapping
-    public ResponseEntity<List<BoardReportResponse>> getAllReports() {
-        return ResponseEntity.ok(boardReportService.getAllReports());
+    public ResponseEntity<ApiResponse<List<BoardReportResponse>>> getAllReports() {
+        return ResponseEntity.ok(ApiResponse.success(boardReportService.getAllReports()));
     }
+
+
     @GetMapping("/max")
-    public ResponseEntity<List<BoardReportResponse>> getMaxAllReports() {
-        return ResponseEntity.ok(boardReportService.getMaxAllReports());
+    public ResponseEntity<ApiResponse<List<BoardReportResponse>>> getMaxAllReports() {
+        return ResponseEntity.ok(ApiResponse.success(boardReportService.getMaxAllReports()));
     }
     // 카테고리 삭제
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id) {
         boardReportService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
     @PutMapping("/{reportId}/mark")
-    public ResponseEntity<String> markBoardReported(@PathVariable Long reportId) {
+    public ResponseEntity<ApiResponse<String>> markBoardReported(@PathVariable Long reportId) {
         boardReportService.markBoardAsReported(reportId);
-        return ResponseEntity.ok("해당 게시글의 신고 상태가 true로 변경되었습니다.");
+        return ResponseEntity.ok(ApiResponse.success(null));
     }
 
 //    @PutMapping("/{id}")
