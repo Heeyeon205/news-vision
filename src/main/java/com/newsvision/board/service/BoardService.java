@@ -222,7 +222,7 @@ public class BoardService {
     }
     @Transactional
     public void incrementViewCount(Board board) { // 조회수 증가 기능
-        board.setView(board.getView() + 1);
+        board.updateView(board.getView() + 1);
         boardRepository.save(board);
     }
 

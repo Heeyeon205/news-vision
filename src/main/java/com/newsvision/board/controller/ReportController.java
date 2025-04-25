@@ -25,7 +25,7 @@ public class ReportController {
             ) {
         Long userId = userDetails.getId();
         reportService.reportBoard(boardId, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success()); // 201 Created 상태 코드 반환 (신고 성공)
+        return ResponseEntity.ok(ApiResponse.success());
     }
     @PostMapping("/comments/{commentId}") //(댓글 신고)
     public ResponseEntity<ApiResponse<Void>> reportComment(
@@ -34,7 +34,7 @@ public class ReportController {
     ) {
         Long userId = userDetails.getId();
         reportService.reportComment(commentId, userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success()); // 201 Created 상태 코드 반환 (신고 성공)
+        return ResponseEntity.ok(ApiResponse.success());
     }
 
 

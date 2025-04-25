@@ -112,7 +112,7 @@ public class PaymentService {
         LocalDateTime paymentDate = order.getPaymentDate();
         long monthsPassed = ChronoUnit.MONTHS.between(paymentDate, now);
 
-        return monthsPassed <= order.getSubscriptionPeriod();
+        return monthsPassed < order.getSubscriptionPeriod();
     }
 
     // 환불 요청 처리 (관리자 승인 전)

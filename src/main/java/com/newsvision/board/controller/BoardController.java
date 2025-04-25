@@ -52,7 +52,7 @@ public class BoardController {
     ) {
         Long userId = userDetails.getId();
         BoardDetailResponse createdBoard = boardService.createBoard(userId,image,content,categoryId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(createdBoard));
+        return ResponseEntity.ok(ApiResponse.success(createdBoard));
     }
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 수정 API
     public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(

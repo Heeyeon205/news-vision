@@ -55,6 +55,7 @@ public class Board {
 
 
 
+
     @PrePersist // 엔티티가 persist 되기 전에 실행
     public void prePersist() {
         this.createAt = LocalDateTime.now();
@@ -62,5 +63,7 @@ public class Board {
         this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
     }
 
-
+    public void updateView(int view) {
+        this.view = view;
+    }
 }

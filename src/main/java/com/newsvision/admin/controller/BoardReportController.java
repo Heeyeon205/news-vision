@@ -24,7 +24,7 @@ public class BoardReportController {
     public ResponseEntity<List<BoardReportResponse>> getMaxAllReports() {
         return ResponseEntity.ok(boardReportService.getMaxAllReports());
     }
-    // 카테고리 삭제
+
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
         boardReportService.deleteCategory(id);
