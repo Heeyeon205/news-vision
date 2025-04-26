@@ -36,8 +36,6 @@ public class UserListService {
                 .collect(Collectors.toList());
     }
 
-
-
     public UserListResponse saveUser(UserListResponse dto) {
         try {
             User.Role role = User.Role.valueOf(dto.getRole());

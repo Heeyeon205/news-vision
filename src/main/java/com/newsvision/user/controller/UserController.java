@@ -1,17 +1,12 @@
 package com.newsvision.user.controller;
 
-import com.newsvision.global.aws.S3Uploader;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.jwt.JwtTokenProvider;
+import com.newsvision.global.jwt.JwtUtil;
 import com.newsvision.global.security.CustomUserDetails;
-import com.newsvision.mypage.dto.response.UserBoardListResponse;
-import com.newsvision.mypage.dto.response.UserNewsListResponse;
-import com.newsvision.mypage.dto.response.UserNoticeListResponse;
-import com.newsvision.mypage.dto.response.UserScrapListResponse;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
-import com.newsvision.user.entity.User;
 import com.newsvision.user.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +17,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("/api/user/")
@@ -31,7 +24,6 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
     private final JwtTokenProvider jwtTokenProvider;
-    private final AuthController authController;
 
     @GetMapping("/check-username")
     public ResponseEntity<ApiResponse<CheckUserUsernameResponse>> checkUsername(@RequestParam String username) {
@@ -94,11 +86,9 @@ public class UserController {
     public ResponseEntity<ApiResponse<UpdateUsernameResponse>> loadData(
             HttpServletRequest request
     ) {
-        String header = request.getHeader("Authorization");
-        String tempToken = header.split(" ")[1];
+        String tempToken = JwtUtil.extractToken(request.getHeader("Authorization"));
         String username = jwtTokenProvider.getUsername(tempToken);
-        UpdateUsernameResponse response = new UpdateUsernameResponse(username);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(new UpdateUsernameResponse(username)));
     }
 
     @PostMapping("/new-password")
@@ -106,12 +96,8 @@ public class UserController {
             HttpServletRequest request,
             @RequestBody UpdatePasswordRequest passwordRequestrequest
     ){
-        String header = request.getHeader("Authorization");
-        String tempToken = header.split(" ")[1];
-        String username = jwtTokenProvider.getUsername(tempToken);
-        User user = userService.findByUsername(username);
-        authController.deleteTempToken(tempToken);
-        userService.updatePassword(user, passwordRequestrequest);
+        String tempToken = JwtUtil.extractToken(request.getHeader("Authorization"));
+        userService.updatePassword(tempToken, passwordRequestrequest);
         return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 }

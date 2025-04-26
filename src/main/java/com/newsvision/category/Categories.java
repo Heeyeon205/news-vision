@@ -1,4 +1,4 @@
-package com.newsvision.category.entity;
+package com.newsvision.category;
 
 import com.newsvision.board.entity.Board;
 import jakarta.persistence.*;

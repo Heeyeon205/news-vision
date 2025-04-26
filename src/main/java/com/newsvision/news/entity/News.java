@@ -1,6 +1,6 @@
 package com.newsvision.news.entity;
 
-import com.newsvision.category.entity.Categories;
+import com.newsvision.category.Categories;
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;

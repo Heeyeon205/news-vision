@@ -1,9 +1,8 @@
-package com.newsvision.mypage.controller;
+package com.newsvision.mypage;
 
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
-import com.newsvision.mypage.dto.response.*;
-import com.newsvision.mypage.service.MypageService;
+import com.newsvision.mypage.response.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

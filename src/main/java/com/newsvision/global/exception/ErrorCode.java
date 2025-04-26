@@ -14,10 +14,12 @@ public enum ErrorCode {
     DUPLICATE_VOTE(400, "이미 투표에 참여했습니다."),
     // 401
     UNAUTHORIZED(401, "인증이 필요합니다."),
+    INVALID_TOKEN(401, "유효하지 않은 Token입니다."),
     INVALID_ACCESS_TOKEN(401, "유효하지 않은 Access Token입니다."),
     INVALID_REFRESH_TOKEN(401, "유효하지 않은 Refresh Token입니다."),
+    INVALID_TEMP_TOKEN(401, "유효하지 않은 Temp Token입니다."),
     NOT_EXISTS_REFRESH_TOKEN(401, "저장된 Refresh Token과 일치하지 않습니다."),
-    // 404,
+    // 404
     NOT_FOUND(404, "요청한 리소스를 찾을 수 없습니다."),
     USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
     VERIFICATION_NOT_FOUND(404, "인증 코드가 존재하지 않습니다."),

@@ -1,8 +1,7 @@
 package com.newsvision.board.entity;
 
-import com.newsvision.category.entity.Categories;
+import com.newsvision.category.Categories;
 import com.newsvision.user.entity.User;
-import com.nimbusds.oauth2.sdk.TokenIntrospectionSuccessResponse;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

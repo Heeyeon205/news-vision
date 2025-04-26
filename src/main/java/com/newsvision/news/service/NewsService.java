@@ -1,13 +1,11 @@
 package com.newsvision.news.service;
 
-import com.newsvision.category.entity.Categories;
-import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.category.Categories;
+import com.newsvision.category.CategoryRepository;
 import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.news.controller.request.NewsCreateRequest;
-import com.newsvision.news.controller.request.NewsUpdateRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
 import com.newsvision.news.entity.NaverNews;
@@ -20,7 +18,6 @@ import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
-import jdk.jfr.Category;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -59,7 +56,6 @@ public class NewsService {
     @Value("${custom.default-image-news-global-url}")
     private String defaultGlobalImage;
 
-
     private final NewsRepository newsRepository;
     private final NewsLikeRepository newsLikeRepository;
     private final ScrapRepository scrapRepository;
@@ -69,7 +65,11 @@ public class NewsService {
     private final NewsSearchService newsSearchService;
     private final FileUploaderService fileUploaderService;
 
-    //
+    public News findByNewsId(Long newsId) {
+        return newsRepository.findById(newsId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    }
+
     public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<News> topNews = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
@@ -80,9 +80,7 @@ public class NewsService {
 
     @Transactional
     public NewsResponse getNewsDetail(Long newsId, User loginUser) {
-        News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
+        News news = findByNewsId(newsId);
         news.increaseView();
 
         int likeCount = newsLikeRepository.countByNews(news);

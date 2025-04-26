@@ -38,7 +38,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         refreshTokenRepository.save(username, refreshToken);
 
         // 토큰 저장하는 url 로 redirect
-        String redirectUrl = "http://localhost:3000/oauth2/redirect"
+//        String redirectUrl = "http://localhost:3000/oauth2/redirect"
+        String redirectUrl = "http://localhost:5173/oauth2/redirect"
                 + "?accessToken=" + accessToken
                 + "&refreshToken=" + refreshToken
                 + "&nickname=" + user.getNickname();

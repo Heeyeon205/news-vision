@@ -10,6 +10,7 @@ import com.newsvision.news.controller.request.NewsUpdateRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
 import com.newsvision.news.entity.NaverNews;
+import com.newsvision.news.entity.News;
 import com.newsvision.news.service.NaverNewsService;
 import com.newsvision.news.service.NewsService;
 import com.newsvision.user.entity.User;
@@ -37,10 +38,8 @@ import java.util.List;
 @RequestMapping("/api/news")
 public class NewsController {
     private final NewsService newsService;
-    private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
-    private final NaverNewsService naverNewsService;
 
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMainNews() {
@@ -48,11 +47,10 @@ public class NewsController {
     }
 
     @GetMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(
-            @PathVariable Long newsId,
-            @AuthenticationPrincipal User loginUser
-    ) {
-        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, loginUser)));
+    public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(@PathVariable Long id ) {
+        News news = newsService.findByNewsId(id);
+        User user = userService.findByUserId(news.getUser().getId());
+        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(id, user)));
     }
 
     @PostMapping("/{newsId}/like")

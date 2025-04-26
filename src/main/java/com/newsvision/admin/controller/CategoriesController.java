@@ -2,7 +2,7 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.controller.response.CategoriesResponse;
 import com.newsvision.admin.service.CategoriesService;
-import com.newsvision.category.entity.Categories;
+import com.newsvision.category.Categories;
 import com.newsvision.global.exception.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.newsvision.mypage.dto.response;
+package com.newsvision.mypage.response;
 
 import com.newsvision.user.entity.Badge;
 import com.newsvision.user.entity.User;

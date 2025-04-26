@@ -2,8 +2,8 @@ package com.newsvision.admin.service;
 
 import com.newsvision.admin.controller.response.CategoriesResponse;
 import com.newsvision.board.repository.BoardRepository;
-import com.newsvision.category.entity.Categories;
-import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.category.Categories;
+import com.newsvision.category.CategoryRepository;
 import com.newsvision.news.repository.NewsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;

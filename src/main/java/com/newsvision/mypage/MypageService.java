@@ -1,9 +1,9 @@
-package com.newsvision.mypage.service;
+package com.newsvision.mypage;
 
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.board.service.CommentService;
-import com.newsvision.mypage.dto.response.*;
+import com.newsvision.mypage.response.*;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
 import com.newsvision.news.service.NewsService;

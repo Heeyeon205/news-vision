@@ -1,4 +1,4 @@
-package com.newsvision.user.service;
+package com.newsvision.global.redis;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;

@@ -2,7 +2,7 @@ package com.newsvision.global.jwt;
 
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.global.security.CustomUserDetailsService;
-import com.newsvision.user.service.TokenBlacklistService;
+import com.newsvision.global.redis.TokenBlacklistService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
