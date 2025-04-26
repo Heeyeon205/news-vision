@@ -1,5 +1,7 @@
 package com.newsvision.global.payment.controller;
 
+import com.newsvision.global.exception.ApiResponse;
+import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.payment.dto.OrderDto;
 import com.newsvision.global.payment.dto.PaymentInitRequest;
 import com.newsvision.global.payment.dto.RefundRequestDto;
@@ -27,16 +29,14 @@ public class PaymentController {
     private final PaymentService paymentService;
 
     @PostMapping("/init")
-    public ResponseEntity<Map<String, Object>> initiatePayment(
+    public ResponseEntity<ApiResponse<Map<String, Object>>> initiatePayment(
             @RequestBody PaymentInitRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Map<String, Object> response = new HashMap<>();
         try {
             if (userDetails == null) {
-                response.put("success", false);
-                response.put("message", "로그인이 필요합니다.");
-                return ResponseEntity.status(401).body(response);
+                return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.INVALID_ACCESS_TOKEN));
             }
 
             response.put("success", true);
@@ -60,12 +60,12 @@ public class PaymentController {
             log.info("임시 주문 저장: userId={}, orderDto={}", userDetails.getId(), orderDto);
             paymentService.storePendingOrder(userDetails.getId(), orderDto);
 
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(ApiResponse.success(response));
         } catch (Exception e) {
             log.error("결제 초기화 중 오류 발생: ", e);
             response.put("success", false);
             response.put("message", "서버 내부 오류가 발생했습니다: " + e.getMessage());
-            return ResponseEntity.status(500).body(response);
+            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
 
@@ -80,12 +80,13 @@ public class PaymentController {
     }
 
     @PostMapping("/order")
-    public ResponseEntity<String> processOrder(
+    public ResponseEntity<ApiResponse<String>> processOrder(
             @RequestBody OrderDto orderDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("Received order: {}, userId: {}", orderDto.toString(), userDetails.getId());
-        return ResponseEntity.ok(paymentService.saveOrder(orderDto, userDetails.getId()));
+        String result = paymentService.saveOrder(orderDto,userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/cancel/{imp_uid}")
@@ -99,53 +100,58 @@ public class PaymentController {
 
     // 환불 요청 api
     @PostMapping("/refund/request/{imp_uid}")
-    public ResponseEntity<String> requestRefund(
+    public ResponseEntity<ApiResponse<String>> requestRefund(
             @PathVariable("imp_uid") String impUid,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         if (userDetails == null) {
-            return ResponseEntity.status(401).body("로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.INVALID_ACCESS_TOKEN));
         }
         log.info("환불 요청: imp_uid={}, userId={}", impUid, userDetails.getId());
-        return ResponseEntity.ok(paymentService.requestRefund(userDetails.getId(), impUid));
+        String result = paymentService.requestRefund(userDetails.getId(), impUid);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     @PostMapping("/refund/approve/{imp_uid}")
-    public ResponseEntity<String> approveRefund(
+    public ResponseEntity<ApiResponse<String>> approveRefund(
             @PathVariable("imp_uid") String impUid,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         if (userDetails == null || !userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return ResponseEntity.status(403).body("관리자 권한이 필요합니다.");
+            return ResponseEntity.status(403).body(ApiResponse.fail(ErrorCode.FORBIDDEN));
         }
         log.info("환불 승인 요청: imp_uid={}, userId={}", impUid, userDetails.getId());
-        return ResponseEntity.ok(paymentService.approveRefund(userDetails.getId(), impUid));
+        String result = paymentService.approveRefund(userDetails.getId(), impUid);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    // 여기부터 하면됨
     @PostMapping("/refund/reject/{imp_uid}")
-    public ResponseEntity<String> rejectRefund(
+    public ResponseEntity<ApiResponse<String>> rejectRefund(
             @PathVariable("imp_uid") String impUid,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         if(userDetails == null || !userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return ResponseEntity.status(403).body("관리자 권한이 필요합니다.");
+            return ResponseEntity.status(403).body(ApiResponse.fail(ErrorCode.FORBIDDEN));
         }
         log.info("환불 거부 요청: imp_uid={}, adminUserId={}", impUid, userDetails.getId());
-        return ResponseEntity.ok(paymentService.rejectRefund(userDetails.getId(), impUid));
+        String result = paymentService.rejectRefund(userDetails.getId(), impUid);
+        return ResponseEntity.ok(ApiResponse.success(result));
     }
 
     // 환불 요청 리스트 조회
     @GetMapping("/refund/requests")
-    public ResponseEntity<List<RefundRequestDto>> getRefundRequests(
+    public ResponseEntity<ApiResponse<List<RefundRequestDto>>> getRefundRequests(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         if (userDetails == null || !userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return ResponseEntity.status(403).body(null);
+            return ResponseEntity.status(403).body(ApiResponse.fail(ErrorCode.FORBIDDEN));
         }
         log.info("환불 요청 리스트 조회: adminUserId={}", userDetails.getId());
-        return ResponseEntity.ok(paymentService.getRefundRequests());
+        List<RefundRequestDto> refundRequests = paymentService.getRefundRequests();
+        return ResponseEntity.ok(ApiResponse.success(refundRequests));
     }
 }

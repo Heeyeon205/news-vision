@@ -141,11 +141,18 @@ public class BoardService {
     @Transactional
     public BoardDetailResponse updateBoard(Board board, Long userId,MultipartFile image,String content,Long categoryId) { // 게시글 수정
         User user = userService.findByUserId(userId);
+
         String imageUrl = null;
         if(image != null && !image.isEmpty()){
+            String oldImageUrl = board.getImage();
             try{
                 byte[] resizedBoardImage = resizeBoardImage(image);
                 imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage,user.getId());
+                board.setImage(imageUrl);
+
+                if(oldImageUrl != null && !oldImageUrl.isEmpty()){
+                    fileUploaderService.deleteFile(oldImageUrl);
+                }
                 log.info("이미지 업로드 성공: URL - {}", imageUrl);
 
             }catch(IOException e){
@@ -163,7 +170,9 @@ public class BoardService {
 
         board.setContent(content);
         board.setCategory(category);
-        board.setImage(imageUrl);
+
+
+
 
         Board updatedBoard = boardRepository.save(board);
         boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
@@ -177,6 +186,16 @@ public class BoardService {
         // 게시글 작성자 본인 또는 관리자만 삭제 가능하도록 권한 체크 (isAdminUser()는 관리자 권한 체크 함수)
         if (!Objects.equals(board.getUser().getId(), userId) /* && !isAdminUser(userId) */) {
             throw new CustomException(ErrorCode.UNAUTHORIZED); // 권한 없음 에러
+        }
+
+        String imageUrl = board.getImage();
+        if(imageUrl != null && !imageUrl.isEmpty()){
+            try{
+                fileUploaderService.deleteFile(imageUrl);
+                log.info("S3에서 이미지 삭제 성공: URL - {}", imageUrl);
+            }catch (Exception e){
+                log.error("S3 이미지 삭제 실패: URL - {}, 오류: {}", imageUrl, e.getMessage());
+            }
         }
 
         boardRepository.delete(board); // 게시글 삭제
