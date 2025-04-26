@@ -21,29 +21,28 @@
 <br/>
 
 ## Development Environment
-<p> 
-Java 17
-Spring Boot 3.2
-IntelliJ
-</p>
 
-<p>
-React 19
-Vite 6 </p>
-Tailwindcss 4.1
-Node.js ??.??
-npm ??.?
-Visual Studio Code
-</p>
+### Back-End
+- Java 17
+- Spring Boot 3.2
+- IntelliJ
 
-### Tools
-<p>
-<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="Notion" />
-<img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white" alt="Slack" />
-<img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=Discord&logoColor=white" alt="Discord" />
-<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white" alt="Git" />
-<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub" />
-</p>
+### Front-End
+- React 19
+- Vite 6
+- Tailwindcss 4.1
+- Node.js ??.??
+- npm ??.?
+- Visual Studio Code
+
+### communication
+- Notion
+- Slack
+- Discode
+
+### Project Management
+- 깃
+- 깃허브
 
 <br/>
 
