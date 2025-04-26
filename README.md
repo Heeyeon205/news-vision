@@ -25,15 +25,29 @@
 <br/>
 
 ## Development Environment
-<p> Java 17 </p>
-<p> Spring Boot 3.2 </p>
-<p> IntelliJ
+<p> 
+Java 17
+Spring Boot 3.2
+IntelliJ
+</p>
 
-<p> React 19 </p>
-<p> Vite 6 </p>
-<p> Tailwindcss 4.1 </p>
-<p> Node.js ??.?? </p>
-<p> npm ??.? </p>
+<p>
+React 19
+Vite 6 </p>
+Tailwindcss 4.1
+Node.js ??.??
+npm ??.?
+Visual Studio Code
+</p>
+
+### Tools
+<p>
+<img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=Notion&logoColor=white" alt="Notion" />
+<img src="https://img.shields.io/badge/Slack-4A154B?style=for-the-badge&logo=Slack&logoColor=white" alt="Slack" />
+<img src="https://img.shields.io/badge/Discord-5865F2?style=for-the-badge&logo=Discord&logoColor=white" alt="Discord" />
+<img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=Git&logoColor=white" alt="Git" />
+<img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=GitHub&logoColor=white" alt="GitHub" />
+</p>
 
 <br/>
 
@@ -77,10 +91,10 @@
 ## Responsibilities
 이종현
 - 프로젝트 설계
-- RESTful API 서버 설계
 - 데이터베이스 설계
-- Spring Serurity, OAuth2, JWT 구현
+- RESTful API 서버 설계
 - Client 서버 설계 및 구현
+- Spring Serurity, OAuth2, JWT 구현
 <br>
 
 구승회
