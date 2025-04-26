@@ -41,8 +41,8 @@
 - Discode
 
 ### Project Management
-- 깃
-- 깃허브
+- Git
+- GitHub
 
 <br/>
 
