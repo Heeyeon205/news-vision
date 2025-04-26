@@ -91,7 +91,6 @@ Visual Studio Code
 - RESTful API 서버 설계 및 구현
 - Client 서버 설계 및 구현
 - 인증 및 인가(Spring Serurity, OAuth2, JWT) 기능 구현
-- 뉴스 서비스 고도화
 <br>
 
 구승회
