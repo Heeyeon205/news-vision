@@ -86,26 +86,27 @@ Visual Studio Code
 
 ## Responsibilities
 이종현
-- 프로젝트 설계
-- 데이터베이스 설계
-- RESTful API 서버 설계
+- 프로젝트 아키텍처 설계
+- 데이터베이스 모델링
+- RESTful API 서버 설계 및 구현
 - Client 서버 설계 및 구현
-- Spring Serurity, OAuth2, JWT 구현
+- 인증 및 인가(Spring Serurity, OAuth2, JWT) 기능 구현
+- 뉴스 서비스 고도화
 <br>
 
 구승회
-- 메인 컨텐츠 뉴스 서비스 구현
-- Elasticsearch 검색 기능 구현
+- 메인 뉴스 서비스 구현
+- Elasticsearch 기반 검색 기능 구현
 <br>
 
 송명보
-- 커뮤니티 게시판 구현
-- 투표 기능 구현
-- 결제 기능 구현
+- 커뮤니티 게시판 기능 구현
+- 사용자 투표 기능 구현
+- 결제 시스템 연동 및 구현
 <br/>
 
 정지원
-- 어드민 기능 구현
+- 관리자 기능 개발 및 관리 시스템 구축
 <br/>
 
 ## Preview
