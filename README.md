@@ -14,10 +14,10 @@
 <br/>
 
 ## Members
-|이종현|구승회|송명보|정지원|
+|PL|BE|BE|BE|
 |:--:|:--:|:--:|:--:|
 |<img src="https://avatars.githubusercontent.com/u/1?v=4" width="200" heigth="300"/>|<img src="https://avatars.githubusercontent.com/u/2?v=4" width="200" heigth="300"/>|<img src="https://avatars.githubusercontent.com/u/3?v=4" width="200" heigth="300"/>|<img src="https://avatars.githubusercontent.com/u/4?v=4" width="200" heigth="300"/>|
-|PL|BE|BE|BE|
+|[이종현](https://github.com/Heeyeon205)|[구승회](https://github.com/shoot3957)|[송명보](https://github.com/Songmyungbo)|[정지원](https://github.com/jiwon0324)|
 <br/>
 
 ## Development Environment
