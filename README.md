@@ -35,7 +35,7 @@
 - npm ??.?
 - Visual Studio Code
 
-### communication
+### Communication
 - Notion
 - Slack
 - Discode
