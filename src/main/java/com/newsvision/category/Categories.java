@@ -1,6 +1,7 @@
 package com.newsvision.category;
 
 import com.newsvision.board.entity.Board;
+import com.newsvision.news.entity.News;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,4 +22,7 @@ public class Categories {
 
     @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Board> boards;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<News> newsList; // 뉴스
 }

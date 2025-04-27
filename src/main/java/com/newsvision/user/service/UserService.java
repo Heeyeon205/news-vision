@@ -8,6 +8,7 @@ import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
+import com.newsvision.user.entity.Badge;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -77,14 +78,15 @@ public class UserService {
     public void save(JoinUserRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String nickname = "Newsion_User_" + UUID.randomUUID().toString().substring(0, 6);
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(encodedPassword)
-                .email(request.getEmail())
-                .image(defaultProfileImage)
-                .nickname(nickname)
-                .build();
-        userRepository.save(user);
+            User user = User.builder()
+                    .username(request.getUsername())
+                    .password(encodedPassword)
+                    .email(request.getEmail())
+                    .image(defaultProfileImage)
+                    .nickname(nickname)
+                    .build();
+            userRepository.save(user);
+
     }
 
     @Transactional
@@ -114,7 +116,7 @@ public class UserService {
                 }
             } catch (IOException e) {
                 log.error("이미지 처리 실패: {}", e.getMessage());
-                throw new RuntimeException("이미지 처리 실패", e);
+                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
         }
 
@@ -157,7 +159,7 @@ public class UserService {
     @Transactional
     public void deleteProfileImage(Long id, String imageUrl) {
         User user = findByUserId(id);
-        if (user.getImage().equals("default-profile.png")) {
+        if (!user.getImage().equals("default-profile.png")) {
             fileUploaderService.deleteFile(user.getImage());
         }
     }

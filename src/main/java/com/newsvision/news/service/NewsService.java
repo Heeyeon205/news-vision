@@ -2,12 +2,14 @@ package com.newsvision.news.service;
 
 import com.newsvision.category.Categories;
 import com.newsvision.category.CategoryRepository;
+import com.newsvision.category.CategoryService;
 import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.dto.response.NewsDetailInfoResponse;
 import com.newsvision.news.entity.NaverNews;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.NewsLike;
@@ -39,6 +41,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NewsService {
 
+    private final CategoryService categoryService;
     @Value("${custom.default-image-news-culture-url}")
     private String defaultCultureImage;
     @Value("${custom.default-image-news-book-url}")
@@ -82,7 +85,6 @@ public class NewsService {
     public NewsResponse getNewsDetail(Long newsId, User loginUser) {
         News news = findByNewsId(newsId);
         news.increaseView();
-
         int likeCount = newsLikeRepository.countByNews(news);
         boolean liked = loginUser != null && newsLikeRepository.existsByUserAndNews(loginUser, news);
         boolean scraped = false;
@@ -309,5 +311,11 @@ public class NewsService {
 
     public int countByNews(News news) {
         return newsLikeRepository.countByNews(news);
+    }
+
+    public NewsDetailInfoResponse newsInfo(Long newsId) {
+        News news = findByNewsId(newsId);
+        List<Categories> categories = categoryService.findAllList();
+        return NewsDetailInfoResponse.from(news, categories);
     }
 }

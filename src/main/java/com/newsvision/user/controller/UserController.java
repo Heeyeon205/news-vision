@@ -21,7 +21,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/user/")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Tag(name = "UserController", description = "유저 API")
 public class UserController {
@@ -44,7 +44,7 @@ public class UserController {
 
     @Operation(summary = "비밀번호 확인", description = "비밀번호 확인")
     @GetMapping("/match-password")
-    public ResponseEntity<ApiResponse<CheckUserPasswordResponse>> checkNickname(
+    public ResponseEntity<ApiResponse<CheckUserPasswordResponse>> checkPassword(
             @RequestParam String password,
             @RequestParam String checkPassword
     ) {
@@ -54,12 +54,9 @@ public class UserController {
 
     @Operation(summary = "유저 회원가입", description = "신규 유저 등록")
     @PostMapping("/join")
-    public ResponseEntity<ApiResponse<JoinUserRequest>> join(@RequestBody JoinUserRequest request) {
-        log.warn("request.getUsername() = {}", request.getUsername());
-        log.warn("request.getPassword() = {}", request.getPassword());
-        log.warn("request.getEmail() = {}", request.getEmail());
+    public ResponseEntity<ApiResponse<String>> join(@RequestBody JoinUserRequest request) {
         userService.save(request);
-        return ResponseEntity.ok(ApiResponse.success(request));
+        return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 
     @Operation(summary = "유저 삭제", description = "유저 탈퇴")
@@ -67,7 +64,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<Long>> delete(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long id = userDetails.getId();
         userService.delete(id);
-        return ResponseEntity.ok(ApiResponse.success());
+        return ResponseEntity.ok(ApiResponse.success(id));
     }
 
     @Operation(summary = "유저 정보", description = "유저 정보")
@@ -97,7 +94,7 @@ public class UserController {
     public ResponseEntity<ApiResponse<UpdateUsernameResponse>> loadData(
             HttpServletRequest request
     ) {
-        String tempToken = JwtUtil.extractToken(request.getHeader("Authorization"));
+        String tempToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
         String username = jwtTokenProvider.getUsername(tempToken);
         return ResponseEntity.ok(ApiResponse.success(new UpdateUsernameResponse(username)));
     }
@@ -108,8 +105,17 @@ public class UserController {
             HttpServletRequest request,
             @RequestBody UpdatePasswordRequest passwordRequestrequest
     ){
-        String tempToken = JwtUtil.extractToken(request.getHeader("Authorization"));
+        String tempToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
         userService.updatePassword(tempToken, passwordRequestrequest);
+        return ResponseEntity.ok(ApiResponse.success("ok"));
+    }
+
+    @Operation(summary = "사용자 권한 확인", description = "사용자 권한 확인")
+    @GetMapping("/check-role")
+    public ResponseEntity<ApiResponse<String>> checkRole(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
+    ){
+        userService.validateRole(customUserDetails.getRole());
         return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 }

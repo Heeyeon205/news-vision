@@ -2,21 +2,17 @@ package com.newsvision.news.controller;
 
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
-import com.newsvision.news.controller.request.NewsCreateRequest;
-import com.newsvision.news.controller.request.NewsUpdateRequest;
+import com.newsvision.news.controller.request.NaverNewsSaveRequest;
 import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.controller.response.NewsSummaryResponse;
-import com.newsvision.news.entity.NaverNews;
+import com.newsvision.news.dto.response.NewsDetailInfoResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.service.NaverNewsService;
 import com.newsvision.news.service.NewsService;
 import com.newsvision.user.entity.User;
-import com.newsvision.user.repository.UserRepository;
 import com.newsvision.user.service.UserService;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -26,11 +22,11 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -38,8 +34,8 @@ import java.util.List;
 @RequestMapping("/api/news")
 public class NewsController {
     private final NewsService newsService;
-    private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;
+    private final NaverNewsService naverNewsService;
 
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMainNews() {
@@ -47,10 +43,10 @@ public class NewsController {
     }
 
     @GetMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(@PathVariable Long id ) {
-        News news = newsService.findByNewsId(id);
+    public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(@PathVariable Long newsId) {
+        News news = newsService.findByNewsId(newsId);
         User user = userService.findByUserId(news.getUser().getId());
-        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(id, user)));
+        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, user)));
     }
 
     @PostMapping("/{newsId}/like")
@@ -58,12 +54,7 @@ public class NewsController {
             @PathVariable Long newsId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        log.info("✅ 인증 객체 등록됨 - username: {}", userDetails.getUsername());
-        log.info("✅ SecurityContext에 등록된 사용자: {}",
-                ((CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername());
-
         newsService.addLike(newsId, userDetails.getUser());
-
         return ResponseEntity.ok(ApiResponse.success("좋아요를 추가했습니다."));
     }
 
@@ -134,88 +125,59 @@ public class NewsController {
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart("title") String title,
             @RequestPart("content") String content,
-            @RequestPart("categoryId") String categoryIdStr,
-            @RequestPart("naverNewsId") String naverNewsIdStr,
+            @RequestPart("categoryId") String categoryId,
+            @RequestPart("naverTitle") String naverTitle,
+            @RequestPart("naverLink") String naverLink,
+            @RequestPart("naverPubDate") String naverPubDate,
             @RequestPart(value = "image", required = false) MultipartFile image
     ) {
         Long userId = userDetails.getId();
         String role = userDetails.getRole();
-        log.info("컨트롤러 진입완료");
         userService.validateRole(role);
-        log.info("역할 검증 완료");
-        Long categoryId = Long.parseLong(categoryIdStr);
-        Long naverNewsId = Long.parseLong(naverNewsIdStr);
-        newsService.createNews(userId, title, content, categoryId, naverNewsId, image);
-        log.info("createNews 완료");
+        Long categoriesId = Long.parseLong(categoryId);
+        Long naverNewsId = naverNewsService.saveNaverNews(new NaverNewsSaveRequest(naverTitle, naverLink, naverPubDate));
+        newsService.createNews(userId, title, content, categoriesId, naverNewsId, image);
         return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 작성되었습니다."));
     }
 
-    private String extractToken(HttpServletRequest request) {
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            return header.substring(7);
+    @GetMapping(value = "/update/{newsId}")
+    public ResponseEntity<ApiResponse<NewsDetailInfoResponse>> updateNews(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long newsId
+    ) {
+        News news = newsService.findByNewsId(newsId);
+        if (!Objects.equals(news.getUser().getId(), userDetails.getId())) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
         }
-        return null;
+        NewsDetailInfoResponse response = newsService.newsInfo(newsId);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PutMapping(value = "/{newsId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<?>> updateNews(
+    public ResponseEntity<ApiResponse<String>> updateNews(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long newsId,
             @RequestPart("title") String title,
             @RequestPart("content") String content,
             @RequestPart("categoryId") String categoryIdStr,
-            @RequestPart(value = "image", required = false) MultipartFile image,
-            HttpServletRequest httpServletRequest
+            @RequestPart(value = "image", required = false) MultipartFile image
     ) {
-        String token = extractToken(httpServletRequest);
-        if (!jwtTokenProvider.validateToken(token)) {
-            log.warn("❌ 유효하지 않은 토큰");
-            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.UNAUTHORIZED));
-        }
-
-        Long userId = jwtTokenProvider.getUserId(token);
-        String role = jwtTokenProvider.getUserRole(token);
+        Long userId = userDetails.getId();
+        String role = userDetails.getRole();
+        userService.validateRole(role);
         Long categoryId = Long.parseLong(categoryIdStr);
-        log.info("📝 뉴스 수정 시도 - userId: {}, role: {}, newsId: {}", userId, role, newsId);
 
-        try {
-            newsService.updateNews(newsId, userId, title, content, categoryId, image);
-            return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 수정되었습니다.", null));
-        } catch (CustomException e) {
-            log.warn("❌ 수정 중 오류 - {}", e.getMessage());
-            return ResponseEntity.status(e.getErrorCode().getStatus())
-                    .body(ApiResponse.fail(e.getErrorCode()));
-        } catch (Exception e) {
-            log.error("🔥 뉴스 수정 중 예외 발생", e);
-            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
-        }
+        newsService.updateNews(newsId, userId, title, content, categoryId, image);
+        return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 수정되었습니다."));
     }
-
 
     @DeleteMapping("/{newsId}")
     public ResponseEntity<ApiResponse<?>> deleteNews(
             @PathVariable Long newsId,
-            HttpServletRequest httpServletRequest
+            @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        String token = extractToken(httpServletRequest);
-        if (!jwtTokenProvider.validateToken(token)) {
-            log.warn("❌ 유효하지 않은 토큰");
-            return ResponseEntity.status(401).body(ApiResponse.fail(ErrorCode.UNAUTHORIZED));
-        }
-
-        Long userId = jwtTokenProvider.getUserId(token);
-        log.info("🧹 뉴스 삭제 시도 - userId: {}, newsId: {}", userId, newsId);
-
-        try {
+        Long userId = customUserDetails.getId();
             newsService.deleteNews(userId, newsId);
-            return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 삭제되었습니다.", null));
-        } catch (CustomException e) {
-            log.warn("❌ 삭제 중 오류 - {}", e.getMessage());
-            return ResponseEntity.status(e.getErrorCode().getStatus())
-                    .body(ApiResponse.fail(e.getErrorCode()));
-        } catch (Exception e) {
-            log.error("🔥 뉴스 삭제 중 예외 발생", e);
-            return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
-        }
+            return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 삭제되었습니다."));
     }
 }

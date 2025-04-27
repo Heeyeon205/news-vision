@@ -18,14 +18,12 @@ public class GptNewsScheduler {
     private final NewsRepository newsRepository;
     private final GptSummaryService gptSummaryService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 58 21 * * *")
     public void summarizeTop10News() {
-        log.info("뉴스 요약 실행");
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<News> top10News = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
 
         for (News news : top10News) {
-            log.info("요약 뉴스 Title: {}", news.getTitle());
             gptSummaryService.createSummary(news.getId(), news.getTitle(), news.getContent());
         }
         log.info("뉴스 요약 완료");

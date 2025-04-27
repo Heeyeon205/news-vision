@@ -56,7 +56,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
-        String refreshToken = JwtUtil.extractToken(request.getHeader("Authorization"));
+        String refreshToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
 
             if (jwtTokenProvider.validateToken(refreshToken)) {
                 long expiration = jwtTokenProvider.getExpiration(refreshToken);
@@ -91,7 +91,7 @@ public class AuthController {
 
     @GetMapping("/check")
     public ResponseEntity<ApiResponse<String>> checkAccessToken(HttpServletRequest request) {
-        String accessToken = JwtUtil.extractToken(request.getHeader("Authorization"));
+        String accessToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
 
         if (!jwtTokenProvider.validateToken(accessToken)) {
             throw new CustomException(ErrorCode.INVALID_ACCESS_TOKEN);
@@ -113,7 +113,7 @@ public class AuthController {
 
     @GetMapping("/temp-check")
     public ResponseEntity<ApiResponse<String>> checkTempToken(HttpServletRequest request) {
-        String tempToken = JwtUtil.extractToken(request.getHeader("Authorization"));
+        String tempToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
 
         if (!jwtTokenProvider.validateToken(tempToken)) {
            throw new CustomException(ErrorCode.INVALID_TEMP_TOKEN);

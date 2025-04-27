@@ -4,7 +4,7 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 
 public class JwtUtil {
-    public static String extractToken(String header) {
+    public static String parsingToken(String header) {
         if (header != null && header.startsWith("Bearer ")) {
             return header.split(" ")[1];
         }
