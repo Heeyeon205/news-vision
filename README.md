@@ -31,8 +31,8 @@
 - React 19
 - Vite 6
 - Tailwindcss 4.1
-- Node.js ??.??
-- npm ??.?
+- Node.js 22.13.1
+- npm 10.9.2
 - Visual Studio Code
 
 ### Communication
