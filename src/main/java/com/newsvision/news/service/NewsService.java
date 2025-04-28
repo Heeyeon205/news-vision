@@ -241,20 +241,30 @@ public class NewsService {
         Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-        String imageUrl = news.getImage();
+        String oldImageUrl = news.getImage();
+        String defaultImageForCategory = getDefaultImageForCategoryId(categoryId);
+        String newImageUrl = oldImageUrl;
         if (image != null && !image.isEmpty()) {
             try {
                 byte[] imageBytes = image.getBytes();
-                imageUrl = fileUploaderService.uploadNewsImage(imageBytes, userId);
-            } catch (Exception e) {
+                newImageUrl = fileUploaderService.uploadNewsImage(imageBytes, userId);
+
+                // ✅ 기존 이미지가 기본 이미지가 아니라면 삭제
+                if (oldImageUrl != null &&
+                        !oldImageUrl.equals(defaultImageForCategory) &&
+                        !oldImageUrl.isEmpty()) {
+                    fileUploaderService.deleteFile(oldImageUrl);
+                }
+
+            } catch (IOException e) {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
         }
 
-        news.setTitle(title);
-        news.setContent(content);
-        news.setImage(imageUrl);
-        news.setCategory(category);
+        news.updateTitle(title);
+        news.updateContent(content);
+        news.updateImage(newImageUrl);
+        news.updateCategory(category);
 
         newsSearchService.saveNews(news);
     }
@@ -277,7 +287,7 @@ public class NewsService {
         // 💡 스크랩도 삭제
         scrapRepository.deleteAllByNews(news);
         log.info("📌 관련된 스크랩 삭제 완료");
-
+        fileUploaderService.deleteFile(news.getImage());
         // 💡 뉴스 삭제
         newsRepository.delete(news);
         log.info("📰 뉴스 삭제 완료");
