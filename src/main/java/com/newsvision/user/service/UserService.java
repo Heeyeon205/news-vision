@@ -164,7 +164,9 @@ public class UserService {
         }
     }
 
-    public Boolean matchUserId(Long userId, Long id) {
-        return userId.equals(id);
+    public void matchUserId(Long userId, Long id) {
+        if(!userId.equals(id)){
+            throw new CustomException(ErrorCode.FORBIDDEN_USER);
+        }
     }
 }

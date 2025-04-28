@@ -8,7 +8,10 @@ import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.security.CustomUserDetails;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -19,13 +22,15 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/boards")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 @Slf4j
 public class BoardController {
     private final BoardService boardService;
+    private final UserService userService;
 
     @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
     public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoards(
@@ -54,6 +59,19 @@ public class BoardController {
         BoardDetailResponse createdBoard = boardService.createBoard(userId,image,content,categoryId);
         return ResponseEntity.ok(ApiResponse.success(createdBoard));
     }
+
+    @GetMapping("/update/{boardId}") // 유저가 수정하려면 해당 글쓴 유저인지
+    public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable Long boardId
+    ){
+        Board board = boardService.findById(boardId);
+        userService.matchUserId(userDetails.getId(),boardId);
+        BoardDetailResponse response = boardService.getBoardDetail(board);
+        return ResponseEntity.ok(ApiResponse.success(response));
+
+    }
+
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 수정 API
     public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(
             @PathVariable Long boardId,

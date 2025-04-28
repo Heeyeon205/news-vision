@@ -69,10 +69,10 @@ public class  NaverNewsService {
                             .originallink(decodeDescription(item.getOriginallink()))
                             .pubDate(item.getPubDate())
                             .build())
-                    .filter(news ->
-                            news.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-                                    news.getDescription().toLowerCase().contains(query.toLowerCase())
-                    )
+//                    .filter(news ->
+//                            news.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+//                                    news.getDescription().toLowerCase().contains(query.toLowerCase())
+//                    )
                     .distinct()
                     .toList();
 

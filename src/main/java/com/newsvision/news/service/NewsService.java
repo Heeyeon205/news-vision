@@ -186,7 +186,6 @@ public class NewsService {
                 break;
         }
 
-
         return result.map(NewsSummaryResponse::from);
     }
 

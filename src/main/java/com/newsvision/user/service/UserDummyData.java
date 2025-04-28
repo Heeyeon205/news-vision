@@ -27,8 +27,9 @@ public class UserDummyData {
                 User admin = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
-                        .nickname("관리자")
-                        .email("admin@example.com")
+                        .nickname("뉴션")
+                        .image("https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png")
+                        .email("admin@admin.com")
                         .role(User.Role.ROLE_ADMIN)
                         .badge(adminBadge)
                         .build();
@@ -41,7 +42,8 @@ public class UserDummyData {
                         .username("creator")
                         .password(passwordEncoder.encode("creator"))
                         .nickname("크리에이터")
-                        .email("creator@example.com")
+                        .image("https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png")
+                        .email("creator@creator.com")
                         .role(User.Role.ROLE_CREATOR)
                         .badge(creatorBadge)
                         .build();
@@ -53,7 +55,8 @@ public class UserDummyData {
                         .username("qwer")
                         .password(passwordEncoder.encode("1234"))
                         .nickname("홍길동")
-                        .email("user@example.com")
+                        .image("https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png")
+                        .email("qwe@qwer.com")
                         .role(User.Role.ROLE_USER)
                         .build();
                 userRepository.save(user);

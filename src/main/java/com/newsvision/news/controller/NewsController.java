@@ -87,17 +87,11 @@ public class NewsController {
         return ResponseEntity.ok(ApiResponse.success("스크랩을 취소했습니다."));
     }
 
-
     @GetMapping("/scraps")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMyScrapList(
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         return ResponseEntity.ok(ApiResponse.success(newsService.getMyScrapList(userDetails.getUser())));
-    }
-
-    @GetMapping("/editorials")
-    public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getCreatorNewsList() {
-        return ResponseEntity.ok(ApiResponse.success(newsService.getCreatorNewsList()));
     }
 
     @GetMapping("/all")
@@ -110,13 +104,13 @@ public class NewsController {
     @GetMapping("/article")
     public ResponseEntity<ApiResponse<Page<NewsSummaryResponse>>> getFilteredArticles(
             @RequestParam(defaultValue = "recent") String type,
-            @RequestParam(required = false) Long id,
+            @RequestParam(required = false) Long categoryId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         User user = userDetails != null ? userDetails.getUser() : null;
         return ResponseEntity.ok(ApiResponse.success(
-                newsService.getFilteredArticles(type, id, user, pageable)
+                newsService.getFilteredArticles(type, categoryId, user, pageable)
         ));
     }
 

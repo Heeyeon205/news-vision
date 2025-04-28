@@ -37,7 +37,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String redirectUrl = "http://localhost:5173/oauth2/redirect"
                 + "?accessToken=" + accessToken
                 + "&refreshToken=" + refreshToken
-                + "&user=" + user;
+                + "&userId=" + user.getId()
+                + "&nickname=" + user.getNickname();
         log.warn("access token: {}", accessToken);
         log.warn("refresh token: {}", refreshToken);
         response.sendRedirect(redirectUrl);

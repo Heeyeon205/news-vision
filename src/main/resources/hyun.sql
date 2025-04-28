@@ -245,3 +245,17 @@ KBS 보도에 따르면 이 남성은 휴대전화 먹통과 KT 알뜰폰 개통
 
 정부가 오는 22일 국회에 추경안을 제출할 예정인데, 국회가 경제 상황을 고려해 대폭 증액을 추진하기 바란다. 대선 국면으로 접어들었지만 경제를 살리고 민생을 보듬는 데 여야가 따로 있을 수 없다. 재정당국인 기획재정부도 추경 규모와 성격에 대해 “아주 유연하고 탄력적으로 대응하겠다”며 국회가 요구해 오면 수용할 뜻을 밝힌 바 있다. 정당들이 실질적인 경기 활성화와 민생 지원 방안을 놓고 정책 경쟁을 벌이는 모습을 보고 싶다.',
         3, NOW(), 5, 2);
+
+
+
+INSERT INTO boards (id, content, category_id, create_at, user_id, image, view, is_reported)
+VALUES (1, '게시글 내용입니다.', 1, '2025-04-22 10:00:00', 1, 'https://example.com/images/board1.jpg', 100,  false),
+       (2, '또 다른 게시글입니다.', 2, '2025-04-22 09:00:00', 2, 'https://example.com/images/board2.jpg', 50,  false),
+       (3, '새로운 소식을 공유합니다!', 1, '2025-04-23 14:30:00', 3, 'https://example.com/images/board3.jpg', 120, false),
+       (4, '이벤트 안내드립니다.', 3, '2025-04-23 16:00:00', 1, 'https://example.com/images/board4.jpg', 80,  false),
+       (5, '궁금한 점이 있습니다.', 2, '2025-04-24 09:15:00', 1, 'https://example.com/images/board5.jpg', 30,  false),
+       (6, '최신 뉴스 공유합니다.', 1, '2025-04-24 11:45:00', 2, 'https://example.com/images/board6.jpg', 150,  false),
+       (7, '재미있는 이야기입니다.', 4, '2025-04-25 13:20:00', 3, 'https://example.com/images/board7.jpg', 90,  false),
+       (8, '팁과 노하우 공유!', 3, '2025-04-25 15:50:00', 1, 'https://example.com/images/board8.jpg', 60, false),
+       (9, '질문이 있어요!', 2, '2025-04-26 10:10:00', 2, 'https://example.com/images/board9.jpg', 40, false),
+       (10, '오늘의 소식입니다.', 5, '2025-04-26 12:00:00', 3, 'https://example.com/images/board10.jpg', 200,  false);

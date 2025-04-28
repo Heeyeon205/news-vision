@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -21,8 +22,9 @@ public class BoardDetailResponse {
     private Boolean isReported;
     private int likeCount;
     private int commentCount;
+    private List<CommentResponse> comments;
 
-    public BoardDetailResponse(Long id, String content, Long categoryId, LocalDateTime createdAt,String relativeCreatedAt, Long userId, String image, int view, Long newsId, Boolean isReported, int likeCount, int commentCount) {
+    public BoardDetailResponse(Long id, String content, Long categoryId, LocalDateTime createdAt,String relativeCreatedAt, Long userId, String image, int view, Long newsId, Boolean isReported, int likeCount, int commentCount,List<CommentResponse> comments) {
         this.id = id;
         this.content = content;
         this.categoryId = categoryId;
@@ -35,5 +37,6 @@ public class BoardDetailResponse {
         this.isReported = isReported;
         this.likeCount = likeCount;
         this.commentCount = commentCount;
+        this.comments = comments;
     }
 }
