@@ -25,7 +25,7 @@ public class PollController {
     ) {
         Long userId = userDetails.getId();
         PollResponse response = pollService.createPoll(request,userId);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @PostMapping("/{pollId}/vote")
