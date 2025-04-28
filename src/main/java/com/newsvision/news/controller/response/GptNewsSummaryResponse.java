@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GptNewsSummaryResponse {
+        private Long id;
         private String title;
         private String summary;
 }

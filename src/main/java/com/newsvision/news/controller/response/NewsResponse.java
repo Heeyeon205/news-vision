@@ -16,6 +16,8 @@ public class NewsResponse {
     private int likeCount;
     private int view;
     private String createdAt;
+    private Long userId;
+    private String profileImage;
     private String authorNickname;
     private String authorBadgeIcon;
     private String category;
@@ -31,6 +33,8 @@ public class NewsResponse {
                 .likeCount(likeCount)
                 .view(news.getView())
                 .createdAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
+                .userId(news.getUser().getId())
+                .profileImage(news.getUser().getImage())
                 .authorNickname(news.getUser().getNickname())
                 .authorBadgeIcon(news.getUser().getBadge() != null ? news.getUser().getBadge().getIcon() : null)
                 .category(news.getCategory().getName())

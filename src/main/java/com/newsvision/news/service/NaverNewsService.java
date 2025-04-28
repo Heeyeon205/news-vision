@@ -4,14 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.controller.request.NaverNewsSaveRequest;
-import com.newsvision.news.controller.request.NewsCreateRequest;
 import com.newsvision.news.dto.response.NaverNewsInfoResponse;
 import com.newsvision.news.dto.response.NaverNewsSearchResponse;
 import com.newsvision.news.entity.NaverNews;
-import com.newsvision.news.entity.News;
 import com.newsvision.news.repository.NaverNewsRepository;
-import com.newsvision.news.repository.NewsRepository;
-import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriUtils;
 
+import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -33,26 +30,24 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class NaverNewsService {
+public class  NaverNewsService {
     @Value("${naver.client-id}")
     private String clientId;
     @Value("${naver.client-secret}")
     private String clientSecret;
 
     private final NaverNewsRepository naverNewsRepository;
-    private final UserRepository userRepository;
-    private final NewsRepository newsRepository;
 
     // 스프링 기본 HTTP 클라이언트
-    private final RestTemplate restTemplate = new RestTemplate();
+    private RestTemplate restTemplate = new RestTemplate();
     // response.getBody()로 받은 JSON 문자열로 변환
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private ObjectMapper objectMapper = new ObjectMapper();
 
-    // 검색어, 개수로 뉴스를 받아온다.
     public List<NaverNewsInfoResponse> searchNews(String query, int display) {
+        display = 30;
         String encodedQuery = UriUtils.encode(query, StandardCharsets.UTF_8);
         String url = "https://openapi.naver.com/v1/search/news.json?query=" + encodedQuery
-                + "&display=" + display + "&start=1&sort=sim"; // sim(정확도), date(최신순)
+                + "&display=" + display + "&start=1&sort=date"; // sim(정확도), date(최신순)
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
@@ -64,14 +59,30 @@ public class NaverNewsService {
                     url, HttpMethod.GET, request, String.class
             );
             NaverNewsSearchResponse result = objectMapper.readValue(response.getBody(), NaverNewsSearchResponse.class);
-            return result.getItems();
+
+            return result.getItems().stream()
+                    .map(item -> NaverNewsInfoResponse.builder()
+                            .id(item.getId())
+                            .title(decodeDescription(item.getTitle()))
+                            .description(decodeDescription(item.getDescription()))
+                            .link(decodeDescription(item.getLink()))
+                            .originallink(decodeDescription(item.getOriginallink()))
+                            .pubDate(item.getPubDate())
+                            .build())
+                    .filter(news ->
+                            news.getTitle().toLowerCase().contains(query.toLowerCase()) ||
+                                    news.getDescription().toLowerCase().contains(query.toLowerCase())
+                    )
+                    .distinct()
+                    .toList();
+
         } catch (org.springframework.web.client.RestClientResponseException e) {
             log.error("HTTP 오류 - 상태 코드: {},", e.getRawStatusCode());
             log.error("HTTP 오류 - 바디: {}", e.getResponseBodyAsString());
-            throw new RuntimeException("네이버 뉴스 API 호출 실패", e);
+            throw new CustomException(ErrorCode.NOT_FOUND);
         } catch (Exception e) {
             log.error("JSON 파싱 실패", e);
-            throw new RuntimeException("네이버 뉴스 응답 파싱 실패", e);
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -83,10 +94,19 @@ public class NaverNewsService {
         LocalDateTime publishedAt = LocalDateTime.parse(request.getPubDate(), DateTimeFormatter.RFC_1123_DATE_TIME);
         NaverNews news = NaverNews.builder()
                 .title(request.getTitle())
-                .description(request.getDescription())
                 .link(request.getLink())
                 .publishedAt(publishedAt)
                 .build();
         return naverNewsRepository.save(news).getId();
+    }
+
+    private String decodeDescription(String text) {
+        try {
+            String decoded = URLDecoder.decode(text, StandardCharsets.UTF_8);
+            return decoded.replaceAll("<[^>]*>", "");
+        } catch (Exception e) {
+            log.error("디코딩 실패", e);
+            return text;
+        }
     }
 }

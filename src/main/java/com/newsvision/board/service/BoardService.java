@@ -1,15 +1,13 @@
 package com.newsvision.board.service;
 
-import com.newsvision.board.controller.request.BoardCreateRequest;
-import com.newsvision.board.controller.request.BoardUpdateRequest;
 import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.BoardLike;
 import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.BoardRepository;
-import com.newsvision.category.entity.Categories;
-import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.category.Categories;
+import com.newsvision.category.CategoryRepository;
 import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.aws.FileUploaderService;
@@ -51,7 +49,6 @@ public class BoardService {
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
     }
 
 

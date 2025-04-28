@@ -8,16 +8,21 @@ import org.springframework.http.HttpStatus;
 @RequiredArgsConstructor
 public enum ErrorCode {
     // 400
+    INVALID_LOGIN_INFO(400, "아이디 혹은 비밀번호를 확인해주세요."),
     INVALID_INPUT(400, "입력값이 올바르지 않습니다."),
     INVALID_VERIFICATION_CODE(400, "인증 코드가 일치하지 않습니다."),
     BADGE_REQUIRED(400, "뱃지가 필요합니다."),
     DUPLICATE_VOTE(400, "이미 투표에 참여했습니다."),
     // 401
     UNAUTHORIZED(401, "인증이 필요합니다."),
+    INVALID_TOKEN(401, "유효하지 않은 Token입니다."),
     INVALID_ACCESS_TOKEN(401, "유효하지 않은 Access Token입니다."),
     INVALID_REFRESH_TOKEN(401, "유효하지 않은 Refresh Token입니다."),
+    INVALID_TEMP_TOKEN(401, "유효하지 않은 Temp Token입니다."),
     NOT_EXISTS_REFRESH_TOKEN(401, "저장된 Refresh Token과 일치하지 않습니다."),
-    // 404,
+    // 403
+    FORBIDDEN(403, "사용자 정보가 일치하지 않습니다."),
+    // 404
     NOT_FOUND(404, "요청한 리소스를 찾을 수 없습니다."),
     USER_NOT_FOUND(404, "유저를 찾을 수 없습니다."),
     VERIFICATION_NOT_FOUND(404, "인증 코드가 존재하지 않습니다."),

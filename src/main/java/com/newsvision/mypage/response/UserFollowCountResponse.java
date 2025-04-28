@@ -1,4 +1,4 @@
-package com.newsvision.mypage.dto.response;
+package com.newsvision.mypage.response;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

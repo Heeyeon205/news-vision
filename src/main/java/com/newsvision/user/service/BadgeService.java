@@ -1,5 +1,7 @@
 package com.newsvision.user.service;
 
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.Badge;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.BadgeRepository;
@@ -18,5 +20,9 @@ public class BadgeService {
             case ROLE_CREATOR -> badgeRepository.findByRole(Badge.Role.ROLE_CREATOR);
             default -> null;
         };
+    }
+
+    public Badge findByBadgeId(Long id) {
+        return badgeRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 }

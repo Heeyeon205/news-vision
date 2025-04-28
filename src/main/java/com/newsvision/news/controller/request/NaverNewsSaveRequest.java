@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class NaverNewsSaveRequest {
     private String title;
-    private String description;
+//    private String description;
     private String link;
     private String pubDate;
 }

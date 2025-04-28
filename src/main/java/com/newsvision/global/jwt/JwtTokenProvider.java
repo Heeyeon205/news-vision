@@ -36,7 +36,6 @@ public class JwtTokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes); // HMAC-SHA256 키 생성
     }
 
-    // access token 생성
     public String createToken(Long userId, String username, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + ACCESS_TOKEN_VALIDITY);
@@ -52,7 +51,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // refresh token 생성
     public String createRefreshToken(String username) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + REFRESH_TOKEN_VALIDITY);
@@ -66,52 +64,6 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    // 토큰 유효성 검사
-    public boolean validateToken(String token) {
-        // 서명 키 + 파싱 후 검증 프로세스
-        try {
-            Jwts.parser()
-                    .setSigningKey(key)
-                    .build()
-                    .parseClaimsJws(token);
-            return true;
-        } catch (JwtException | IllegalArgumentException e) {
-            log.warn("JWT: {}", e.getMessage());
-            return false;
-        }
-    }
-
-    // 모든 token 에서 유저 id  조회
-    public Long getUserId(String token) {
-        return parseClaims(token).get("userId", Long.class);
-    }
-
-    // 모든 token 에서 유저 username  조회
-    public String getUsername(String token) {
-        return parseClaims(token).getSubject();
-    }
-
-    // access token 에서 유저 role 조회
-    public String getUserRole(String token) {
-        return parseClaims(token).get("role", String.class);
-    }
-
-    // 모든 token 에서 payload 파싱
-    private Claims parseClaims(String token) {
-        // subject, role, expiration 등 클레임에 접근
-        return Jwts.parser()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-    }
-
-    // 모든 token 만료 반환
-    public long getExpiration(String token) {
-        return parseClaims(token).getExpiration().getTime() - System.currentTimeMillis();
-    }
-
-    // 임시 토큰 생성
     public String createTempToken(Long userId, String username, String role) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + TEMP_TOKEN_VALIDITY);
@@ -125,5 +77,41 @@ public class JwtTokenProvider {
                 .claim("role", role)
                 .signWith(key)
                 .compact();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("JWT: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public Long getUserId(String token) {
+        return parseClaims(token).get("userId", Long.class);
+    }
+    public String getUsername(String token) {
+        return parseClaims(token).getSubject();
+    }
+    public String getUserRole(String token) {
+        return parseClaims(token).get("role", String.class);
+    }
+
+    // 토큰에서 payload 파싱
+    private Claims parseClaims(String token) {
+        return Jwts.parser()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public long getExpiration(String token) {
+        return parseClaims(token).getExpiration().getTime() - System.currentTimeMillis();
     }
 }

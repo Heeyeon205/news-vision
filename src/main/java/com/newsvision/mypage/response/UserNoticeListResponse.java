@@ -1,4 +1,4 @@
-package com.newsvision.mypage.dto.response;
+package com.newsvision.mypage.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.notice.Notice;

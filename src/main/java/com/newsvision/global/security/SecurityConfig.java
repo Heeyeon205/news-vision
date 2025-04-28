@@ -43,7 +43,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:3000"));
+        config.setAllowedOrigins(List.of("http://localhost:5173"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -65,14 +65,16 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(
-                        // 기본
+                        // basic
                         "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**", "/api/auth/**",
-                        // 일단 개발용 풀 개방
+                        // dev
                         "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**", "/payment/payments","/api/v1/payment/validation/**",
                         // auth
                         "/api/auth/login", "/api/user/join",
-                        // 정적 파일
-                        "/css/**", "/js/**", "/images/**", "/static/**", "/oauth2/**"
+                        // static
+                        "/css/**", "/js/**", "/images/**", "/static/**", "/oauth2/**",
+                        // Swagger
+                        "/swagger-ui/**","/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**"
                 ).permitAll()
                 .requestMatchers("???").hasAnyRole("ADMIN", "CREATOR", "USER")
                 .requestMatchers("/admin/**").hasRole("ADMIN")

@@ -1,22 +1,10 @@
 package com.newsvision.user.service;
 
-import com.newsvision.admin.service.CategoriesService;
-import com.newsvision.board.entity.Board;
-import com.newsvision.board.repository.BoardLikeRepository;
-import com.newsvision.board.repository.CommentRepository;
-import com.newsvision.board.service.BoardService;
-import com.newsvision.board.service.CommentService;
-import com.newsvision.category.repository.CategoryRepository;
+import com.newsvision.global.auth.AuthService;
 import com.newsvision.global.aws.FileUploaderService;
-import com.newsvision.global.aws.S3Uploader;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.mypage.dto.response.MypageInfoResponse;
-import com.newsvision.news.entity.News;
-import com.newsvision.news.entity.Scrap;
-import com.newsvision.news.repository.NewsLikeRepository;
-import com.newsvision.news.service.NewsService;
-import com.newsvision.notice.Notice;
+import com.newsvision.global.jwt.JwtTokenProvider;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
@@ -34,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.UUID;
 
 @Slf4j
@@ -47,6 +34,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final FileUploaderService fileUploaderService;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthService authService;
 
     public User findByUserId(Long userId) {
         return userRepository.findById(userId)
@@ -89,18 +78,20 @@ public class UserService {
     public void save(JoinUserRequest request) {
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         String nickname = "Newsion_User_" + UUID.randomUUID().toString().substring(0, 6);
-        User user = User.builder()
-                .username(request.getUsername())
-                .password(encodedPassword)
-                .email(request.getEmail())
-                .image(defaultProfileImage)
-                .nickname(nickname)
-                .build();
-        userRepository.save(user);
+            User user = User.builder()
+                    .username(request.getUsername())
+                    .password(encodedPassword)
+                    .email(request.getEmail())
+                    .image(defaultProfileImage)
+                    .nickname(nickname)
+                    .build();
+            userRepository.save(user);
+
     }
 
     @Transactional
     public void delete(Long userId) {
+        deleteProfileImage(userId, findByUserId(userId).getImage());
         userRepository.deleteById(userId);
     }
 
@@ -125,7 +116,7 @@ public class UserService {
                 }
             } catch (IOException e) {
                 log.error("이미지 처리 실패: {}", e.getMessage());
-                throw new RuntimeException("이미지 처리 실패", e);
+                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
         }
 
@@ -157,8 +148,23 @@ public class UserService {
     }
 
     @Transactional
-    public void updatePassword(User user, UpdatePasswordRequest request) {
+    public void updatePassword(String tempToken, UpdatePasswordRequest request) {
+        String username = jwtTokenProvider.getUsername(tempToken);
+        User user = findByUsername(username);
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         user.updatePassword(encodedPassword);
+        authService.deleteTempToken(tempToken);
+    }
+
+    @Transactional
+    public void deleteProfileImage(Long id, String imageUrl) {
+        User user = findByUserId(id);
+        if (!user.getImage().equals("default-profile.png")) {
+            fileUploaderService.deleteFile(user.getImage());
+        }
+    }
+
+    public Boolean matchUserId(Long userId, Long id) {
+        return userId.equals(id);
     }
 }

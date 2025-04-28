@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.entity.GptNews;
 import com.newsvision.news.repository.GptNewsRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +42,7 @@ public class GptSummaryService {
                         return summary;
                     } catch (Exception e) {
                         log.error("요약 실패", e);
-                        return "요약 실패";
+                        throw new CustomException(ErrorCode.NOT_FOUND);
                     }
                 });
     }
@@ -82,6 +84,9 @@ public class GptSummaryService {
             String responseBody = response.body().string();
             JsonNode root = objectMapper.readTree(responseBody);
             return root.get("choices").get(0).get("message").get("content").asText().trim();
+        } catch (Exception e) {
+            log.error("error {}", e.getMessage());
+            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
 }
