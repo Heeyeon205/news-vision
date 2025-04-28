@@ -20,8 +20,8 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(401, "유효하지 않은 Refresh Token입니다."),
     INVALID_TEMP_TOKEN(401, "유효하지 않은 Temp Token입니다."),
     NOT_EXISTS_REFRESH_TOKEN(401, "저장된 Refresh Token과 일치하지 않습니다."),
-    // 403
-    FORBIDDEN(403, "사용자 정보가 일치하지 않습니다."),
+    //403
+    FORBIDDEN_USER(403, "사용자 정보가 일치하지 않습니다."),
     FORBIDDEN(403,"관리자 권한이 필요합니다."),
     // 404,
     NOT_FOUND(404, "요청한 리소스를 찾을 수 없습니다."),
