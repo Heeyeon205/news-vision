@@ -2,6 +2,7 @@ package com.newsvision.news.service;
 
 import com.newsvision.category.Categories;
 import com.newsvision.category.CategoryRepository;
+import com.newsvision.category.CategoryResponse;
 import com.newsvision.category.CategoryService;
 import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.aws.FileUploaderService;
@@ -315,7 +316,7 @@ public class NewsService {
 
     public NewsDetailInfoResponse newsInfo(Long newsId) {
         News news = findByNewsId(newsId);
-        List<Categories> categories = categoryService.findAllList();
+        List<CategoryResponse> categories = categoryService.findAll();
         return NewsDetailInfoResponse.from(news, categories);
     }
 }

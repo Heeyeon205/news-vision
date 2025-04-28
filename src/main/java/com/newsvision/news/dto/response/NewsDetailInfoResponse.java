@@ -1,6 +1,7 @@
 package com.newsvision.news.dto.response;
 
 import com.newsvision.category.Categories;
+import com.newsvision.category.CategoryResponse;
 import com.newsvision.category.CategoryService;
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;
@@ -17,6 +18,7 @@ import java.util.List;
 @Builder
 public class NewsDetailInfoResponse {
     private Long refId;
+    private String refTitle;
     private String refPubdate;
     private String refLink;
 
@@ -26,11 +28,12 @@ public class NewsDetailInfoResponse {
     private String content;
     private Long categoryId;
 
-    private List<Categories> list;
+    private List<CategoryResponse> list;
 
-    public static NewsDetailInfoResponse from(News news, List<Categories> categories) {
+    public static NewsDetailInfoResponse from(News news, List<CategoryResponse> categories) {
         return new NewsDetailInfoResponse(
                 news.getNaverNews().getId(),
+                news.getNaverNews().getTitle(),
                 TimeUtil.formatRelativeTime(news.getNaverNews().getPublishedAt()),
                 news.getNaverNews().getLink(),
                 news.getId(),

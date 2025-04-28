@@ -141,7 +141,7 @@ public class NewsController {
     }
 
     @GetMapping(value = "/update/{newsId}")
-    public ResponseEntity<ApiResponse<NewsDetailInfoResponse>> updateNews(
+    public ResponseEntity<ApiResponse<NewsDetailInfoResponse>> updateForm(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long newsId
     ) {
@@ -159,15 +159,15 @@ public class NewsController {
             @PathVariable Long newsId,
             @RequestPart("title") String title,
             @RequestPart("content") String content,
-            @RequestPart("categoryId") String categoryIdStr,
+            @RequestPart("categoryId") String categoryId,
             @RequestPart(value = "image", required = false) MultipartFile image
     ) {
         Long userId = userDetails.getId();
         String role = userDetails.getRole();
         userService.validateRole(role);
-        Long categoryId = Long.parseLong(categoryIdStr);
+        Long categoriesId = Long.parseLong(categoryId);
 
-        newsService.updateNews(newsId, userId, title, content, categoryId, image);
+        newsService.updateNews(newsId, userId, title, content, categoriesId, image);
         return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 수정되었습니다."));
     }
 

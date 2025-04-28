@@ -11,6 +11,7 @@ import com.newsvision.user.dto.request.LoginUserRequest;
 import com.newsvision.user.dto.request.VerifyEmailRequest;
 import com.newsvision.user.dto.response.LoginTokenUserResponse;
 import com.newsvision.user.dto.response.TempTokenResponse;
+import com.newsvision.user.entity.Badge;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.service.EmailService;
 import com.newsvision.global.redis.TokenBlacklistService;
@@ -43,14 +44,14 @@ public class AuthController {
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("ID or PW 불일치: {}", request.getPassword());
-            throw new CustomException(ErrorCode.INVALID_INPUT);
+            throw new CustomException(ErrorCode.INVALID_LOGIN_INFO);
         }
 
         String accessToken = jwtTokenProvider.createToken(user.getId(), user.getUsername(), user.getRole().name());
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
         refreshTokenRepository.save(user.getUsername(), refreshToken);
 
-        LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken, user.getUsername());
+        LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken, user.getId(), user.getNickname());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

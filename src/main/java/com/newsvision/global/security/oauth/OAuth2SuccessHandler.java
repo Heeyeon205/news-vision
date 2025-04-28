@@ -30,19 +30,14 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         Long userId = user.getId();
         String username = user.getUsername();
 
-        // token 생성
         String accessToken = jwtTokenProvider.createToken(userId, username, user.getRole().name());
         String refreshToken = jwtTokenProvider.createRefreshToken(username);
-
-        // redis 에 refresh token 저장
         refreshTokenRepository.save(username, refreshToken);
 
-        // 토큰 저장하는 url 로 redirect
-//        String redirectUrl = "http://localhost:3000/oauth2/redirect"
         String redirectUrl = "http://localhost:5173/oauth2/redirect"
                 + "?accessToken=" + accessToken
                 + "&refreshToken=" + refreshToken
-                + "&nickname=" + user.getNickname();
+                + "&user=" + user;
         log.warn("access token: {}", accessToken);
         log.warn("refresh token: {}", refreshToken);
         response.sendRedirect(redirectUrl);

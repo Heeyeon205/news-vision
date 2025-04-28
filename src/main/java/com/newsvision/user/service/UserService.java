@@ -163,4 +163,8 @@ public class UserService {
             fileUploaderService.deleteFile(user.getImage());
         }
     }
+
+    public Boolean matchUserId(Long userId, Long id) {
+        return userId.equals(id);
+    }
 }

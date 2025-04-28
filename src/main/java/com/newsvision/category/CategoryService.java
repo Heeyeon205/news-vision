@@ -15,8 +15,4 @@ public class CategoryService {
                 .map(categories -> new CategoryResponse(categories.getId(), categories.getName()))
                 .toList();
     }
-
-    public List<Categories> findAllList() {
-        return categoryRepository.findAll();
-    }
 }
