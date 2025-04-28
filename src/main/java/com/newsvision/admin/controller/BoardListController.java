@@ -8,8 +8,11 @@ package com.newsvision.admin.controller;
 import com.newsvision.admin.service.BoardListService;
 import com.newsvision.board.controller.response.BoardResponse;
 import com.newsvision.board.service.BoardService;
+import com.newsvision.global.exception.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,45 +24,50 @@ import java.util.List;
 public class BoardListController {
     private final BoardService boardService;
     private final BoardListService boardListService;
-
     @GetMapping
-   public ResponseEntity<List<BoardResponse>> getBoardList(
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoardList(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "10") int size,
-            @RequestParam(required = false) Long categoryId
-            ){
+            @RequestParam(required = false) Long categoryId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
 
         List<BoardResponse> boardList = boardService.getBoardsList(page, size, categoryId);
-        return ResponseEntity.ok(boardList);
+        return ResponseEntity.ok(ApiResponse.success(boardList));
     }
 
 
+    @GetMapping("/min")
+    public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoards(
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-    @GetMapping("/max")
-    public ResponseEntity<List<BoardResponse>> getBoards() {
-        List<BoardResponse> boards = boardListService.getMaxBoardsList(); // 파라미터 없이 호출
-        return ResponseEntity.ok(boards);
+       if (userDetails == null || !userDetails.getAuthorities().stream()
+               .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+          return ResponseEntity.status(403).body(null);
+       }
+
+        List<BoardResponse> boards = boardListService.getMaxBoardsList();
+        return ResponseEntity.ok(ApiResponse.success(boards));
     }
 
-
-
-//    @GetMapping("/max")
-//    public ResponseEntity<Page<BoardResponse>> getBoardList(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        PageRequest pageRequest = PageRequest.of(page, size, Sort.by("createAt").ascending());
-//        Page<BoardResponse> boardList = boardListService.getBoardList(pageRequest);
-//        return ResponseEntity.ok(boardList);
-//    }
 
 
     @DeleteMapping("/delete/{boardId}")
-    public ResponseEntity<Void> deleteBoard(
+    public ResponseEntity<ApiResponse<String>> deleteBoard(
             @PathVariable Long boardId,
-            @RequestParam Long userId) {
+            @RequestParam Long userId,
+           @AuthenticationPrincipal UserDetails userDetails){
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+              .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+         return ResponseEntity.status(403).body(null);}
+
 
         boardService.deleteBoard(boardId, userId);
-        return ResponseEntity.noContent().build(); // 204 No Content 반환
+        return ResponseEntity.ok(ApiResponse.success("게시글(ID: " + boardId + ") 삭제 완료"));
     }
 }
 

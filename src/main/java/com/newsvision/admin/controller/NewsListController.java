@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,41 +24,47 @@ public class NewsListController {
 
     private final NewsListService newsListService; // 목록 조회용 서비스
     private final NewsService newsService;       // 개별 뉴스 처리용 서비스
-    private static final Logger log = LoggerFactory.getLogger(NewsListController.class); // 클래스 이름 일치
 
-    /**
-     * 관리자용 뉴스 목록 조회
-     */
+
     @GetMapping
-    public ResponseEntity<ApiResponse<List<NewsResponse>>> getNewsList() {
-        log.info("[GET /admin/news] Fetching all news for admin.");
-        try {
-            List<NewsResponse> newsList = newsListService.getAllNews();
-            return ResponseEntity.ok(ApiResponse.success(newsList));
-        } catch (Exception e) {
-            log.error("[GET /admin/news] Error fetching news list.", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body((ApiResponse<List<NewsResponse>>) List.of()); // 오류 시 빈 리스트 또는 에러 객체 반환 고려
+    public ResponseEntity<ApiResponse<List<NewsResponse>>> getNewsList(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
         }
 
-
-
+        List<NewsResponse> newsList = newsListService.getAllNews();
+        return ResponseEntity.ok(ApiResponse.success(newsList));
     }
+
     @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<NewsResponse>>> getAllNews() {
+    public ResponseEntity<ApiResponse<List<NewsResponse>>> getAllNews(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         List<NewsResponse> newsList = newsListService.getMaxAllNews();
-        return ResponseEntity.ok(ApiResponse.success((newsList)));
+        return ResponseEntity.ok(ApiResponse.success(newsList));
     }
 
     @DeleteMapping("/delete/{newsId}")
-    public ResponseEntity<ApiResponse<Void>> deleteNews(@PathVariable Long newsId,
-                                                        @RequestParam Long userId) {
-        log.info("삭제 요청 - userId: {}, newsId: {}", userId, newsId);
+    public ResponseEntity<ApiResponse<String>> deleteNews(
+            @PathVariable Long newsId,
+            @RequestParam Long userId,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
 
         newsService.deleteNews(userId, newsId);
-        return ResponseEntity.ok(ApiResponse.success(null));
-
+        return ResponseEntity.ok(ApiResponse.success("뉴스(ID: " + newsId + ") 삭제 완료"));
     }
 
 

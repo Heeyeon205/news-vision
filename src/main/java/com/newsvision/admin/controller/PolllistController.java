@@ -5,6 +5,8 @@ import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.poll.controller.response.PollResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,20 +19,35 @@ public class PolllistController {
     private final PollListServicer pollService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<PollResponse>>> getPollList() {
+    public ResponseEntity<ApiResponse<List<PollResponse>>> getPollList(   @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
         return ResponseEntity.ok(ApiResponse.success(pollService.getAllPolls()));
     }
 
     @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<PollResponse>>> getMaxPollList() {
+    public ResponseEntity<ApiResponse<List<PollResponse>>> getMaxPollList(   @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
         return ResponseEntity.ok(ApiResponse.success(pollService.getMaxAllPolls()));
     }
 
 
-    // 카테고리 삭제
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<Void>> deletePoll(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deletePoll(@PathVariable Long id  ,
+                                                          @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
         pollService.deletePoll(id);
-        return ResponseEntity.ok(ApiResponse.success());
+        return ResponseEntity.ok(ApiResponse.success("투표(ID: " + id + ") 삭제 완료"));
     }
 }

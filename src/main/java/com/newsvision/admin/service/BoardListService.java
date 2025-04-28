@@ -29,7 +29,8 @@ public class BoardListService {
         int page = 0;
         int size = 10;
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        //Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")); 최대
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id")); //최저
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
         return boardPage.getContent().stream().map(board -> {

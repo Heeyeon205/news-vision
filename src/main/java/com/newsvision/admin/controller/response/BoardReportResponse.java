@@ -1,16 +1,17 @@
 package com.newsvision.admin.controller.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Getter
-@Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class BoardReportResponse {
-    private Long id;
-    private String user;
-    private String board;
+
+    private Long id;              // 신고 ID
+    private String boardId;        // 신고당한 게시글 ID
+    private String boardContent;   // 신고당한 게시글 내용
+    private String userId;         // 신고한 사용자 ID
+    private String userNickname;   // 신고한 사용자 닉네임
 }
