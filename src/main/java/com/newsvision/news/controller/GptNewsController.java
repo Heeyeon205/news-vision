@@ -24,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/gpt-news")
 public class GptNewsController {
-    private final GptSummaryService gptSummaryService;
     private final NewsRepository newsRepository;
     private final GptNewsRepository gptNewsRepository;
 
@@ -32,12 +31,12 @@ public class GptNewsController {
     public ResponseEntity<ApiResponse<List<GptNewsSummaryResponse>>> getMainNewsSummaries() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<News> newsList = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
+
         List<GptNewsSummaryResponse> response = newsList.stream()
                 .map(news -> gptNewsRepository.findByNewsId(news.getId())
-                        .map(gptNews -> new GptNewsSummaryResponse(news.getId() ,gptNews.getTitle(), gptNews.getSummary()))
-                        .orElse(new GptNewsSummaryResponse(news.getId(), news.getTitle(), "요약이 존재하지 않습니다."))
-                )
-                .toList();
+                .map(gptNews -> new GptNewsSummaryResponse(news.getId(), gptNews.getImage(), gptNews.getTitle(), gptNews.getSummary()))
+                .orElse(new GptNewsSummaryResponse(news.getId(), news.getImage(), news.getTitle(), "요약이 존재하지 않습니다."))
+            ) .toList();
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

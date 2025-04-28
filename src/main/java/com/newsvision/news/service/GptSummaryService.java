@@ -27,7 +27,7 @@ public class GptSummaryService {
     private static final String API_URL = "https://api.openai.com/v1/chat/completions";
     private final GptNewsRepository gptNewsRepository;
 
-    public String createSummary(Long newsId, String title, String content) {
+    public String createSummary(Long newsId, String image, String title, String content) {
         return gptNewsRepository.findByNewsId(newsId)
                 .map(GptNews::getSummary)
                 .orElseGet(() -> {
@@ -35,6 +35,7 @@ public class GptSummaryService {
                         String summary = useChatGptSummary(content);
                         GptNews gptNews = GptNews.builder()
                                 .newsId(newsId)
+                                .image(image)
                                 .title(title)
                                 .summary(summary)
                                 .build();
@@ -79,7 +80,7 @@ public class GptSummaryService {
 
         try (Response response = client.newCall(request).execute()) {
             if (!response.isSuccessful()) {
-                throw new IOException("API 호출 실패: " + response.code());
+                throw new CustomException(ErrorCode.NOT_FOUND);
             }
             String responseBody = response.body().string();
             JsonNode root = objectMapper.readTree(responseBody);

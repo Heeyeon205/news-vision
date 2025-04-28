@@ -43,19 +43,19 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @GetMapping("/board-list")
-    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long id = customUserDetails.getId();
-        List<UserBoardListResponse> response = mypageService.getMypageBoardList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
-    }
-
     @GetMapping("/news-list")
     public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getMypageNewsList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long id = customUserDetails.getId();
         List<UserNewsListResponse> response = mypageService.getMypageNewsList(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/board-list")
+    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+        Long id = customUserDetails.getId();
+        List<UserBoardListResponse> response = mypageService.getMypageBoardList(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

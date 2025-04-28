@@ -16,7 +16,6 @@ public class RefreshTokenRepository {
         long expireTime = 60 * 60 * 24 * 7; // refresh token = 7일
         redisTemplate.opsForValue().set(username, refreshToken, Duration.ofSeconds(expireTime));
     }
-
     // 토큰 조회
     public String get(String username) {
         return redisTemplate.opsForValue().get(username);

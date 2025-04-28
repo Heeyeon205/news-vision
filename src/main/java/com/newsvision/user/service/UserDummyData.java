@@ -21,6 +21,7 @@ public class UserDummyData {
 
     @Bean
     CommandLineRunner initUsers() {
+        String defaultProfile = "https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png";
         return args -> {
             if (!userRepository.existsByUsername("admin")) {
                 Badge adminBadge = badgeService.findByBadgeId(1L);
@@ -28,7 +29,7 @@ public class UserDummyData {
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
                         .nickname("뉴션")
-                        .image("https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png")
+                        .image(defaultProfile)
                         .email("admin@admin.com")
                         .role(User.Role.ROLE_ADMIN)
                         .badge(adminBadge)
@@ -42,7 +43,7 @@ public class UserDummyData {
                         .username("creator")
                         .password(passwordEncoder.encode("creator"))
                         .nickname("크리에이터")
-                        .image("https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png")
+                        .image(defaultProfile)
                         .email("creator@creator.com")
                         .role(User.Role.ROLE_CREATOR)
                         .badge(creatorBadge)
@@ -55,7 +56,7 @@ public class UserDummyData {
                         .username("qwer")
                         .password(passwordEncoder.encode("1234"))
                         .nickname("홍길동")
-                        .image("https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/default-profile.png")
+                        .image(defaultProfile)
                         .email("qwe@qwer.com")
                         .role(User.Role.ROLE_USER)
                         .build();

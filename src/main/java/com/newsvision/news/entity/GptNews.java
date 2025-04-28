@@ -21,6 +21,9 @@ public class GptNews {
     private Long newsId;
 
     @Column(nullable = false)
+    private String image;
+
+    @Column(nullable = false)
     private String title;
 
     @Column(columnDefinition = "TEXT", nullable = false)

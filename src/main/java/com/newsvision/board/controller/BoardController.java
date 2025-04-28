@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/boards")
+@RequestMapping("/api/board")
 @RequiredArgsConstructor
 @Slf4j
 public class BoardController {
@@ -68,7 +68,7 @@ public class BoardController {
             @PathVariable Long boardId
     ){
         Board board = boardService.findById(boardId);
-        userService.matchUserId(userDetails.getId(),boardId);
+        userService.matchUserId(userDetails.getId(),board.getUser().getId());
         BoardUpdateResponse response = boardService.getBoardUpdate(board);
         return ResponseEntity.ok(ApiResponse.success(response));
 
