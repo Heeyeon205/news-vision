@@ -26,19 +26,22 @@ public class CommentReportService {
         return commentReportRepository.findAll().stream()
                 .map(report -> CommentReportResponse.builder()
                         .id(report.getId())
-                        .comment(String.valueOf(report.getComment().getId()))
-                        .user(String.valueOf(report.getUser().getId()))
+                        .commentId(String.valueOf(report.getComment().getId()))
+                        .commentContent(report.getComment().getContent())  // 댓글 내용 가져오기
+                        .userId(String.valueOf(report.getUser().getId()))
+                        .userNickname(report.getUser().getNickname())      // 신고자 닉네임 가져오기
                         .build())
                 .collect(Collectors.toList());
     }
-
 
     public List<CommentReportResponse> getMaxAllCommentReports() {
         return commentReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
                 .map(report -> CommentReportResponse.builder()
                         .id(report.getId())
-                        .comment(String.valueOf(report.getComment().getId()))
-                        .user(String.valueOf(report.getUser().getId()))
+                        .commentId(String.valueOf(report.getComment().getId()))
+                        .commentContent(report.getComment().getContent())  // 댓글 내용 가져오기
+                        .userId(String.valueOf(report.getUser().getId()))
+                        .userNickname(report.getUser().getNickname())      // 신고자 닉네임 가져오기
                         .build())
                 .collect(Collectors.toList());
     }
@@ -56,12 +59,9 @@ public class CommentReportService {
                 .orElseThrow(() -> new IllegalArgumentException("신고 ID가 존재하지 않습니다: " + reportId));
 
         Comment comment = report.getComment();
-        comment.setIsReported(true); // isReported = true 설정
+        comment.setIsReported(true);
         comment.setContent("관리자로 인해 삭제된 게시글 입니다.");
         commentRepository.save(comment);
     }
-
-
-
 
 }

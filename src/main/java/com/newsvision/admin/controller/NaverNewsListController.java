@@ -4,6 +4,8 @@ import com.newsvision.admin.controller.response.NaverNewsResponse;
 import com.newsvision.admin.service.NaverNewsListService;
 import com.newsvision.global.exception.ApiResponse;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,20 +23,42 @@ public class NaverNewsListController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<NaverNewsResponse>>> getAllNaverNews() {
+    public ResponseEntity<ApiResponse<List<NaverNewsResponse>>> getAllNaverNews(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         List<NaverNewsResponse> naverNewsResponses = naverNewsService.getAllNaverNews();
         return ResponseEntity.ok(ApiResponse.success(naverNewsResponses));
-
     }
 
     @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<NaverNewsResponse>>> getMaxAllNaverNews() {
+    public ResponseEntity<ApiResponse<List<NaverNewsResponse>>> getMaxAllNaverNews(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         List<NaverNewsResponse> naverNewsResponses = naverNewsService.getMaxAllNaverNews();
         return ResponseEntity.ok(ApiResponse.success(naverNewsResponses));
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteNaverNews(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteNaverNews(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         naverNewsService.deleteNaverNews(id);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.ok(ApiResponse.success("네이버 뉴스(ID: " + id + ") 삭제 완료"));
     }
 }

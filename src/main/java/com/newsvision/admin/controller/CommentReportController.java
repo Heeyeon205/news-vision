@@ -5,6 +5,8 @@ import com.newsvision.admin.service.CommentReportService;
 import com.newsvision.global.exception.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,24 +20,53 @@ public class CommentReportController {
     private final CommentReportService commentReportService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getCommentReports() {
+    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getCommentReports(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         return ResponseEntity.ok(ApiResponse.success(commentReportService.getAllCommentReports()));
     }
 
     @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getMaxCommentReports() {
+    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getMaxCommentReports(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         return ResponseEntity.ok(ApiResponse.success(commentReportService.getMaxAllCommentReports()));
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteCategory(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteCategory(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         commentReportService.deleteCategory(id);
-        return ResponseEntity.ok(ApiResponse.success(null));
+        return ResponseEntity.ok(ApiResponse.success("댓글 신고 카테고리(ID: " + id + ") 삭제 완료"));
     }
 
     @PutMapping("/{reportId}/mark")
-    public ResponseEntity<ApiResponse<String>> markCommentAsReported(@PathVariable Long reportId) {
+    public ResponseEntity<ApiResponse<String>> markCommentAsReported(
+            @PathVariable Long reportId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
+
         commentReportService.markCommentAsReported(reportId);
-        return ResponseEntity.ok(ApiResponse.success(null));
-    }
-}
+        return ResponseEntity.ok(ApiResponse.success("댓글 신고(ID: " + reportId + ")가 true로 설정되었습니다."));
+    }}

@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,28 +29,38 @@ public class UserListController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserListResponse>>> getUserList() {
+    public ResponseEntity<ApiResponse<List<UserListResponse>>> getUserList(   @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
         List<UserListResponse> users = userListService.getAllUsers();
         return ResponseEntity.ok(ApiResponse.success(users));
     }
 
     @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<UserListResponse>>> getMaxAllUsers() {
+    public ResponseEntity<ApiResponse<List<UserListResponse>>> getMaxAllUsers(   @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
         List<UserListResponse> users = userListService.getMaxAllUsers();
         return ResponseEntity.ok(ApiResponse.success(users));
     }
 
 
-    @PostMapping
-    public UserListResponse createUser(@RequestBody UserListResponse userListResponse) {
-        return userListService.saveUser(userListResponse);
-    }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
-            userService.delete(id);
-           return ResponseEntity.ok(ApiResponse.success());
+        if (userDetails == null || !userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+            return ResponseEntity.status(403).body(null);
+        }
 
+        userService.delete(id);
+        return ResponseEntity.ok(ApiResponse.success("회원(ID: " + id + ") 삭제 완료"));
     }
 }

@@ -26,17 +26,22 @@ public class BoardReportService {
         return boardReportRepository.findAll().stream()
                 .map(report -> BoardReportResponse.builder()
                         .id(report.getId())
-                        .board(String.valueOf(report.getBoard().getId()))
-                        .user(String.valueOf(report.getUser().getId()))
+                        .boardId(String.valueOf(report.getBoard().getId())) // 게시글 ID
+                        .boardContent(report.getBoard().getContent())       // 게시글 내용
+                        .userId(String.valueOf(report.getUser().getId()))   // 신고자 ID
+                        .userNickname(report.getUser().getNickname())       // 신고자 닉네임
                         .build())
                 .collect(Collectors.toList());
     }
+
     public List<BoardReportResponse> getMaxAllReports() {
         return boardReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
                 .map(report -> BoardReportResponse.builder()
                         .id(report.getId())
-                        .board(String.valueOf(report.getBoard().getId()))
-                        .user(String.valueOf(report.getUser().getId()))
+                        .boardId(String.valueOf(report.getBoard().getId())) // 게시글 ID
+                        .boardContent(report.getBoard().getContent())       // 게시글 내용
+                        .userId(String.valueOf(report.getUser().getId()))   // 신고자 ID
+                        .userNickname(report.getUser().getNickname())       // 신고자 닉네임
                         .build())
                 .collect(Collectors.toList());
     }
