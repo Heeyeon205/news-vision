@@ -1,7 +1,7 @@
 package com.newsvision.board.service;
 
-import com.newsvision.board.controller.response.BoardDetailResponse;
-import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.controller.request.BoardCreateRequest;
+import com.newsvision.board.controller.response.*;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.BoardLike;
 import com.newsvision.board.repository.BoardLikeRepository;
@@ -45,6 +45,7 @@ public class BoardService {
     private final BoardSearchService boardSearchService;
     private final UserService userService;
     private final FileUploaderService fileUploaderService;
+    private final CommentService commentService;
 
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId)
@@ -81,24 +82,25 @@ public class BoardService {
         int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
         // 댓글 수 계산 - null 체크 추가
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
-        return new BoardDetailResponse(
-                board.getId(),
-                board.getContent(),
-                board.getCategory().getId(),
-                board.getCreateAt(),
-                TimeUtil.formatRelativeTime(board.getCreateAt()),
-                board.getUser().getId(),
-                board.getImage(),
-                board.getView(),
-                board.getNewsId(),
-                board.getIsReported(),
-                likeCount,
-                commentCount
-        );
+
+        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
+        return new BoardDetailResponse(board, likeCount, commentCount, comments);
+
+    }
+
+    @Transactional(readOnly = true)
+    public BoardCreateResponse getBoardCreate(Board board) {
+        int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
+        // 댓글 수 계산 - null 체크 추가
+        int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+
+        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
+        return new BoardCreateResponse(board, likeCount, commentCount, comments);
+
     }
 
     @Transactional
-    public BoardDetailResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 작성
+    public BoardCreateResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 작성
         try {
         log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
         User user = userService.findByUserId(userId);
@@ -126,7 +128,7 @@ public class BoardService {
             Board savedBoard = boardRepository.save(board);
             boardSearchService.saveBoard(board, 0, 0);
         log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
-            return getBoardDetail(savedBoard);
+            return getBoardCreate(savedBoard);
         }catch (Exception e) {
             System.out.println("ERROR 발생!!!: " + e.getMessage());  // System.out.println 추가
             e.printStackTrace();
@@ -135,8 +137,20 @@ public class BoardService {
         }
 
     }
+    @Transactional(readOnly = true)
+    public BoardUpdateResponse getBoardUpdate(Board board) { // 게시글 상세 조회
+        // 좋아요 수 계산 - null 체크 추가
+        int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
+        // 댓글 수 계산 - null 체크 추가
+        int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+
+        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
+        return new BoardUpdateResponse(board, likeCount, commentCount, comments);
+
+    }
+
     @Transactional
-    public BoardDetailResponse updateBoard(Board board, Long userId,MultipartFile image,String content,Long categoryId) { // 게시글 수정
+    public BoardUpdateResponse updateBoard(Board board, Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 수정
         User user = userService.findByUserId(userId);
 
         String imageUrl = null;
@@ -173,7 +187,7 @@ public class BoardService {
 
         Board updatedBoard = boardRepository.save(board);
         boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
-        return getBoardDetail(updatedBoard);
+        return getBoardUpdate(updatedBoard);
     }
     @Transactional
     public void deleteBoard(Long boardId, Long userId) { // 게시글 삭제

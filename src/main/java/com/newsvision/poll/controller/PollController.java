@@ -3,6 +3,7 @@ package com.newsvision.poll.controller;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.poll.controller.request.CreatePollRequest;
+import com.newsvision.poll.controller.request.UpdatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;
 import com.newsvision.poll.controller.response.PollResponse;
 import com.newsvision.poll.service.PollService;
@@ -28,6 +29,17 @@ public class PollController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @PutMapping("/{pollId}")
+    public ResponseEntity<ApiResponse<PollResponse>> updatePoll(
+            @PathVariable Long pollId,
+            @RequestBody UpdatePollRequest request,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ){
+        Long userId = userDetails.getId();
+        PollResponse response = pollService.updatePoll(pollId,request,userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @PostMapping("/{pollId}/vote")
     public ResponseEntity<ApiResponse<Void>> vote(
             @PathVariable Long pollId,
@@ -43,5 +55,14 @@ public class PollController {
     public ResponseEntity<ApiResponse<PollResponse>> getPoll(@PathVariable Long pollId) {
         PollResponse response = pollService.getPoll(pollId);
         return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @DeleteMapping("/{pollId}")
+    public ResponseEntity<ApiResponse<Void>> deletePoll(
+            @PathVariable Long pollId
+          , @AuthenticationPrincipal CustomUserDetails userDetails) {
+        Long userId = userDetails.getId();
+        pollService.deletePoll(pollId,userId);
+        return ResponseEntity.ok(ApiResponse.success());
     }
 }

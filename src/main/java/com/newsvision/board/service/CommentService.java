@@ -30,16 +30,7 @@ public class CommentService {
     public List<CommentResponse> getCommentsByBoardId(Long boardId) { // 특정 게시글 댓글 목록 조회
         List<Comment> comments = commentRepository.findByBoardId(boardId);
         return comments.stream()
-                .map(comment -> new CommentResponse(
-                        comment.getId(),
-                        comment.getUser().getId(),
-                        comment.getBoard().getId(),
-                        comment.getIsReported(),
-                        comment.getContent(),
-                        comment.getCreateAt(), // 댓글 작성 시간 전달
-                        TimeUtil.formatRelativeTime(comment.getCreateAt())
-
-                ))
+                .map(CommentResponse::new)
                 .collect(Collectors.toList());
     }
 
@@ -56,15 +47,7 @@ public class CommentService {
         comment.setContent(commentContent);
 
         Comment savedComment = commentRepository.save(comment);
-        return new CommentResponse(
-                savedComment.getId(),
-                savedComment.getUser().getId(),
-                savedComment.getBoard().getId(),
-                savedComment.getIsReported(),
-                savedComment.getContent(),
-                savedComment.getCreateAt(), // 댓글 작성 시간 전달
-                TimeUtil.formatRelativeTime(savedComment.getCreateAt())
-        );
+        return new CommentResponse(savedComment);
     }
     @Transactional
     public void deleteComment(Long commentId, Long userId) { // 댓글 삭제 (본인 또는 관리자 권한 체크)
@@ -91,15 +74,7 @@ public class CommentService {
         comment.setContent(commentContent);
         Comment updatedComment = commentRepository.save(comment);
 
-        return new CommentResponse(
-                updatedComment.getId(),
-                updatedComment.getUser().getId(),
-                updatedComment.getBoard().getId(),
-                updatedComment.getIsReported(),
-                updatedComment.getContent(),
-                updatedComment.getCreateAt(),
-                TimeUtil.formatRelativeTime(updatedComment.getCreateAt())
-        );
+        return new CommentResponse(updatedComment);
 
     }
 

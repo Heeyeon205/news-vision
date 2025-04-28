@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface PollVoteRepository extends JpaRepository<PollVote, Long> {
     boolean existsByUserIdAndPollOption_Poll_Id(Long userId, Long pollId);
+    void deleteByPollOption_Poll_Id(Long pollId);
 }

@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @Setter
-public class CreatePollRequest {
+public class UpdatePollRequest {
     private String title;
     private String content;
     private LocalDateTime expiredAt; // 만료일
