@@ -3,8 +3,10 @@ package com.newsvision.board.controller;
 
 import com.newsvision.board.controller.request.BoardCreateRequest;
 import com.newsvision.board.controller.request.BoardUpdateRequest;
+import com.newsvision.board.controller.response.BoardCreateResponse;
 import com.newsvision.board.controller.response.BoardDetailResponse;
 import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.controller.response.BoardUpdateResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/board")
+@RequestMapping("/api/boards")
 @RequiredArgsConstructor
 @Slf4j
 public class BoardController {
@@ -49,31 +51,31 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(boardDetail));
     }
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 작성 API
-    public ResponseEntity<ApiResponse<BoardDetailResponse>> createBoard(
+    public ResponseEntity<ApiResponse<BoardCreateResponse>> createBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "content")  String content,
             @RequestParam(value = "categoryId") Long categoryId
     ) {
         Long userId = userDetails.getId();
-        BoardDetailResponse createdBoard = boardService.createBoard(userId,image,content,categoryId);
+        BoardCreateResponse createdBoard = boardService.createBoard(userId,image,content,categoryId);
         return ResponseEntity.ok(ApiResponse.success(createdBoard));
     }
 
     @GetMapping("/update/{boardId}") // 유저가 수정하려면 해당 글쓴 유저인지
-    public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(
+    public ResponseEntity<ApiResponse<BoardUpdateResponse>> updateBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable Long boardId
     ){
         Board board = boardService.findById(boardId);
         userService.matchUserId(userDetails.getId(),boardId);
-        BoardDetailResponse response = boardService.getBoardDetail(board);
+        BoardUpdateResponse response = boardService.getBoardUpdate(board);
         return ResponseEntity.ok(ApiResponse.success(response));
 
     }
 
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 수정 API
-    public ResponseEntity<ApiResponse<BoardDetailResponse>> updateBoard(
+    public ResponseEntity<ApiResponse<BoardUpdateResponse>> updateBoard(
             @PathVariable Long boardId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestParam(value = "image", required = false) MultipartFile image,
@@ -82,7 +84,7 @@ public class BoardController {
     ) {
         Long userId = userDetails.getId();
         Board board = boardService.findById(boardId);
-        BoardDetailResponse updatedBoard = boardService.updateBoard(board, userId,image, content,categoryId);
+        BoardUpdateResponse updatedBoard = boardService.updateBoard(board, userId,image, content,categoryId);
         return ResponseEntity.ok(ApiResponse.success(updatedBoard));
     }
 

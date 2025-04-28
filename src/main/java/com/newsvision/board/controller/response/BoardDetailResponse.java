@@ -1,6 +1,8 @@
 package com.newsvision.board.controller.response;
 
 
+import com.newsvision.board.entity.Board;
+import com.newsvision.global.Utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,12 +13,14 @@ import java.util.List;
 @Setter
 public class BoardDetailResponse {
     private Long id;
+    private String nickname;
+    private String userImage; // 유저 이미지
+    private String icon;
     private String content;
     private Long categoryId;
-    private LocalDateTime createdAt;
-    private String relativeCreatedAt;
+    private String createdAt;
     private Long userId;
-    private String image;
+    private String image; // 보드 이미지
     private int view;
     private Long newsId;
     private Boolean isReported;
@@ -24,17 +28,19 @@ public class BoardDetailResponse {
     private int commentCount;
     private List<CommentResponse> comments;
 
-    public BoardDetailResponse(Long id, String content, Long categoryId, LocalDateTime createdAt,String relativeCreatedAt, Long userId, String image, int view, Long newsId, Boolean isReported, int likeCount, int commentCount,List<CommentResponse> comments) {
-        this.id = id;
-        this.content = content;
-        this.categoryId = categoryId;
-        this.createdAt = createdAt;
-        this.relativeCreatedAt = relativeCreatedAt;
-        this.userId = userId;
-        this.image = image;
-        this.view = view;
-        this.newsId = newsId;
-        this.isReported = isReported;
+    public BoardDetailResponse(Board board, int likeCount, int commentCount, List<CommentResponse> comments) {
+        this.id = board.getId();
+        this.nickname = board.getUser().getNickname();
+        this.userImage = board.getUser().getImage();
+        this.icon = board.getUser().getBadge() != null ? board.getUser().getBadge().getIcon() : null;
+        this.content = board.getContent();
+        this.categoryId = board.getCategory() != null ? board.getCategory().getId() : null;
+        this.createdAt = TimeUtil.formatRelativeTime(board.getCreateAt());
+        this.userId = board.getUser().getId();
+        this.image = board.getImage();
+        this.view = board.getView();
+        this.newsId = board.getNewsId();
+        this.isReported = board.getIsReported();
         this.likeCount = likeCount;
         this.commentCount = commentCount;
         this.comments = comments;

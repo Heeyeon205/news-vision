@@ -13,6 +13,7 @@ public enum ErrorCode {
     INVALID_VERIFICATION_CODE(400, "인증 코드가 일치하지 않습니다."),
     BADGE_REQUIRED(400, "뱃지가 필요합니다."),
     DUPLICATE_VOTE(400, "이미 투표에 참여했습니다."),
+    INVALID_REQUEST(400, "잘못된 요청입니다."),
     // 401
     UNAUTHORIZED(401, "인증이 필요합니다."),
     INVALID_TOKEN(401, "유효하지 않은 Token입니다."),

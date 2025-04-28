@@ -3,6 +3,7 @@ package com.newsvision.poll.service;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.poll.controller.request.CreatePollRequest;
+import com.newsvision.poll.controller.request.UpdatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;
 import com.newsvision.poll.controller.response.PollOptionResponse;
 import com.newsvision.poll.controller.response.PollResponse;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,6 +57,48 @@ public class PollService {
             return convertToPollResponse(poll);
 
 
+    }
+
+    @Transactional
+    public PollResponse updatePoll(Long pollId, UpdatePollRequest request, Long userId) {
+        Poll poll = pollRepository.findById(pollId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        // 권한 체크 : 작성자만 수정 가능
+        if(poll.getUser() == null || !poll.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        // 만료일 검증
+        if(request.getExpiredAt() != null && request.getExpiredAt().isBefore(LocalDateTime.now())) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+        // 선택지 검증
+        if (request.getOptions() == null || request.getOptions().size() < 2) {
+            throw new CustomException(ErrorCode.INVALID_REQUEST);
+        }
+
+        // 투표 정보 업데이트
+        poll.setTitle(request.getTitle());
+        poll.setContent(request.getContent());
+        poll.setExpiredAt(request.getExpiredAt());
+        // 기존 선택지 삭제
+        pollOptionRepository.deleteAll(poll.getPollOptions());
+        poll.getPollOptions().clear();
+
+        // 새 선택지 추가
+        List<PollOption> newOptions = request.getOptions().stream()
+                .map(optionContent->{
+                    PollOption option = new PollOption();
+                    option.setContent(optionContent);
+                    option.setPoll(poll);
+                    option.setCount(0); // 새 선택지는 투표 수 초기화
+                    return option;
+                })
+                .collect(Collectors.toList());
+        pollOptionRepository.saveAll(newOptions);
+        poll.setPollOptions(newOptions);
+
+        pollRepository.save(poll);
+        return convertToPollResponse(poll);
     }
 
     @Transactional
@@ -105,6 +149,23 @@ public class PollService {
                 })
                 .collect(Collectors.toList()));
         return response;
+    }
+
+    @Transactional
+    public void deletePoll(Long pollId, Long userId) {
+        Poll poll = pollRepository.findById(pollId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        // 권한 체크 : 작성자만 삭제가능
+        if(poll.getUser() == null || !poll.getUser().getId().equals(userId)) {
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        // 연관된 pollVote 삭제
+        pollVoteRepository.deleteByPollOption_Poll_Id(pollId);
+
+        // Poll 삭제
+        pollRepository.delete(poll);
+
+
     }
 
 

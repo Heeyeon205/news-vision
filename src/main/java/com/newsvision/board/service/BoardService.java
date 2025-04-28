@@ -1,8 +1,7 @@
 package com.newsvision.board.service;
 
-import com.newsvision.board.controller.response.BoardDetailResponse;
-import com.newsvision.board.controller.response.BoardResponse;
-import com.newsvision.board.controller.response.CommentResponse;
+import com.newsvision.board.controller.request.BoardCreateRequest;
+import com.newsvision.board.controller.response.*;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.BoardLike;
 import com.newsvision.board.repository.BoardLikeRepository;
@@ -85,42 +84,40 @@ public class BoardService {
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
 
         List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
-        return new BoardDetailResponse(
-                board.getId(),
-                board.getContent(),
-                board.getCategory().getId(),
-                board.getCreateAt(),
-                TimeUtil.formatRelativeTime(board.getCreateAt()),
-                board.getUser().getId(),
-                board.getImage(),
-                board.getView(),
-                board.getNewsId(),
-                board.getIsReported(),
-                likeCount,
-                commentCount,
-                comments
-        );
+        return new BoardDetailResponse(board, likeCount, commentCount, comments);
+
+    }
+
+    @Transactional(readOnly = true)
+    public BoardCreateResponse getBoardCreate(Board board) {
+        int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
+        // 댓글 수 계산 - null 체크 추가
+        int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+
+        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
+        return new BoardCreateResponse(board, likeCount, commentCount, comments);
+
     }
 
     @Transactional
-    public BoardDetailResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 작성
+    public BoardCreateResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 작성
         try {
-            log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
-            User user = userService.findByUserId(userId);
-            String imageUrl = null;
-            if(image != null && !image.isEmpty()){
-                try{
-                    byte[] resizedBoardImage = resizeBoardImage(image);
-                    imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage,user.getId());
-                    log.info("이미지 업로드 성공: URL - {}", imageUrl);
+        log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
+        User user = userService.findByUserId(userId);
+        String imageUrl = null;
+        if(image != null && !image.isEmpty()){
+            try{
+                byte[] resizedBoardImage = resizeBoardImage(image);
+                imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage,user.getId());
+                log.info("이미지 업로드 성공: URL - {}", imageUrl);
 
-                }catch(IOException e){
-                    log.error("이미지 처리 실패:{}", e.getMessage());
-                }
+            }catch(IOException e){
+                log.error("이미지 처리 실패:{}", e.getMessage());
             }
+        }
 
-            log.info("사용자 찾음: 사용자 이름 - {}", user.getUsername());
-            Categories category = categoryRepository.findById(categoryId)
+        log.info("사용자 찾음: 사용자 이름 - {}", user.getUsername());
+        Categories category = categoryRepository.findById(categoryId)
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
             Board board = new Board();
@@ -130,8 +127,8 @@ public class BoardService {
             board.setImage(imageUrl);
             Board savedBoard = boardRepository.save(board);
             boardSearchService.saveBoard(board, 0, 0);
-            log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
-            return getBoardDetail(savedBoard);
+        log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
+            return getBoardCreate(savedBoard);
         }catch (Exception e) {
             System.out.println("ERROR 발생!!!: " + e.getMessage());  // System.out.println 추가
             e.printStackTrace();
@@ -140,8 +137,20 @@ public class BoardService {
         }
 
     }
+    @Transactional(readOnly = true)
+    public BoardUpdateResponse getBoardUpdate(Board board) { // 게시글 상세 조회
+        // 좋아요 수 계산 - null 체크 추가
+        int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
+        // 댓글 수 계산 - null 체크 추가
+        int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+
+        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
+        return new BoardUpdateResponse(board, likeCount, commentCount, comments);
+
+    }
+
     @Transactional
-    public BoardDetailResponse updateBoard(Board board, Long userId,MultipartFile image,String content,Long categoryId) { // 게시글 수정
+    public BoardUpdateResponse updateBoard(Board board, Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 수정
         User user = userService.findByUserId(userId);
 
         String imageUrl = null;
@@ -178,7 +187,7 @@ public class BoardService {
 
         Board updatedBoard = boardRepository.save(board);
         boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
-        return getBoardDetail(updatedBoard);
+        return getBoardUpdate(updatedBoard);
     }
     @Transactional
     public void deleteBoard(Long boardId, Long userId) { // 게시글 삭제
@@ -262,3 +271,7 @@ public class BoardService {
         return boardLikeRepository.countByBoardId(id);
     }
 }
+
+
+
+
