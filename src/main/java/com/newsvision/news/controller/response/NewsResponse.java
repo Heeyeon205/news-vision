@@ -23,6 +23,7 @@ public class NewsResponse {
     private String category;
     private boolean liked;
     private boolean scraped;
+    private String badgeTitle;
 
     public static NewsResponse of(News news, int likeCount, boolean liked, boolean scraped) {
         return NewsResponse.builder()
@@ -40,6 +41,7 @@ public class NewsResponse {
                 .category(news.getCategory().getName())
                 .liked(liked)
                 .scraped(scraped)
+                .badgeTitle(news.getUser().getBadge().getTitle())
                 .build();
     }
 }
