@@ -81,4 +81,10 @@ public class CommentService {
     public int countByBoardId(Long id) {
         return commentRepository.countByBoardId(id);
     }
+
+    public Comment findByCommentId(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+    }
+
 }

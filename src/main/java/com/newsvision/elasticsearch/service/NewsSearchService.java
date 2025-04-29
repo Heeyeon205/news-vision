@@ -80,7 +80,7 @@ public class NewsSearchService {
                         .title(doc.getTitle())
                         .image(doc.getImage())
                         .category(doc.getCategoryName())
-                        .author(doc.getUsername())
+                        .nickname(doc.getUsername())
                         .createdAt(String.valueOf(LocalDateTime.parse(doc.getCreatedAt(), formatter)))
                         .build())
                 .toList();

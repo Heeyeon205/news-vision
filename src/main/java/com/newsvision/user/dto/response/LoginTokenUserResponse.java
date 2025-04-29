@@ -14,4 +14,5 @@ public class LoginTokenUserResponse {
     private Long userId;
     private String nickname;
     private String image;
+    private String role;
 }

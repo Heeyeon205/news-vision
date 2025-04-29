@@ -8,6 +8,8 @@ import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.category.Categories;
 import com.newsvision.category.CategoryRepository;
+import com.newsvision.category.CategoryResponse;
+import com.newsvision.category.CategoryService;
 import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.aws.FileUploaderService;
@@ -40,12 +42,12 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardLikeRepository boardLikeRepository;
-    private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final BoardSearchService boardSearchService;
     private final UserService userService;
     private final FileUploaderService fileUploaderService;
     private final CommentService commentService;
+    private final CategoryService categoryService;
 
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId)
@@ -101,6 +103,9 @@ public class BoardService {
 
     @Transactional
     public BoardCreateResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 작성
+        if(content.isEmpty()){
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
         try {
         log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
         User user = userService.findByUserId(userId);
@@ -130,7 +135,6 @@ public class BoardService {
         log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
             return getBoardCreate(savedBoard);
         }catch (Exception e) {
-            System.out.println("ERROR 발생!!!: " + e.getMessage());  // System.out.println 추가
             e.printStackTrace();
             log.error("게시글 생성 중 예외 발생!",e);
             throw e;
@@ -144,8 +148,9 @@ public class BoardService {
         // 댓글 수 계산 - null 체크 추가
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
 
+        List<CategoryResponse> categoryies = categoryService.findAll();
         List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
-        return new BoardUpdateResponse(board, likeCount, commentCount, comments);
+        return new BoardUpdateResponse(board, likeCount, commentCount, comments, categoryies);
 
     }
 

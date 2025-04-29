@@ -78,6 +78,7 @@ public class PopularKeywordService {
                     .map(bucket -> new PopularKeywordResponse(bucket.key().stringValue(), bucket.docCount()))
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            e.printStackTrace();
             log.error("🔥 Elasticsearch 쿼리 중 예외 발생", e); // 여기에 찍힌다!
             throw e;
         }

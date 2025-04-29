@@ -51,7 +51,7 @@ public class AuthController {
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getUsername());
         refreshTokenRepository.save(user.getUsername(), refreshToken);
 
-        LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken, user.getId(), user.getNickname(), user.getImage());
+        LoginTokenUserResponse response = new LoginTokenUserResponse(accessToken, refreshToken, user.getId(), user.getNickname(), user.getImage(), user.getRole().name());
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 

@@ -1,32 +1,38 @@
 package com.newsvision.board.controller.response;
 
 import com.newsvision.board.entity.Board;
+import com.newsvision.category.CategoryResponse;
 import com.newsvision.global.Utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class BoardUpdateResponse {
     private Long id;
-    private String nickname;
-    private String userImage; // 유저 이미지
-    private String icon;
+    private String image; // 보드 이미지
     private String content;
     private Long categoryId;
     private String createdAt;
-    private Long userId;
-    private String image; // 보드 이미지
     private int view;
-    private Long newsId;
-    private Boolean isReported;
     private int likeCount;
     private int commentCount;
-    private List<CommentResponse> comments;
+    private Boolean isReported;
 
-    public BoardUpdateResponse(Board board, int likeCount, int commentCount, List<CommentResponse> comments) {
+    private Long userId;
+    private String userImage; // 유저 이미지
+    private String nickname;
+    private String icon;
+
+    private Long newsId;
+
+    private List<CommentResponse> comments;
+    private List<CategoryResponse> categories;
+
+    public BoardUpdateResponse(Board board, int likeCount, int commentCount, List<CommentResponse> comments, List<CategoryResponse> categories) {
         this.id = board.getId();
         this.nickname = board.getUser().getNickname();
         this.userImage = board.getUser().getImage();
@@ -42,6 +48,6 @@ public class BoardUpdateResponse {
         this.likeCount = likeCount;
         this.commentCount = commentCount;
         this.comments = comments;
-
+        this.categories = categories;
     }
 }

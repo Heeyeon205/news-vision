@@ -12,14 +12,16 @@ import java.time.LocalDateTime;
 @Setter
 public class CommentResponse {
     private Long id;
-    private Long userId;
+    private String content;
+    private boolean isReported;
+    private String createdAt;
+
     private Long boardId;
+
+    private Long userId;
     private String image;
     private String icon;
     private String nickname;
-    private boolean isReported;
-    private String content;
-    private String createdAt;
 
 
     public CommentResponse(Comment comment) {
@@ -27,7 +29,9 @@ public class CommentResponse {
         this.userId = comment.getUser().getId();
         this.boardId = comment.getBoard().getId();
         this.image = comment.getUser().getImage();
-        this.icon = comment.getUser().getBadge().getIcon();
+        if(comment.getUser().getRole().name().equals("ROLE_ADMIN") && comment.getUser().getRole().name().equals("ROLE_CREATOR")){
+            this.icon = comment.getUser().getBadge().getIcon();
+        }
         this.nickname = comment.getUser().getNickname();
         this.isReported = comment.getIsReported();
         this.content = comment.getContent();

@@ -58,7 +58,7 @@ public class BoardController {
             @RequestParam(value = "categoryId") Long categoryId
     ) {
         Long userId = userDetails.getId();
-        BoardCreateResponse createdBoard = boardService.createBoard(userId,image,content,categoryId);
+        BoardCreateResponse createdBoard = boardService.createBoard(userId, image, content, categoryId);
         return ResponseEntity.ok(ApiResponse.success(createdBoard));
     }
 
@@ -71,7 +71,6 @@ public class BoardController {
         userService.matchUserId(userDetails.getId(),board.getUser().getId());
         BoardUpdateResponse response = boardService.getBoardUpdate(board);
         return ResponseEntity.ok(ApiResponse.success(response));
-
     }
 
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 수정 API

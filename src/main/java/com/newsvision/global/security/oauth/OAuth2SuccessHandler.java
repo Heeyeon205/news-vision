@@ -39,7 +39,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 + "&refreshToken=" + refreshToken
                 + "&userId=" + user.getId()
                 + "&nickname=" + user.getNickname()
-                + "&image=" + user.getImage();
+                + "&image=" + user.getImage()
+                + "&role=" + user.getRole().name();
         log.warn("access token: {}", accessToken);
         log.warn("refresh token: {}", refreshToken);
         response.sendRedirect(redirectUrl);

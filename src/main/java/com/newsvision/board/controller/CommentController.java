@@ -3,9 +3,11 @@ package com.newsvision.board.controller;
 import com.newsvision.board.controller.request.CommentCreateRequest;
 import com.newsvision.board.controller.request.CommentUpdateRequest;
 import com.newsvision.board.controller.response.CommentResponse;
+import com.newsvision.board.entity.Comment;
 import com.newsvision.board.service.CommentService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -21,6 +23,7 @@ import java.util.List;
 @Slf4j
 public class CommentController {
     private final CommentService commentService;
+    private final UserService userService;
 
     @GetMapping("/boards/{boardId}") //(특정 게시글 댓글 목록 조회)
     public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByBoardId(@PathVariable Long boardId) {
@@ -48,6 +51,7 @@ public class CommentController {
         commentService.deleteComment(commentId, userId);
         return ResponseEntity.ok(ApiResponse.success());
     }
+
     @PutMapping("/{commentId}") // (댓글 수정)
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable Long commentId,
@@ -58,5 +62,4 @@ public class CommentController {
         CommentResponse updatedComment = commentService.updateComment(commentId, userId, request.getContent()); // Service의 updateComment 메서드 호출
         return ResponseEntity.ok(ApiResponse.success(updatedComment)); // 수정 완료 200 OK 상태 코드 반환
     }
-
 }
