@@ -6,6 +6,8 @@ import com.newsvision.poll.controller.request.CreatePollRequest;
 import com.newsvision.poll.controller.request.UpdatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;
 import com.newsvision.poll.controller.response.PollResponse;
+import com.newsvision.poll.controller.response.PollVoteResponse;
+import com.newsvision.poll.repository.PollVoteRepository;
 import com.newsvision.poll.service.PollService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +20,9 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/polls")
 public class PollController {
     private final PollService pollService;
+    private final PollVoteRepository pollVoteRepository;
 
-    @PostMapping
+    @PostMapping()
     public ResponseEntity<ApiResponse<PollResponse>> createPoll(
             @RequestBody CreatePollRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
@@ -41,14 +44,15 @@ public class PollController {
     }
 
     @PostMapping("/{pollId}/vote")
-    public ResponseEntity<ApiResponse<Void>> vote(
+    public ResponseEntity<ApiResponse<PollVoteResponse>> vote(
             @PathVariable Long pollId,
             @RequestBody VoteRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = userDetails.getId();
         pollService.vote(request, userId);
-        return ResponseEntity.ok(ApiResponse.success());
+        int voteCount = pollVoteRepository.countByPollOption_Poll_Id(pollId);
+        return ResponseEntity.ok(ApiResponse.success(new PollVoteResponse(voteCount, true)));
     }
 
     @GetMapping("/{pollId}")

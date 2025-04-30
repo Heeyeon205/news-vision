@@ -14,20 +14,15 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/popular")
 public class PopularKeywordController {
-    @PostConstruct
-    public void init() {
-        System.out.println("✅ PopularKeywordController 로드됨");
-    }
     private final PopularKeywordService popularKeywordService;
 
     @GetMapping("/{type}")
     public ResponseEntity<List<PopularKeywordResponse>> getPopularKeywords(@PathVariable String type) {
-        log.info("🔥 /api/popular/{} 요청 받음", type); // ✅ 찍히는지 확인
-        try {
+            log.info("일단 여기는 들어옴 파퓰러 컨트롤러");
+            log.info("getPopularKeywords type:{}", type);
             List<PopularKeywordResponse> result = popularKeywordService.getPopularKeywordsByType(type);
+            log.info("여기가 리턴 직전 사이즈_{}", result.size());
             return ResponseEntity.ok(result);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
-    }
 }
+}
+

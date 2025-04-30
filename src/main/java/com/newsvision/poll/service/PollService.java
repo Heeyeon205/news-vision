@@ -5,6 +5,7 @@ import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.poll.controller.request.CreatePollRequest;
 import com.newsvision.poll.controller.request.UpdatePollRequest;
 import com.newsvision.poll.controller.request.VoteRequest;
+import com.newsvision.poll.controller.response.PollListResponse;
 import com.newsvision.poll.controller.response.PollOptionResponse;
 import com.newsvision.poll.controller.response.PollResponse;
 import com.newsvision.poll.entity.Poll;
@@ -15,6 +16,7 @@ import com.newsvision.poll.repository.PollRepository;
 import com.newsvision.poll.repository.PollVoteRepository;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -27,11 +29,21 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@Transactional(readOnly = true)
 public class PollService {
     private final PollRepository pollRepository;
     private final PollOptionRepository pollOptionRepository;
     private final PollVoteRepository pollVoteRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
+
+    public List<PollListResponse> getAllList() {
+        LocalDateTime now = LocalDateTime.now();
+        List<Poll> polls = pollRepository.findAllByExpiredAtAfter(now);
+        return polls.stream()
+                .map(PollListResponse::new)  // or new PollListResponse(poll) if using constructor
+                .toList();
+    }
 
     @Transactional
     public PollResponse createPoll(CreatePollRequest request, Long userId) {
@@ -116,19 +128,16 @@ public class PollService {
         log.info("투표 수정 성공: pollId={}", pollId);
         return convertToPollResponse(poll);
     }
+
     @Transactional
     public void vote(VoteRequest request, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        User user = userService.findByUserId(userId);
         PollOption pollOption = pollOptionRepository.findById(request.getOptionId())
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
         Poll poll = pollOption.getPoll();
 
-        //중복투표 방지
         if(pollVoteRepository.existsByUserIdAndPollOption_Poll_Id(user.getId(), poll.getId())){
             throw new CustomException(ErrorCode.DUPLICATE_VOTE);
-
         }
 
         PollVote pollVote = new PollVote();
@@ -139,6 +148,7 @@ public class PollService {
         pollOption.setCount(pollOption.getCount() + 1);
         pollOptionRepository.save(pollOption);
     }
+
     @Transactional(readOnly = true)
     public PollResponse getPoll(Long pollId) {
         Poll poll = pollRepository.findById(pollId)
@@ -153,7 +163,7 @@ public class PollService {
         response.setContent(poll.getContent());
         response.setCreatedAt(poll.getCreatedAt());
         response.setExpiredAt(poll.getExpiredAt());
-        response.setAuthorNickname(poll.getUser() != null ? poll.getUser().getNickname() : "Unknown");
+        response.setNickname(poll.getUser() != null ? poll.getUser().getNickname() : "Unknown");
         response.setPollOptions(poll.getPollOptions().stream()
                 .map(option -> {
                     PollOptionResponse optionResponse = new PollOptionResponse();
@@ -174,14 +184,7 @@ public class PollService {
         if(poll.getUser() == null || !poll.getUser().getId().equals(userId)) {
             throw new CustomException(ErrorCode.UNAUTHORIZED);
         }
-        // 연관된 pollVote 삭제
         pollVoteRepository.deleteByPollOption_Poll_Id(pollId);
-
-        // Poll 삭제
         pollRepository.delete(poll);
-
-
     }
-
-
 }

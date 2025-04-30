@@ -4,6 +4,7 @@ import com.newsvision.admin.service.NewsListService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.news.dto.response.NewsResponse;
 import com.newsvision.news.service.NewsService;
+import com.newsvision.poll.service.PollService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,20 +18,16 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class NewsListController {
-
     private final NewsListService newsListService; // 목록 조회용 서비스
     private final NewsService newsService;       // 개별 뉴스 처리용 서비스
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<NewsResponse>>> getNewsList(
             @AuthenticationPrincipal UserDetails userDetails) {
-
         if (userDetails == null || !userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
             return ResponseEntity.status(403).body(null);
         }
-
         List<NewsResponse> newsList = newsListService.getAllNews();
         return ResponseEntity.ok(ApiResponse.success(newsList));
     }

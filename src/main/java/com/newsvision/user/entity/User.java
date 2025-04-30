@@ -7,6 +7,7 @@ import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
 import com.newsvision.notice.Notice;
+import com.newsvision.poll.entity.Poll;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -108,4 +109,8 @@ public class User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notice> noticeList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference("user-polls")
+    private List<Poll> pollList = new ArrayList<>();
 }

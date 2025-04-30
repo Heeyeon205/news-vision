@@ -1,5 +1,6 @@
 package com.newsvision.news.service;
 
+
 import com.newsvision.category.Categories;
 import com.newsvision.category.CategoryRepository;
 import com.newsvision.category.CategoryResponse;
@@ -8,19 +9,17 @@ import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.news.dto.response.NewsResponse;
-import com.newsvision.news.dto.response.NewsSummaryResponse;
-import com.newsvision.news.dto.response.NewsDetailInfoResponse;
+import com.newsvision.news.dto.response.*;
 import com.newsvision.news.entity.NaverNews;
 import com.newsvision.news.entity.News;
-import com.newsvision.news.entity.NewsLike;
-import com.newsvision.news.entity.Scrap;
 import com.newsvision.news.repository.NaverNewsRepository;
 import com.newsvision.news.repository.NewsLikeRepository;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
+import com.newsvision.poll.controller.response.PollListResponse;
+import com.newsvision.poll.service.PollService;
 import com.newsvision.user.entity.User;
-import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
@@ -40,9 +39,8 @@ import java.util.List;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NewsService {
-
-    private final CategoryService categoryService;
     @Value("${custom.default-image-news-culture-url}")
     private String defaultCultureImage;
     @Value("${custom.default-image-news-book-url}")
@@ -61,77 +59,82 @@ public class NewsService {
     private String defaultGlobalImage;
 
     private final NewsRepository newsRepository;
-    private final NewsLikeRepository newsLikeRepository;
-    private final ScrapRepository scrapRepository;
-    private final CategoryRepository categoryRepository;
-    private final UserRepository userRepository;
-    private final NaverNewsRepository naverNewsRepository;
     private final NewsSearchService newsSearchService;
     private final FileUploaderService fileUploaderService;
     private final NewsLikeService newsLikeService;
+    private final ScrapService scrapService;
+    private final CategoryService categoryService;
+    private final UserService userService;
+    private final PollService pollService;
+
+    private final CategoryRepository categoryRepository;
+    private final ScrapRepository scrapRepository;
+    private final NewsLikeRepository newsLikeRepository;
+    private final NaverNewsRepository naverNewsRepository;
 
     public News findByNewsId(Long newsId) {
         return newsRepository.findById(newsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
-    public List<NewsSummaryResponse> getTop10RecentNewsOnlyByAdmin() {
+    public NewsMainDataResponse getNewsMain() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<News> topNews = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
-        return topNews.stream()
-                .map(NewsSummaryResponse::from)
-                .toList();
+        List<PollListResponse> polls = pollService.getAllList();
+
+        return NewsMainDataResponse.builder()
+                .newsList(NewsMainResponse.fromList(topNews))
+                .pollList(polls)
+                .build();
     }
 
+
     @Transactional
-    public NewsResponse getNewsDetail(Long newsId, User loginUser) {
+    public NewsResponse getNewsDetail(Long newsId, Long userId) {
         News news = findByNewsId(newsId);
         news.increaseView();
-        int likeCount = newsLikeRepository.countByNews(news);
-        boolean liked = loginUser != null && newsLikeRepository.existsByUserAndNews(loginUser, news);
-        boolean scraped = false;
+        int likeCount = newsLikeService.countLikeByNews(news);
+        boolean liked = userId != null && newsLikeService.existsLike(newsId, userId);
+        boolean scraped = userId != null && scrapService.existsScrap(newsId, userId);
+
         return NewsResponse.of(news, likeCount, liked, scraped);
     }
 
     @Transactional
-    public void addLike(News news, User user) {
-        if(newsLikeService.existsLike(news, user)) {
+    public void addLike(Long newsId, Long userId) {
+        News news = findByNewsId(newsId);
+        if(newsLikeService.existsLike(newsId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
-        newsLikeService.addLike(news, user);
+        newsLikeService.addLike(news, userService.findByUserId(userId));
     }
 
     @Transactional
-    public void removeLike(News news, User user) {
-        if(!newsLikeService.existsLike(news, user)) {
+    public void removeLike(Long newsId, Long userId) {
+        News news = findByNewsId(newsId);
+        if(!newsLikeService.existsLike(newsId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
-        newsLikeService.removeLike(news, user);
+        newsLikeService.removeLike(news, userService.findByUserId(userId));
     }
 
     @Transactional
-    public void addScrap(Long newsId, User user) {
-        News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
-        boolean exists = scrapRepository.existsByUserAndNews(user, news);
-        if (!exists) {
-            Scrap scrap = Scrap.builder()
-                    .news(news)
-                    .user(user)
-                    .build();
-            scrapRepository.save(scrap);
+    public void addScrap(Long newsId, Long userId) {
+        News news = findByNewsId(newsId);
+        if(scrapService.existsScrap(newsId, userId)){
+            throw new CustomException(ErrorCode.INVALID_INPUT);
         }
+        scrapService.save(news, userService.findByUserId(userId));
     }
 
     @Transactional
-    public void removeScrap(Long newsId, User user) {
-        News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
-        scrapRepository.deleteByUserAndNews(user, news);
+    public void removeScrap(Long newsId,  Long userId) {
+        News news = findByNewsId(newsId);
+        if(!scrapService.existsScrap(newsId,userId)){
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
+        scrapService.deleteByUserAndNews(news, userService.findByUserId(userId));
     }
-
 
     public List<NewsSummaryResponse> getMyScrapList(User user) {
         return scrapRepository.findAllByUser(user).stream()
@@ -153,7 +156,6 @@ public class NewsService {
 
     public Page<NewsSummaryResponse> getFilteredArticles(String type, Long categoryId, User user, Pageable pageable) {
         Page<News> result;
-
         switch (type) {
             case "popular":
                 result = newsRepository.findAllOrderByLikeCountDesc(pageable);
@@ -176,13 +178,11 @@ public class NewsService {
 
     @Transactional
     public void createNews(Long userId, String title, String content, Long categoryId, Long naverNewsId, MultipartFile image) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        User user = userService.findByUserId(userId);
         Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
         NaverNews naverNews = naverNewsRepository.findById(naverNewsId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
         String imageUrl = null;
         try {
             if (image != null && !image.isEmpty()) {
@@ -239,55 +239,39 @@ public class NewsService {
                         !oldImageUrl.isEmpty()) {
                     fileUploaderService.deleteFile(oldImageUrl);
                 }
-
             } catch (IOException e) {
                 throw new RuntimeException("이미지 업로드 실패", e);
             }
         }
-
         news.updateTitle(title);
         news.updateContent(content);
         news.updateImage(newImageUrl);
         news.updateCategory(category);
-
         newsSearchService.saveNews(news);
     }
 
     @Transactional
     public void deleteNews(Long userId, Long newsId) {
-        News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
-        if (!news.getUser().getId().equals(userId)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED);
-        }
-
-        log.info("🗑️ 뉴스 삭제 요청 - newsId: {}, by userId: {}", newsId, userId);
-
-        // 💡 좋아요 먼저 삭제
-        newsLikeRepository.deleteAllByNews(news);
-        log.info("👍 관련된 좋아요 삭제 완료");
-
-        // 💡 스크랩도 삭제
-        scrapRepository.deleteAllByNews(news);
-        log.info("📌 관련된 스크랩 삭제 완료");
+        News news = findByNewsId(newsId);
+        scrapService.delete(news);
         fileUploaderService.deleteFile(news.getImage());
-        // 💡 뉴스 삭제
         newsRepository.delete(news);
-        log.info("📰 뉴스 삭제 완료");
-
-        // ✅ Elasticsearch에서도 제거
         newsSearchService.deleteNews(newsId);
     }
 
-    private byte[] resizeNewsImage(MultipartFile file) throws IOException {
+    private byte[] resizeNewsImage(MultipartFile file) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        Thumbnails.of(file.getInputStream())
-                .size(530, 300)
-                .outputFormat("jpg")
-                .outputQuality(0.9)
-                .toOutputStream(outputStream);
-        return outputStream.toByteArray();
+        try {
+            Thumbnails.of(file.getInputStream())
+                    .size(530, 300)
+                    .outputFormat("jpg")
+                    .outputQuality(0.9)
+                    .toOutputStream(outputStream);
+            return outputStream.toByteArray();
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new CustomException(ErrorCode.NOT_FOUND);
+        }
     }
 
     private String getDefaultImageForCategoryId(Long categoryId) {

@@ -15,4 +15,6 @@ public interface NewsLikeRepository extends JpaRepository<NewsLike, Long> {
     int countByNews(News news);
 
     void deleteAllByNews(News news);
+
+    boolean existsByNewsIdAndUserId(Long newsId, Long userId);
 }

@@ -103,7 +103,6 @@ public class UserService {
     @Transactional
     public void updateUserProfile(Long id, MultipartFile image, String nickname, String email, String introduce) {
         User user = findByUserId(id);
-
         if (image != null && !image.isEmpty()) {
             String oldImageUrl = user.getImage();
             try {
@@ -126,7 +125,7 @@ public class UserService {
         if (email != null && !email.equals(user.getEmail())) {
             user.updateEmail(email);
         }
-        if (introduce != null && !introduce.equals(user.getIntroduce())) {
+        if (introduce != null && !introduce.equals(user.getIntroduce()) && introduce.equals("null")) {
             user.updateIntroduce(introduce);
         }
     }

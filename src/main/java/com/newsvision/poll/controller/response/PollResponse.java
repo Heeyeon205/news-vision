@@ -17,6 +17,6 @@ public class PollResponse {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
-    private String authorNickname; // 투표 작성자 닉네임
+    private String nickname;
     private List<PollOptionResponse> pollOptions;
 }
