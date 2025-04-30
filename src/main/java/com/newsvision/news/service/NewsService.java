@@ -8,8 +8,8 @@ import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.news.controller.response.NewsResponse;
-import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.dto.response.NewsResponse;
+import com.newsvision.news.dto.response.NewsSummaryResponse;
 import com.newsvision.news.dto.response.NewsDetailInfoResponse;
 import com.newsvision.news.entity.NaverNews;
 import com.newsvision.news.entity.News;
@@ -68,6 +68,7 @@ public class NewsService {
     private final NaverNewsRepository naverNewsRepository;
     private final NewsSearchService newsSearchService;
     private final FileUploaderService fileUploaderService;
+    private final NewsLikeService newsLikeService;
 
     public News findByNewsId(Long newsId) {
         return newsRepository.findById(newsId)
@@ -92,37 +93,21 @@ public class NewsService {
         return NewsResponse.of(news, likeCount, liked, scraped);
     }
 
-
-
     @Transactional
-    public void addLike(Long newsId, User user) {
-        News news = newsRepository.findById(newsId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
-        boolean exists = newsLikeRepository.existsByUserAndNews(user, news);
-        if (!exists) {
-            NewsLike like = NewsLike.builder()
-                    .news(news)
-                    .user(user)
-                    .build();
-            newsLikeRepository.save(like);
+    public void addLike(News news, User user) {
+        if(newsLikeService.existsLike(news, user)) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
         }
+        newsLikeService.addLike(news, user);
     }
 
     @Transactional
-    public void removeLike(Long newsId, User user) {
-        try {
-            log.info("🧹 removeLike 호출 - newsId: {}, userId: {}", newsId, user.getId());
-            News news = newsRepository.findById(newsId)
-                    .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-            newsLikeRepository.deleteByUserAndNews(user, news);
-            log.info("✅ 삭제 성공");
-        } catch (Exception e) {
-            log.error("🔥 좋아요 삭제 중 오류 발생", e);
-            throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+    public void removeLike(News news, User user) {
+        if(!newsLikeService.existsLike(news, user)) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
         }
+        newsLikeService.removeLike(news, user);
     }
-
 
     @Transactional
     public void addScrap(Long newsId, User user) {

@@ -2,12 +2,12 @@ package com.newsvision.elasticsearch.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.dto.response.BoardResponse;
 import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.dto.response.NewsSummaryResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

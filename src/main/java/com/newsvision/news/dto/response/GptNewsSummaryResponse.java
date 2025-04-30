@@ -1,4 +1,4 @@
-package com.newsvision.news.controller.response;
+package com.newsvision.news.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,48 +1,42 @@
-package com.newsvision.board.controller.response;
-
+package com.newsvision.board.dto.response;
 
 import com.newsvision.board.entity.Board;
 import com.newsvision.global.Utils.TimeUtil;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Getter
 @Setter
-public class BoardDetailResponse {
-    private Long id;
+@NoArgsConstructor
+public class BoardResponse {
+    private Long boardId;
     private String nickname;
-    private String userImage; // 유저 이미지
+    private String userImage; //유저 이미지
     private String icon;
+    private String image; // 보드 이미지
     private String content;
     private Long categoryId;
-    private String createdAt;
-    private Long userId;
-    private String image; // 보드 이미지
+    private String createAt;
     private int view;
     private Long newsId;
     private Boolean isReported;
     private int likeCount;
     private int commentCount;
-    private List<CommentResponse> comments;
 
-    public BoardDetailResponse(Board board, int likeCount, int commentCount, List<CommentResponse> comments) {
-        this.id = board.getId();
+    public BoardResponse(Board board, int likeCount, int commentCount) {
+        this.boardId = board.getId();
         this.nickname = board.getUser().getNickname();
         this.userImage = board.getUser().getImage();
         this.icon = board.getUser().getBadge() != null ? board.getUser().getBadge().getIcon() : null;
+        this.image = board.getImage();
         this.content = board.getContent();
         this.categoryId = board.getCategory() != null ? board.getCategory().getId() : null;
-        this.createdAt = TimeUtil.formatRelativeTime(board.getCreateAt());
-        this.userId = board.getUser().getId();
-        this.image = board.getImage();
+        this.createAt = TimeUtil.formatRelativeTime(board.getCreateAt()); // getCreateAt() -> getCreatedAt()
         this.view = board.getView();
         this.newsId = board.getNewsId();
         this.isReported = board.getIsReported();
         this.likeCount = likeCount;
         this.commentCount = commentCount;
-        this.comments = comments;
     }
 }

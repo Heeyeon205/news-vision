@@ -1,10 +1,10 @@
-package com.newsvision.board.controller.request;
+package com.newsvision.board.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class CommentUpdateRequest {
+public class CommentCreateRequest {
     private String content;
 }

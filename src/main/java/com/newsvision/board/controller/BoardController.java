@@ -1,22 +1,16 @@
 package com.newsvision.board.controller;
 
 
-import com.newsvision.board.controller.request.BoardCreateRequest;
-import com.newsvision.board.controller.request.BoardUpdateRequest;
-import com.newsvision.board.controller.response.BoardCreateResponse;
-import com.newsvision.board.controller.response.BoardDetailResponse;
-import com.newsvision.board.controller.response.BoardResponse;
-import com.newsvision.board.controller.response.BoardUpdateResponse;
+import com.newsvision.board.dto.response.*;
 import com.newsvision.board.entity.Board;
+import com.newsvision.board.entity.BoardLike;
+import com.newsvision.board.service.BoardLikeService;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
-import com.newsvision.global.exception.CustomException;
-import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/board")
@@ -33,6 +26,7 @@ import java.util.Objects;
 public class BoardController {
     private final BoardService boardService;
     private final UserService userService;
+    private final BoardLikeService boardLikeService;
 
     @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
     public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoards(
@@ -45,11 +39,16 @@ public class BoardController {
     }
 
     @GetMapping("/{boardId}")
-    public ResponseEntity<ApiResponse<BoardDetailResponse>> getBoardDetail(@PathVariable Long boardId) {
+    public ResponseEntity<ApiResponse<BoardDetailResponse>> getBoardDetail(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
         Board board = boardService.findById(boardId);
-        BoardDetailResponse boardDetail = boardService.getBoardDetail(board);
+        BoardDetailResponse boardDetail = boardService.getBoardDetail(board, userId);
         return ResponseEntity.ok(ApiResponse.success(boardDetail));
     }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 작성 API
     public ResponseEntity<ApiResponse<BoardCreateResponse>> createBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -97,14 +96,26 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
-    @PostMapping("/{boardId}/likes")
-    public ResponseEntity<ApiResponse<Void>> likeBoard(@PathVariable Long boardId,@AuthenticationPrincipal CustomUserDetails userDetails) {
-        Long userId = userDetails.getId();
-        Board board = boardService.findById(boardId);
-        log.info("BoardController.likeBoard 메서드 호출됨! boardId: {}, userId: {}", boardId, userId);
+    @PostMapping("/{boardId}/like")
+    public ResponseEntity<ApiResponse<BoardLikeResponse>> addLike(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        boardService.addLike(boardId, userDetails.getId());
+        int LikeCount = boardLikeService.countByBoardId(boardId);
+        Boolean isLike = true;
+        return ResponseEntity.ok(ApiResponse.success(new BoardLikeResponse(LikeCount, isLike)));
+    }
 
-        boardService.likeBoard(board, userId);
-        return ResponseEntity.ok(ApiResponse.success());
+    @DeleteMapping("/{boardId}/like")
+    public ResponseEntity<ApiResponse<BoardLikeResponse>> removeLike(
+            @PathVariable Long boardId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        boardService.removeLike(boardId, userDetails.getId());
+        int LikeCount = boardLikeService.countByBoardId(boardId);
+        Boolean isLike = false;
+        return ResponseEntity.ok(ApiResponse.success(new BoardLikeResponse(LikeCount, isLike)));
     }
 
     @PostMapping("/{boardId}/views")

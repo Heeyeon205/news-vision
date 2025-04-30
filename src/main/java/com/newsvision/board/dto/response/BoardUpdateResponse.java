@@ -1,4 +1,4 @@
-package com.newsvision.board.controller.response;
+package com.newsvision.board.dto.response;
 
 import com.newsvision.board.entity.Board;
 import com.newsvision.category.CategoryResponse;
@@ -6,14 +6,13 @@ import com.newsvision.global.Utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
 public class BoardUpdateResponse {
     private Long id;
-    private String image; // 보드 이미지
+    private String image;
     private String content;
     private Long categoryId;
     private String createdAt;
@@ -23,7 +22,7 @@ public class BoardUpdateResponse {
     private Boolean isReported;
 
     private Long userId;
-    private String userImage; // 유저 이미지
+    private String userImage;
     private String nickname;
     private String icon;
 

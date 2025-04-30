@@ -1,4 +1,4 @@
-package com.newsvision.news.controller.response;
+package com.newsvision.news.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;

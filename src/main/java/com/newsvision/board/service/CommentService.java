@@ -1,11 +1,10 @@
 package com.newsvision.board.service;
 
-import com.newsvision.board.controller.response.CommentResponse;
+import com.newsvision.board.dto.response.CommentResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.Comment;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.board.repository.CommentRepository;
-import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.User;

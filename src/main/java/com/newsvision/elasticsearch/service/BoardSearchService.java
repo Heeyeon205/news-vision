@@ -1,10 +1,9 @@
 package com.newsvision.elasticsearch.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.query_dsl.QueryBuilders;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.elasticsearch.core.search.Hit;
-import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.dto.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.elasticsearch.document.BoardDocument;
 import com.newsvision.elasticsearch.repository.BoardSearchRepository;
