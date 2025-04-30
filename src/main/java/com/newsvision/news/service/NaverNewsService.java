@@ -3,7 +3,7 @@ package com.newsvision.news.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
-import com.newsvision.news.controller.request.NaverNewsSaveRequest;
+import com.newsvision.news.dto.request.NaverNewsSaveRequest;
 import com.newsvision.news.dto.response.NaverNewsInfoResponse;
 import com.newsvision.news.dto.response.NaverNewsSearchResponse;
 import com.newsvision.news.entity.NaverNews;

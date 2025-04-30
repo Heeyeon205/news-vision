@@ -1,12 +1,10 @@
-package com.newsvision.board.controller.response;
+package com.newsvision.board.dto.response;
 
 
 import com.newsvision.board.entity.Comment;
 import com.newsvision.global.Utils.TimeUtil;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

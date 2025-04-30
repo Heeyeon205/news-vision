@@ -6,7 +6,7 @@ package com.newsvision.admin.controller;
 
 
 import com.newsvision.admin.service.BoardListService;
-import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.dto.response.BoardResponse;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
 import lombok.RequiredArgsConstructor;

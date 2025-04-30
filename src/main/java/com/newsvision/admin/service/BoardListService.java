@@ -1,10 +1,9 @@
 package com.newsvision.admin.service;
 
 
-import com.newsvision.board.controller.response.BoardResponse;
+import com.newsvision.board.dto.response.BoardResponse;
 import com.newsvision.board.entity.Board;
 import com.newsvision.board.repository.BoardRepository;
-import com.newsvision.global.Utils.TimeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

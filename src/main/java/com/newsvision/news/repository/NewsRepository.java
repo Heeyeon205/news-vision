@@ -1,6 +1,5 @@
 package com.newsvision.news.repository;
 
-import com.newsvision.news.controller.response.NewsResponse;
 import com.newsvision.news.entity.News;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.domain.Page;

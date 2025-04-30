@@ -1,16 +1,14 @@
 package com.newsvision.board.controller;
 
-import com.newsvision.board.controller.request.CommentCreateRequest;
-import com.newsvision.board.controller.request.CommentUpdateRequest;
-import com.newsvision.board.controller.response.CommentResponse;
-import com.newsvision.board.entity.Comment;
+import com.newsvision.board.dto.request.CommentCreateRequest;
+import com.newsvision.board.dto.request.CommentUpdateRequest;
+import com.newsvision.board.dto.response.CommentResponse;
 import com.newsvision.board.service.CommentService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;

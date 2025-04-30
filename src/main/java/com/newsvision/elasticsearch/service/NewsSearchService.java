@@ -7,14 +7,12 @@ import co.elastic.clients.elasticsearch.core.search.Hit;
 import com.newsvision.elasticsearch.document.NewsDocument;
 import com.newsvision.elasticsearch.repository.NewsSearchRepository;
 import com.newsvision.global.Utils.JasoUtils;
-import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.dto.response.NewsSummaryResponse;
 import com.newsvision.news.entity.News;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.data.elasticsearch.core.*;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;

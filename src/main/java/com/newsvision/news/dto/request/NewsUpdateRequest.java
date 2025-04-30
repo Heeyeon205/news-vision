@@ -1,4 +1,4 @@
-package com.newsvision.news.controller.request;
+package com.newsvision.news.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

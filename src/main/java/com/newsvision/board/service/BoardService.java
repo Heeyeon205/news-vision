@@ -1,9 +1,7 @@
 package com.newsvision.board.service;
 
-import com.newsvision.board.controller.request.BoardCreateRequest;
-import com.newsvision.board.controller.response.*;
+import com.newsvision.board.dto.response.*;
 import com.newsvision.board.entity.Board;
-import com.newsvision.board.entity.BoardLike;
 import com.newsvision.board.repository.BoardLikeRepository;
 import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.category.Categories;
@@ -11,12 +9,10 @@ import com.newsvision.category.CategoryRepository;
 import com.newsvision.category.CategoryResponse;
 import com.newsvision.category.CategoryService;
 import com.newsvision.elasticsearch.service.BoardSearchService;
-import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.User;
-import com.newsvision.user.repository.UserRepository;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +44,7 @@ public class BoardService {
     private final FileUploaderService fileUploaderService;
     private final CommentService commentService;
     private final CategoryService categoryService;
+    private final BoardLikeService boardLikeService;
 
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId)
@@ -79,15 +76,12 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardDetailResponse getBoardDetail(Board board) { // 게시글 상세 조회
-        // 좋아요 수 계산 - null 체크 추가
+    public BoardDetailResponse getBoardDetail(Board board, Long userId) {
         int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
-        // 댓글 수 계산 - null 체크 추가
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
-
-        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
-        return new BoardDetailResponse(board, likeCount, commentCount, comments);
-
+        boolean isLike = userId != null && boardLikeService.existsByBoardIdAndUserId(board.getId(), userId);
+        List<CommentResponse> comments  = commentService.getCommentsByBoardId(board.getId());
+        return new BoardDetailResponse(board, likeCount, commentCount, comments, isLike);
     }
 
     @Transactional(readOnly = true)
@@ -187,9 +181,6 @@ public class BoardService {
         board.setContent(content);
         board.setCategory(category);
 
-
-
-
         Board updatedBoard = boardRepository.save(board);
         boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
         return getBoardUpdate(updatedBoard);
@@ -218,43 +209,6 @@ public class BoardService {
         boardSearchService.deleteBoard(boardId);
     }
 
-
-
-    @Transactional
-    public void likeBoard(Board board, Long userId) {
-        log.info("BoardService.likeBoard - 시작: boardId={}, userId={}", board.getId(), userId);
-        try {
-            log.info("BoardService.likeBoard - id로 Board 가져오는 중: {}", board.getId());
-            log.info("BoardService.likeBoard - Board 찾음: {}", board.getId());
-
-            log.info("BoardService.likeBoard - id로 User 가져오는 중: {}", userId);
-            User user = userService.findByUserId(userId);
-            log.info("BoardService.likeBoard - User 찾음: {}", user.getId());
-
-            boolean alreadyLiked = boardLikeRepository.existsByBoardIdAndUserId(board.getId(), userId);
-            log.info("BoardService.likeBoard - 이미 좋아요 눌렀는지 확인: {}", alreadyLiked);
-
-            if (alreadyLiked) {
-                log.info("BoardService.likeBoard - 이미 좋아요 누름, 좋아요 취소");
-                boardLikeRepository.deleteByBoardIdAndUserId(board.getId(), userId);
-                log.info("BoardService.likeBoard - 좋아요 취소 완료");
-            } else {
-                log.info("BoardService.likeBoard - 아직 좋아요 안 누름, 좋아요 추가");
-                BoardLike boardLike = new BoardLike();
-                boardLike.setBoard(board);
-                boardLike.setUser(user);
-                boardLikeRepository.save(boardLike);
-                log.info("BoardService.likeBoard - 좋아요 추가 완료");
-            }
-            log.info("BoardService.likeBoard - 성공적으로 완료");
-        } catch (CustomException e) {
-            log.error("BoardService.likeBoard - CustomException 발생: {}", e.getErrorCode());
-            throw e; // 예외 다시 던지기
-        } catch (Exception e) {
-            log.error("BoardService.likeBoard - 예기치 않은 예외 발생", e);
-            throw e; // 예외 다시 던지기
-        }
-    }
     @Transactional
     public void incrementViewCount(Board board) { // 조회수 증가 기능
         board.updateView(board.getView() + 1);
@@ -271,9 +225,26 @@ public class BoardService {
         return outputStream.toByteArray();
     }
 
-
     public int countByBoardId(Long id) {
         return boardLikeRepository.countByBoardId(id);
+    }
+
+    @Transactional
+    public void addLike(Long boardId, Long userId) {
+        if(boardLikeService.existsByBoardIdAndUserId(boardId, userId)) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
+        Board board = findById(boardId);
+        User user = userService.findByUserId(userId);
+        boardLikeService.save(board, user);
+    }
+
+    @Transactional
+    public void removeLike(Long boardId, Long userId) {
+        if(!boardLikeService.existsByBoardIdAndUserId(boardId, userId)) {
+            throw new CustomException(ErrorCode.INVALID_INPUT);
+        }
+        boardLikeService.delete(boardId, userId);
     }
 }
 

@@ -2,7 +2,7 @@ package com.newsvision.news.controller;
 
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
-import com.newsvision.news.controller.request.NaverNewsSaveRequest;
+import com.newsvision.news.dto.request.NaverNewsSaveRequest;
 import com.newsvision.news.dto.response.NaverNewsInfoResponse;
 import com.newsvision.news.service.NaverNewsService;
 import com.newsvision.user.service.UserService;

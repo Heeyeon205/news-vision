@@ -3,13 +3,15 @@ package com.newsvision.board.entity;
 
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
 @Setter
 @Table(name = "boardLikes")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class BoardLike {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +25,5 @@ public class BoardLike {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id", referencedColumnName = "id")
     private Board board;
-
-
 
 }

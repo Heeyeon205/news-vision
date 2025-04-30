@@ -4,12 +4,14 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
-import com.newsvision.news.controller.request.NaverNewsSaveRequest;
-import com.newsvision.news.controller.response.NewsResponse;
-import com.newsvision.news.controller.response.NewsSummaryResponse;
+import com.newsvision.news.dto.request.NaverNewsSaveRequest;
+import com.newsvision.news.dto.response.NewsLikeResponse;
+import com.newsvision.news.dto.response.NewsResponse;
+import com.newsvision.news.dto.response.NewsSummaryResponse;
 import com.newsvision.news.dto.response.NewsDetailInfoResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.service.NaverNewsService;
+import com.newsvision.news.service.NewsLikeService;
 import com.newsvision.news.service.NewsService;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.service.UserService;
@@ -36,6 +38,7 @@ public class NewsController {
     private final NewsService newsService;
     private final UserService userService;
     private final NaverNewsService naverNewsService;
+    private final NewsLikeService newsLikeService;
 
     @GetMapping("/main")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMainNews() {
@@ -50,24 +53,28 @@ public class NewsController {
     }
 
     @PostMapping("/{newsId}/like")
-    public ResponseEntity<ApiResponse<String>> addLike(
+    public ResponseEntity<ApiResponse<NewsLikeResponse>> addLike(
             @PathVariable Long newsId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        newsService.addLike(newsId, userDetails.getUser());
-        return ResponseEntity.ok(ApiResponse.success("좋아요를 추가했습니다."));
+        News news = newsService.findByNewsId(newsId);
+        newsService.addLike(news, userDetails.getUser());
+        int likeCount = newsLikeService.findLikeCountByNews(news);
+        boolean isLike = true;
+        return ResponseEntity.ok(ApiResponse.success(new NewsLikeResponse(likeCount, isLike)));
     }
-
 
     @DeleteMapping("/{newsId}/like")
-    public ResponseEntity<ApiResponse<String>> removeLike(
+    public ResponseEntity<ApiResponse<NewsLikeResponse>> removeLike(
             @PathVariable Long newsId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        newsService.removeLike(newsId, userDetails.getUser());
-        return ResponseEntity.ok(ApiResponse.success("좋아요를 취소했습니다."));
+        News news = newsService.findByNewsId(newsId);
+        newsService.removeLike(news, userDetails.getUser());
+        int likeCount = newsLikeService.findLikeCountByNews(news);
+        boolean isLike = false;
+        return ResponseEntity.ok(ApiResponse.success(new NewsLikeResponse(likeCount, isLike)));
     }
-
 
     @PostMapping("/{newsId}/scrap")
     public ResponseEntity<ApiResponse<String>> addScrap(
@@ -140,9 +147,7 @@ public class NewsController {
             @PathVariable Long newsId
     ) {
         News news = newsService.findByNewsId(newsId);
-        if (!Objects.equals(news.getUser().getId(), userDetails.getId())) {
-            throw new CustomException(ErrorCode.INVALID_INPUT);
-        }
+        userService.matchUserId(userDetails.getId(),news.getUser().getId());
         NewsDetailInfoResponse response = newsService.newsInfo(newsId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }

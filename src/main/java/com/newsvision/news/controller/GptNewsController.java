@@ -1,18 +1,13 @@
 package com.newsvision.news.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.newsvision.global.exception.ApiResponse;
-import com.newsvision.news.controller.response.GptNewsSummaryResponse;
-import com.newsvision.news.controller.response.NewsSummaryResponse;
-import com.newsvision.news.entity.NaverNews;
+import com.newsvision.news.dto.response.GptNewsSummaryResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.repository.GptNewsRepository;
 import com.newsvision.news.repository.NewsRepository;
-import com.newsvision.news.service.GptSummaryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

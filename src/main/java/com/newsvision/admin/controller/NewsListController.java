@@ -2,13 +2,9 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.service.NewsListService;
 import com.newsvision.global.exception.ApiResponse;
-import com.newsvision.global.exception.CustomException;
-import com.newsvision.news.controller.response.NewsResponse;
+import com.newsvision.news.dto.response.NewsResponse;
 import com.newsvision.news.service.NewsService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
