@@ -1,6 +1,6 @@
 package com.newsvision.news.dto.response;
 
-import com.newsvision.poll.controller.response.PollListResponse;
+import com.newsvision.poll.dto.response.PollListResponse;
 import lombok.Builder;
 import lombok.Getter;
 

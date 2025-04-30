@@ -9,6 +9,7 @@ import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
+import com.newsvision.user.entity.User;
 import com.newsvision.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -123,4 +124,18 @@ public class UserController {
         userService.validateRole(customUserDetails.getRole());
         return ResponseEntity.ok(ApiResponse.success("ok"));
     }
+
+    @Operation(summary = "로그인 사용자 확인", description = "로그인 사용자 확인")
+    @GetMapping("/me")
+    public ResponseEntity<ApiResponse<UserInfoResponse>> getMyInfo(
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        if(userDetails == null || userDetails.getId() == null){
+            log.warn(" 인증 안 된 사용자 요청");
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+        User user = userService.findByUserId(userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(new UserInfoResponse(user)));
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.newsvision.poll.controller.response;
+package com.newsvision.poll.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.poll.entity.Poll;

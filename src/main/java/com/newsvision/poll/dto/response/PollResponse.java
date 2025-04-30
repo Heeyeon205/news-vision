@@ -1,4 +1,4 @@
-package com.newsvision.poll.controller.response;
+package com.newsvision.poll.dto.response;
 
 import lombok.*;
 
@@ -18,5 +18,6 @@ public class PollResponse {
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
     private String nickname;
+    private boolean isVote;
     private List<PollOptionResponse> pollOptions;
 }

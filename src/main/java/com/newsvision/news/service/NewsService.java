@@ -16,7 +16,7 @@ import com.newsvision.news.repository.NaverNewsRepository;
 import com.newsvision.news.repository.NewsLikeRepository;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
-import com.newsvision.poll.controller.response.PollListResponse;
+import com.newsvision.poll.dto.response.PollListResponse;
 import com.newsvision.poll.service.PollService;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.service.UserService;
@@ -88,7 +88,6 @@ public class NewsService {
                 .build();
     }
 
-
     @Transactional
     public NewsResponse getNewsDetail(Long newsId, Long userId) {
         News news = findByNewsId(newsId);
@@ -96,7 +95,6 @@ public class NewsService {
         int likeCount = newsLikeService.countLikeByNews(news);
         boolean liked = userId != null && newsLikeService.existsLike(newsId, userId);
         boolean scraped = userId != null && scrapService.existsScrap(newsId, userId);
-
         return NewsResponse.of(news, likeCount, liked, scraped);
     }
 

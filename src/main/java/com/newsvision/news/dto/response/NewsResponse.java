@@ -2,11 +2,8 @@ package com.newsvision.news.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;
-import com.newsvision.poll.controller.response.PollListResponse;
 import lombok.Builder;
 import lombok.Getter;
-
-import java.util.List;
 
 @Getter
 @Builder

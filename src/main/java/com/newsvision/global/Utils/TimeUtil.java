@@ -2,6 +2,9 @@ package com.newsvision.global.Utils;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class TimeUtil {
 
@@ -29,11 +32,14 @@ public class TimeUtil {
 
     public static String dDayCaculate(LocalDateTime dateTime) {
         LocalDateTime now = LocalDateTime.now();
-        Duration duration = Duration.between(dateTime, now);
+        Duration duration = Duration.between(now, dateTime);
         long seconds = duration.getSeconds();
-        if (seconds < 60) {
+
+        if (seconds < 0) {
+            return "마감";
+        } else if (seconds < 60) {
             return "곧 마감!";
-        }else if (seconds < 3600) {
+        } else if (seconds < 3600) {
             return (seconds / 60) + "분 남았어요!";
         } else if (seconds < 86400) {
             return (seconds / 3600) + "시간 남았어요!";
@@ -46,5 +52,11 @@ public class TimeUtil {
         } else {
             return (seconds / (365 * 86400)) + "년 남았어요!";
         }
+    }
+
+    public static LocalDateTime stringToLocalDateTime(String strTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
+        ZonedDateTime dateTime = ZonedDateTime.parse(strTime, formatter);
+        return dateTime.toLocalDateTime();
     }
 }
