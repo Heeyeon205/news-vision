@@ -1,18 +1,15 @@
 package com.newsvision.news.controller;
 
-import com.newsvision.global.exception.CustomException;
-import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.news.dto.request.NaverNewsSaveRequest;
-import com.newsvision.news.dto.response.NewsLikeResponse;
-import com.newsvision.news.dto.response.NewsResponse;
-import com.newsvision.news.dto.response.NewsSummaryResponse;
-import com.newsvision.news.dto.response.NewsDetailInfoResponse;
+import com.newsvision.news.dto.response.*;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.service.NaverNewsService;
 import com.newsvision.news.service.NewsLikeService;
 import com.newsvision.news.service.NewsService;
+import com.newsvision.news.service.ScrapService;
+import com.newsvision.poll.service.PollService;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -41,15 +37,16 @@ public class NewsController {
     private final NewsLikeService newsLikeService;
 
     @GetMapping("/main")
-    public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> getMainNews() {
-        return ResponseEntity.ok(ApiResponse.success(newsService.getTop10RecentNewsOnlyByAdmin()));
+    public ResponseEntity<ApiResponse<NewsMainDataResponse>> getMainNews() {
+        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsMain()));
     }
 
     @GetMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(@PathVariable Long newsId) {
-        News news = newsService.findByNewsId(newsId);
-        User user = userService.findByUserId(news.getUser().getId());
-        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, user)));
+    public ResponseEntity<ApiResponse<NewsResponse>> getNewsDetail(
+            @PathVariable Long newsId,
+    @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, userDetails.getId())));
     }
 
     @PostMapping("/{newsId}/like")
@@ -58,10 +55,9 @@ public class NewsController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         News news = newsService.findByNewsId(newsId);
-        newsService.addLike(news, userDetails.getUser());
+        newsService.addLike(newsId, userDetails.getId());
         int likeCount = newsLikeService.findLikeCountByNews(news);
-        boolean isLike = true;
-        return ResponseEntity.ok(ApiResponse.success(new NewsLikeResponse(likeCount, isLike)));
+        return ResponseEntity.ok(ApiResponse.success(new NewsLikeResponse(likeCount, true)));
     }
 
     @DeleteMapping("/{newsId}/like")
@@ -70,28 +66,27 @@ public class NewsController {
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         News news = newsService.findByNewsId(newsId);
-        newsService.removeLike(news, userDetails.getUser());
+        newsService.removeLike(newsId, userDetails.getId());
         int likeCount = newsLikeService.findLikeCountByNews(news);
-        boolean isLike = false;
-        return ResponseEntity.ok(ApiResponse.success(new NewsLikeResponse(likeCount, isLike)));
+        return ResponseEntity.ok(ApiResponse.success(new NewsLikeResponse(likeCount, false)));
     }
 
     @PostMapping("/{newsId}/scrap")
-    public ResponseEntity<ApiResponse<String>> addScrap(
+    public ResponseEntity<ApiResponse<NewsScrapResponse>> addScrap(
             @PathVariable Long newsId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        newsService.addScrap(newsId, userDetails.getUser());
-        return ResponseEntity.ok(ApiResponse.success("스크랩을 추가했습니다."));
+        newsService.addScrap(newsId, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(new NewsScrapResponse(true)));
     }
 
     @DeleteMapping("/{newsId}/scrap")
-    public ResponseEntity<ApiResponse<String>> removeScrap(
+    public ResponseEntity<ApiResponse<NewsScrapResponse>> removeScrap(
             @PathVariable Long newsId,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        newsService.removeScrap(newsId, userDetails.getUser());
-        return ResponseEntity.ok(ApiResponse.success("스크랩을 취소했습니다."));
+        newsService.removeScrap(newsId, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(new NewsScrapResponse(false)));
     }
 
     @GetMapping("/scraps")

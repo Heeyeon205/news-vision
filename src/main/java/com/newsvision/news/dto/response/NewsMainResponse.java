@@ -2,7 +2,6 @@ package com.newsvision.news.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;
-import com.newsvision.poll.controller.response.PollListResponse;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Getter
 @Builder
-public class NewsSummaryResponse {
+public class NewsMainResponse {
     private Long id;
     private String title;
     private String image;
@@ -18,8 +17,8 @@ public class NewsSummaryResponse {
     private String nickname;
     private String createdAt;
 
-    public static NewsSummaryResponse from(News news) {
-        return NewsSummaryResponse.builder()
+    public static NewsMainResponse from(News news) {
+        return NewsMainResponse.builder()
                 .id(news.getId())
                 .title(news.getTitle())
                 .image(news.getImage())
@@ -27,5 +26,11 @@ public class NewsSummaryResponse {
                 .nickname(news.getUser().getNickname())
                 .createdAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
                 .build();
+    }
+
+    public static List<NewsMainResponse> fromList(List<News> newsList) {
+        return newsList.stream()
+                .map(NewsMainResponse::from)
+                .toList();
     }
 }

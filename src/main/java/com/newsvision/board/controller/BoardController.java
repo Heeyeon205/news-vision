@@ -45,6 +45,7 @@ public class BoardController {
     ) {
         Long userId = userDetails != null ? userDetails.getId() : null;
         Board board = boardService.findById(boardId);
+        boardService.incrementViewCount(board);
         BoardDetailResponse boardDetail = boardService.getBoardDetail(board, userId);
         return ResponseEntity.ok(ApiResponse.success(boardDetail));
     }
@@ -116,12 +117,5 @@ public class BoardController {
         int LikeCount = boardLikeService.countByBoardId(boardId);
         Boolean isLike = false;
         return ResponseEntity.ok(ApiResponse.success(new BoardLikeResponse(LikeCount, isLike)));
-    }
-
-    @PostMapping("/{boardId}/views")
-    public ResponseEntity<ApiResponse<Void>> incrementViewCount(@PathVariable Long boardId) {
-        Board board = boardService.findById(boardId);
-        boardService.incrementViewCount(board);
-        return ResponseEntity.ok(ApiResponse.success());
     }
 }

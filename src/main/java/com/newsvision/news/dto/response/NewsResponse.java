@@ -2,27 +2,32 @@ package com.newsvision.news.dto.response;
 
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.news.entity.News;
+import com.newsvision.poll.controller.response.PollListResponse;
 import lombok.Builder;
 import lombok.Getter;
+
+import java.util.List;
 
 @Getter
 @Builder
 public class NewsResponse {
-
     private Long id;
+    private String image;
     private String title;
     private String content;
-    private String image;
+    private String createdAt;
+    private String category;
+
     private int likeCount;
     private int view;
-    private String createdAt;
-    private Long userId;
-    private String profileImage;
-    private String authorNickname;
-    private String authorBadgeIcon;
-    private String category;
+
     private boolean liked;
     private boolean scraped;
+
+    private Long userId;
+    private String profileImage;
+    private String nickname;
+    private String icon;
     private String badgeTitle;
 
     public static NewsResponse of(News news, int likeCount, boolean liked, boolean scraped) {
@@ -36,8 +41,8 @@ public class NewsResponse {
                 .createdAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
                 .userId(news.getUser().getId())
                 .profileImage(news.getUser().getImage())
-                .authorNickname(news.getUser().getNickname())
-                .authorBadgeIcon(news.getUser().getBadge() != null ? news.getUser().getBadge().getIcon() : null)
+                .nickname(news.getUser().getNickname())
+                .icon(news.getUser().getBadge() != null ? news.getUser().getBadge().getIcon() : null)
                 .category(news.getCategory().getName())
                 .liked(liked)
                 .scraped(scraped)
