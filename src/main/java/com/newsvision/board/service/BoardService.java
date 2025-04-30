@@ -51,7 +51,6 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
-
     public List<BoardResponse> getBoardsList(int page, int size, Long categoryId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Board> boardPage;
@@ -65,7 +64,6 @@ public class BoardService {
             log.info("전체 게시글 조회");
             boardPage = boardRepository.findAll(pageable);
         }
-
 
         List<Board> boards = boardPage.getContent();
         return boards.stream().map(board -> {
@@ -92,7 +90,6 @@ public class BoardService {
 
         List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
         return new BoardCreateResponse(board, likeCount, commentCount, comments);
-
     }
 
     @Transactional
@@ -133,8 +130,8 @@ public class BoardService {
             log.error("게시글 생성 중 예외 발생!",e);
             throw e;
         }
-
     }
+
     @Transactional(readOnly = true)
     public BoardUpdateResponse getBoardUpdate(Board board) { // 게시글 상세 조회
         // 좋아요 수 계산 - null 체크 추가
@@ -145,7 +142,6 @@ public class BoardService {
         List<CategoryResponse> categoryies = categoryService.findAll();
         List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
         return new BoardUpdateResponse(board, likeCount, commentCount, comments, categoryies);
-
     }
 
     @Transactional
@@ -204,7 +200,6 @@ public class BoardService {
                 log.error("S3 이미지 삭제 실패: URL - {}, 오류: {}", imageUrl, e.getMessage());
             }
         }
-
         boardRepository.delete(board); // 게시글 삭제
         boardSearchService.deleteBoard(boardId);
     }

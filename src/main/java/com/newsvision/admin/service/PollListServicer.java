@@ -23,7 +23,7 @@ public class PollListServicer {
                         .content(poll.getContent())
                         .createdAt(poll.getCreatedAt())
                         .expiredAt(poll.getExpiredAt())
-                        .authorNickname(poll.getUser().getNickname())
+                        .nickname(poll.getUser().getNickname())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -36,7 +36,7 @@ public class PollListServicer {
                         .content(poll.getContent())
                         .createdAt(poll.getCreatedAt())
                         .expiredAt(poll.getExpiredAt())
-                        .authorNickname(poll.getUser().getNickname())
+                        .nickname(poll.getUser().getNickname())
                         .build())
                 .collect(Collectors.toList());
     }

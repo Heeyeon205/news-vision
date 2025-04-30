@@ -6,6 +6,8 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import co.elastic.clients.json.JsonData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newsvision.elasticsearch.dto.PopularKeywordResponse;
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,8 @@ import java.util.stream.Collectors;
 public class PopularKeywordService {
     private final ElasticsearchClient esClient;
 
-    public List<PopularKeywordResponse> getPopularKeywordsByType(String type) throws Exception {
+    public List<PopularKeywordResponse> getPopularKeywordsByType(String type) {
+        log.info("일단 여기는 들어옴 파퓰러 서비스");
         try {
             String json = """
             {
@@ -60,15 +63,15 @@ public class PopularKeywordService {
                     .index("search-logs")
                     .withJson(new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8)))
             );
-
+            log.info("파퓰러 서비스 파싱 완료");
+            log.info("request_{}", request);
             SearchResponse<Void> response = esClient.search(request, Void.class);
 
             if (response.aggregations() == null) {
                 log.error("🔥 aggregation 결과가 null임");
-                throw new IllegalStateException("Aggregation 결과가 null임");
+                throw new CustomException(ErrorCode.INVALID_INPUT);
             }
-
-
+            log.info("response.aggregations(){}", response.aggregations());
             return response.aggregations()
                     .get("top_keywords")
                     .sterms()
@@ -80,7 +83,7 @@ public class PopularKeywordService {
         } catch (Exception e) {
             e.printStackTrace();
             log.error("🔥 Elasticsearch 쿼리 중 예외 발생", e); // 여기에 찍힌다!
-            throw e;
+            throw new CustomException(ErrorCode.INVALID_INPUT);
         }
     }
 }

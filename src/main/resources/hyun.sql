@@ -143,3 +143,17 @@ VALUES (1, '게시글 내용입니다.', 1, '2025-04-22 10:00:00', 1, 'https://e
        (8, '팁과 노하우 공유!', 3, '2025-04-25 15:50:00', 1, 'https://example.com/images/board8.jpg', 60, false),
        (9, '질문이 있어요!', 2, '2025-04-26 10:10:00', 2, 'https://example.com/images/board9.jpg', 40, false),
        (10, '오늘의 소식입니다.', 5, '2025-04-26 12:00:00', 3, 'https://example.com/images/board10.jpg', 200,  false);
+
+INSERT INTO polls (title, content, created_at, expired_at, user_id) values
+('트럼프 좋아함?', '테스트1', '2025-04-22 10:00:00','2025-06-22 10:00:00', 1),
+('오늘 저녁 메뉴는?', '테스트2', '2025-04-22 10:00:00','2025-06-23 10:00:00', 2);
+
+INSERT INTO polls_options (content,  poll_id) values
+('개별루', 1),
+('괜춘',1),
+('좋음 ㅇㅇ',1),
+('ㄹㅇ미친놈임',1),
+('제육',2),
+('탕수육',2),
+('피자',2),
+('치킨',2);

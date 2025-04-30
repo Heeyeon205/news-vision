@@ -1,6 +1,7 @@
 package com.newsvision.poll.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -34,6 +35,7 @@ public class Poll {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @JsonBackReference("user-polls")
     private User user;
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
