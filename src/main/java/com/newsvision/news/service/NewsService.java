@@ -234,7 +234,6 @@ public class NewsService {
                 byte[] imageBytes = image.getBytes();
                 newImageUrl = fileUploaderService.uploadNewsImage(imageBytes, userId);
 
-                // ✅ 기존 이미지가 기본 이미지가 아니라면 삭제
                 if (oldImageUrl != null &&
                         !oldImageUrl.equals(defaultImageForCategory) &&
                         !oldImageUrl.isEmpty()) {
@@ -264,7 +263,7 @@ public class NewsService {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         try {
             Thumbnails.of(file.getInputStream())
-                    .size(530, 300)
+                    .size(600, 350)
                     .outputFormat("jpg")
                     .outputQuality(0.9)
                     .toOutputStream(outputStream);

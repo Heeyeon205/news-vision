@@ -1,5 +1,6 @@
 package com.newsvision.admin.service;
 
+import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.poll.dto.response.PollResponse;
 import com.newsvision.poll.repository.PollRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class PollListServicer {
                         .id(poll.getId())
                         .title(poll.getTitle())
                         .content(poll.getContent())
-                        .createdAt(poll.getCreatedAt())
-                        .expiredAt(poll.getExpiredAt())
+                        .createdAt(TimeUtil.formatRelativeTime(poll.getCreatedAt()))
+                        .expiredAt(TimeUtil.dDayCaculate(poll.getExpiredAt()))
                         .nickname(poll.getUser().getNickname())
                         .build())
                 .collect(Collectors.toList());
@@ -34,8 +35,8 @@ public class PollListServicer {
                         .id(poll.getId())
                         .title(poll.getTitle())
                         .content(poll.getContent())
-                        .createdAt(poll.getCreatedAt())
-                        .expiredAt(poll.getExpiredAt())
+                        .createdAt(TimeUtil.formatRelativeTime(poll.getCreatedAt()))
+                        .expiredAt(TimeUtil.dDayCaculate(poll.getExpiredAt()))
                         .nickname(poll.getUser().getNickname())
                         .build())
                 .collect(Collectors.toList());

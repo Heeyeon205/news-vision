@@ -1,4 +1,4 @@
-INSERT INTO badges (icon, title, role)
+ INSERT INTO badges (icon, title, role)
 VALUES ('https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/admin-badge.png', '뉴션 공식 계정', 'ROLE_ADMIN'),
        ('https://newsion-project.s3.ap-northeast-2.amazonaws.com/profiles/4/creator-badge.png', '뉴션 공식 크리에이터', 'ROLE_CREATOR');
 

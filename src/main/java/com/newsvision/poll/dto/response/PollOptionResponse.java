@@ -1,12 +1,13 @@
 package com.newsvision.poll.dto.response;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
-@Setter
+@Builder
 public class PollOptionResponse {
-    private Long id;
-    private String content;
-    private int count;
+    private final Long id;
+    private final String content;
+    private final int count;
 }

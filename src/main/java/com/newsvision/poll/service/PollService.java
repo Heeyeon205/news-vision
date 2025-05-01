@@ -1,5 +1,6 @@
 package com.newsvision.poll.service;
 
+import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.poll.dto.request.CreatePollRequest;
@@ -15,6 +16,7 @@ import com.newsvision.poll.repository.PollOptionRepository;
 import com.newsvision.poll.repository.PollRepository;
 import com.newsvision.poll.repository.PollVoteRepository;
 import com.newsvision.user.entity.User;
+import com.newsvision.user.service.FollowService;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +33,11 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class PollService {
     private final PollRepository pollRepository;
+
     private final UserService userService;
     private final PollOptionService pollOptionService;
+    private final PollVoteService pollVoteService;
+    private final FollowService followService;
 
     private final PollOptionRepository pollOptionRepository;
     private final PollVoteRepository pollVoteRepository;
@@ -47,6 +52,37 @@ public class PollService {
         return polls.stream()
                 .map(PollListResponse::new)
                 .toList();
+    }
+
+    public PollResponse getPoll(Long pollId, Long userId) {
+        Poll poll = findById(pollId);
+        return convertToPollResponse(poll, userId);
+    }
+
+    private PollResponse convertToPollResponse(Poll poll, Long userId) {
+        boolean voted = userId != null && pollVoteService.existsByPollVote(poll.getId(), userId);
+        boolean followed = userId != null && followService.existsFollow(userId, poll.getUser().getId());
+        return PollResponse.builder()
+                .id(poll.getId())
+                .title(poll.getTitle())
+                .content(poll.getContent())
+                .createdAt(TimeUtil.formatRelativeTime(poll.getCreatedAt()))
+                .expiredAt(TimeUtil.dDayCaculate(poll.getExpiredAt()))
+                .userId(poll.getUser().getId())
+                .nickname(poll.getUser().getNickname())
+                .image(poll.getUser().getImage())
+                .icon(poll.getUser().getBadge().getIcon())
+                .badgeTitle(poll.getUser().getBadge().getTitle())
+                .isVote(voted)
+                .followed(followed)
+                .pollOptions(poll.getPollOptions().stream()
+                        .map(option -> PollOptionResponse.builder()
+                                .id(option.getId())
+                                .content(option.getContent())
+                                .count(option.getCount())
+                                .build())
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     @Transactional
@@ -70,7 +106,7 @@ public class PollService {
             pollOptionRepository.saveAll(pollOptions);
             poll.setPollOptions(pollOptions);
 
-            return convertToPollResponse(poll);
+            return convertToPollResponse(poll, userId);
     }
 
     @Transactional
@@ -118,7 +154,7 @@ public class PollService {
 
         // poll 저장 (cascade로 인해 pollOptions도 함께 저장됨)
         pollRepository.save(poll);
-        return convertToPollResponse(poll);
+        return convertToPollResponse(poll, userId);
     }
 
     public boolean checkVote(Long userId, Long pollId) {
@@ -142,31 +178,6 @@ public class PollService {
 
         pollOption.setCount(pollOption.getCount() + 1);
         pollOptionRepository.save(pollOption);
-    }
-
-    public PollResponse getPoll(Long pollId) {
-        Poll poll = findById(pollId);
-        return convertToPollResponse(poll);
-    }
-
-    private PollResponse convertToPollResponse(Poll poll) {
-        PollResponse response = new PollResponse();
-        response.setId(poll.getId());
-        response.setTitle(poll.getTitle());
-        response.setContent(poll.getContent());
-        response.setCreatedAt(poll.getCreatedAt());
-        response.setExpiredAt(poll.getExpiredAt());
-        response.setNickname(poll.getUser() != null ? poll.getUser().getNickname() : "Unknown");
-        response.setPollOptions(poll.getPollOptions().stream()
-                .map(option -> {
-                    PollOptionResponse optionResponse = new PollOptionResponse();
-                    optionResponse.setId(option.getId());
-                    optionResponse.setContent(option.getContent());
-                    optionResponse.setCount(option.getCount());
-                    return optionResponse;
-                })
-                .collect(Collectors.toList()));
-        return response;
     }
 
     @Transactional

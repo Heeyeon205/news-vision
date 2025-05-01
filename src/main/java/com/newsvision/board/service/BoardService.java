@@ -88,7 +88,6 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardCreateResponse getBoardCreate(Board board) {
         int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
-        // 댓글 수 계산 - null 체크 추가
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
 
         List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
@@ -216,7 +215,7 @@ public class BoardService {
     private byte[] resizeBoardImage(MultipartFile file) throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         Thumbnails.of(file.getInputStream())
-                .size(530, 300)
+                .size(600, 350)
                 .outputFormat("jpg")
                 .outputQuality(0.9)
                 .toOutputStream(outputStream);

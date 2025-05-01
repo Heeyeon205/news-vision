@@ -7,17 +7,22 @@ import java.util.List;
 
 
 @Getter
-@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class PollResponse {
-    private Long id;
-    private String title;
-    private String content;
-    private LocalDateTime createdAt;
-    private LocalDateTime expiredAt;
-    private String nickname;
-    private boolean isVote;
-    private List<PollOptionResponse> pollOptions;
+    private final Long id;
+    private final String title;
+    private final String content;
+    private final String createdAt;
+    private final String expiredAt;
+
+    private final Long userId;
+    private final String image;
+    private final String nickname;
+    private final String icon;
+    private final String badgeTitle;
+
+    private final boolean isVote;
+    private final boolean followed;
+
+    private final List<PollOptionResponse> pollOptions;
 }

@@ -21,14 +21,24 @@ public class PollController {
     private final PollService pollService;
     private final PollVoteRepository pollVoteRepository;
 
+    @GetMapping("/{pollId}")
+    public ResponseEntity<ApiResponse<PollResponse>> getPoll(
+            @PathVariable Long pollId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long userId = userDetails != null ? userDetails.getId() : null;
+        PollResponse response = pollService.getPoll(pollId, userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
     @PostMapping()
-    public ResponseEntity<ApiResponse<PollResponse>> createPoll(
+    public ResponseEntity<ApiResponse<Long>> createPoll(
             @RequestBody CreatePollRequest request,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         Long userId = userDetails.getId();
         PollResponse response = pollService.createPoll(request,userId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(response.getId()));
     }
 
     @PutMapping("/{pollId}")
@@ -52,12 +62,6 @@ public class PollController {
         pollService.vote(request, userId);
         int voteCount = pollVoteRepository.countByPollOption_Poll_Id(pollId);
         return ResponseEntity.ok(ApiResponse.success(new PollVoteResponse(voteCount, pollService.checkVote(pollId, userId))));
-    }
-
-    @GetMapping("/{pollId}")
-    public ResponseEntity<ApiResponse<PollResponse>> getPoll(@PathVariable Long pollId) {
-        PollResponse response = pollService.getPoll(pollId);
-        return ResponseEntity.ok(ApiResponse.success(response));
     }
 
     @DeleteMapping("/{pollId}")
