@@ -24,25 +24,32 @@ public class BoardReportService {
 
     public List<BoardReportResponse> getAllReports() {
         return boardReportRepository.findAll().stream()
-                .map(report -> BoardReportResponse.builder()
-                        .id(report.getId())
-                        .boardId(String.valueOf(report.getBoard().getId())) // 게시글 ID
-                        .boardContent(report.getBoard().getContent())       // 게시글 내용
-                        .userId(String.valueOf(report.getUser().getId()))   // 신고자 ID
-                        .userNickname(report.getUser().getNickname())       // 신고자 닉네임
-                        .build())
+                .map(report -> {
+                    Board board = report.getBoard();
+                    return BoardReportResponse.builder()
+                            .id(report.getId())
+                            .boardId(board.getId())
+                            .boardWriter(board.getUser().getNickname())
+                            .boardCreatedAt(board.getCreateAt().toString())
+                            .userId(report.getUser().getId())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
+
     public List<BoardReportResponse> getMaxAllReports() {
         return boardReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
-                .map(report -> BoardReportResponse.builder()
-                        .id(report.getId())
-                        .boardId(String.valueOf(report.getBoard().getId())) // 게시글 ID
-                        .boardContent(report.getBoard().getContent())       // 게시글 내용
-                        .userId(String.valueOf(report.getUser().getId()))   // 신고자 ID
-                        .userNickname(report.getUser().getNickname())       // 신고자 닉네임
-                        .build())
+                .map(report -> {
+                    Board board = report.getBoard();
+                    return BoardReportResponse.builder()
+                            .id(report.getId())
+                            .boardId(board.getId())
+                            .boardWriter(board.getUser().getNickname())
+                            .boardCreatedAt(board.getCreateAt().toString())
+                            .userId(report.getUser().getId())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -58,8 +65,11 @@ public class BoardReportService {
 
         Board board = report.getBoard();
         board.setIsReported(true);
-        board.setContent("관리자로 인해 삭제된 댓글 입니다.");
+        board.setContent("관리자로 인해 삭제된 게시글 입니다.");
         boardRepository.save(board);
+
+        boardReportRepository.deleteByBoard(board);
+
     }
 
 

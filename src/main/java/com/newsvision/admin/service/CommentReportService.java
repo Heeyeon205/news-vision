@@ -24,27 +24,38 @@ public class CommentReportService {
 
     public List<CommentReportResponse> getAllCommentReports() {
         return commentReportRepository.findAll().stream()
-                .map(report -> CommentReportResponse.builder()
-                        .id(report.getId())
-                        .commentId(String.valueOf(report.getComment().getId()))
-                        .commentContent(report.getComment().getContent())  // 댓글 내용 가져오기
-                        .userId(String.valueOf(report.getUser().getId()))
-                        .userNickname(report.getUser().getNickname())      // 신고자 닉네임 가져오기
-                        .build())
+                .map(report -> {
+                    Comment comment = report.getComment();
+                    return CommentReportResponse.builder()
+                            .id(report.getId())
+                            .commentId(String.valueOf(comment.getId()))
+                            .commentContent(comment.getContent())
+                            .userId(String.valueOf(report.getUser().getId()))
+                            .userNickname(report.getUser().getNickname())
+                            .boardId(comment.getBoard().getId()) // 게시글 ID 추가
+                            .createdAt(comment.getCreateAt().toString()) // ISO 문자열로 변환
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
     public List<CommentReportResponse> getMaxAllCommentReports() {
         return commentReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
-                .map(report -> CommentReportResponse.builder()
-                        .id(report.getId())
-                        .commentId(String.valueOf(report.getComment().getId()))
-                        .commentContent(report.getComment().getContent())  // 댓글 내용 가져오기
-                        .userId(String.valueOf(report.getUser().getId()))
-                        .userNickname(report.getUser().getNickname())      // 신고자 닉네임 가져오기
-                        .build())
+                .map(report -> {
+                    Comment comment = report.getComment();
+                    return CommentReportResponse.builder()
+                            .id(report.getId())
+                            .commentId(String.valueOf(comment.getId()))
+                            .commentContent(comment.getContent())
+                            .userId(String.valueOf(report.getUser().getId()))
+                            .userNickname(report.getUser().getNickname())
+                            .boardId(comment.getBoard().getId()) // 게시글 ID 추가
+                            .createdAt(comment.getCreateAt().toString()) // 날짜 포맷은 프론트에서 처리
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
+
 
 
     public void deleteCategory(Long id) {
@@ -60,8 +71,10 @@ public class CommentReportService {
 
         Comment comment = report.getComment();
         comment.setIsReported(true);
-        comment.setContent("관리자로 인해 삭제된 게시글 입니다.");
+        comment.setContent("관리자로 인해 삭제된 댓글 입니다.");
         commentRepository.save(comment);
+
+        commentReportRepository.deleteByComment(comment);
     }
 
 }
