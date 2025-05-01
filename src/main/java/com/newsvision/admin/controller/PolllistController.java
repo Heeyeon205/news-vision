@@ -2,7 +2,7 @@ package com.newsvision.admin.controller;
 
 import com.newsvision.admin.service.PollListServicer;
 import com.newsvision.global.exception.ApiResponse;
-import com.newsvision.poll.controller.response.PollResponse;
+import com.newsvision.poll.dto.response.PollResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

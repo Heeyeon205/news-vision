@@ -25,21 +25,21 @@ public class SearchController {
 
     private final NewsSearchService newsSearchService;
     private final BoardSearchService boardSearchService;
-    private final ObjectMapper objectMapper; // ✅ ObjectMapper 주입
+    private final ObjectMapper objectMapper;
     private static final org.slf4j.Logger searchLogger = org.slf4j.LoggerFactory.getLogger("SEARCH_LOGGER");
 
     @GetMapping("/news")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> searchNews(@RequestParam String keyword) {
-        log.info("keyword: {}", keyword);
         if (keyword != null && !keyword.trim().isEmpty()) {
             Map<String, String> logMap = new HashMap<>();
             logMap.put("type", "news");
             logMap.put("keyword", keyword);
             try {
-                String jsonLog = objectMapper.writeValueAsString(logMap); // ✅ JSON 직렬화
+                String jsonLog = objectMapper.writeValueAsString(logMap);
                 searchLogger.info(jsonLog);
             } catch (JsonProcessingException e) {
-                log.warn("❌ 검색 로그 JSON 직렬화 실패", e);
+                log.error("error: ", e);
+                e.printStackTrace();
             }
         }
 
@@ -61,7 +61,7 @@ public class SearchController {
             logMap.put("type", "board");
             logMap.put("keyword", keyword);
             try {
-                String jsonLog = objectMapper.writeValueAsString(logMap); // ✅ JSON 직렬화
+                String jsonLog = objectMapper.writeValueAsString(logMap);
                 searchLogger.info(jsonLog);
             } catch (JsonProcessingException e) {
                 log.warn("❌ 검색 로그 JSON 직렬화 실패", e);

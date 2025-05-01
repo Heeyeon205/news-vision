@@ -2,15 +2,14 @@ package com.newsvision.poll.controller;
 
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
-import com.newsvision.poll.controller.request.CreatePollRequest;
-import com.newsvision.poll.controller.request.UpdatePollRequest;
-import com.newsvision.poll.controller.request.VoteRequest;
-import com.newsvision.poll.controller.response.PollResponse;
-import com.newsvision.poll.controller.response.PollVoteResponse;
+import com.newsvision.poll.dto.request.CreatePollRequest;
+import com.newsvision.poll.dto.request.UpdatePollRequest;
+import com.newsvision.poll.dto.request.VoteRequest;
+import com.newsvision.poll.dto.response.PollResponse;
+import com.newsvision.poll.dto.response.PollVoteResponse;
 import com.newsvision.poll.repository.PollVoteRepository;
 import com.newsvision.poll.service.PollService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -52,7 +51,7 @@ public class PollController {
         Long userId = userDetails.getId();
         pollService.vote(request, userId);
         int voteCount = pollVoteRepository.countByPollOption_Poll_Id(pollId);
-        return ResponseEntity.ok(ApiResponse.success(new PollVoteResponse(voteCount, true)));
+        return ResponseEntity.ok(ApiResponse.success(new PollVoteResponse(voteCount, pollService.checkVote(pollId, userId))));
     }
 
     @GetMapping("/{pollId}")

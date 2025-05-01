@@ -1,6 +1,6 @@
 package com.newsvision.admin.service;
 
-import com.newsvision.poll.controller.response.PollResponse;
+import com.newsvision.poll.dto.response.PollResponse;
 import com.newsvision.poll.repository.PollRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;

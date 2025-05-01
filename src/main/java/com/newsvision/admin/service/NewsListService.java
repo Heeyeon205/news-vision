@@ -3,7 +3,6 @@ package com.newsvision.admin.service;
 import com.newsvision.news.dto.response.NewsResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.repository.NewsRepository;
-import com.newsvision.poll.controller.response.PollListResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;

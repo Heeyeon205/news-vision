@@ -1,6 +1,7 @@
 package com.newsvision.news.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.dto.request.NaverNewsSaveRequest;
@@ -37,10 +38,7 @@ public class  NaverNewsService {
     private String clientSecret;
 
     private final NaverNewsRepository naverNewsRepository;
-
-    // 스프링 기본 HTTP 클라이언트
     private RestTemplate restTemplate = new RestTemplate();
-    // response.getBody()로 받은 JSON 문자열로 변환
     private ObjectMapper objectMapper = new ObjectMapper();
 
     public List<NaverNewsInfoResponse> searchNews(String query, int display) {
@@ -67,7 +65,7 @@ public class  NaverNewsService {
                             .description(decodeDescription(item.getDescription()))
                             .link(decodeDescription(item.getLink()))
                             .originallink(decodeDescription(item.getOriginallink()))
-                            .pubDate(item.getPubDate())
+                            .pubDate(TimeUtil.formatRelativeTime(TimeUtil.stringToLocalDateTime(item.getPubDate())))
                             .build())
 //                    .filter(news ->
 //                            news.getTitle().toLowerCase().contains(query.toLowerCase()) ||
@@ -75,13 +73,12 @@ public class  NaverNewsService {
 //                    )
                     .distinct()
                     .toList();
-
         } catch (org.springframework.web.client.RestClientResponseException e) {
-            log.error("HTTP 오류 - 상태 코드: {},", e.getRawStatusCode());
-            log.error("HTTP 오류 - 바디: {}", e.getResponseBodyAsString());
+            log.error("error: {},", e.getRawStatusCode());
+            log.error("error {}", e.getResponseBodyAsString());
             throw new CustomException(ErrorCode.NOT_FOUND);
         } catch (Exception e) {
-            log.error("JSON 파싱 실패", e);
+            log.error("error_{}", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
@@ -108,5 +105,10 @@ public class  NaverNewsService {
             log.error("디코딩 실패", e);
             return text;
         }
+    }
+
+    @Transactional
+    public void deleteNaverNews(Long id) {
+        naverNewsRepository.deleteById(id);
     }
 }

@@ -46,7 +46,8 @@ public class NewsController {
             @PathVariable Long newsId,
     @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, userDetails.getId())));
+        Long userId = (userDetails != null) ? userDetails.getId() : null;
+        return ResponseEntity.ok(ApiResponse.success(newsService.getNewsDetail(newsId, userId)));
     }
 
     @PostMapping("/{newsId}/like")
@@ -166,11 +167,13 @@ public class NewsController {
     }
 
     @DeleteMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<?>> deleteNews(
+    public ResponseEntity<ApiResponse<String>> deleteNews(
             @PathVariable Long newsId,
             @AuthenticationPrincipal CustomUserDetails customUserDetails
     ) {
-        Long userId = customUserDetails.getId();
+            Long userId = customUserDetails.getId();
+            News news = newsService.findByNewsId(newsId);
+            naverNewsService.deleteNaverNews(news.getNaverNews().getId());
             newsService.deleteNews(userId, newsId);
             return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 삭제되었습니다."));
     }
