@@ -12,6 +12,7 @@ public class CategoryService {
 
     public List<CategoryResponse> findAll() {
         return categoryRepository.findAll().stream()
+                .filter(categories -> categories.getId() != 1L)
                 .map(categories -> new CategoryResponse(categories.getId(), categories.getName()))
                 .toList();
     }

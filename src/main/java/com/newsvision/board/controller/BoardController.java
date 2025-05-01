@@ -73,7 +73,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 수정 API
+    @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<BoardUpdateResponse>> updateBoard(
             @PathVariable Long boardId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
