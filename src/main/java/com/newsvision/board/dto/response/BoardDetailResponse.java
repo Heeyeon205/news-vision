@@ -23,8 +23,10 @@ public class BoardDetailResponse {
     private String createdAt;
     private int view;
 
-    private Boolean isReported;
+    private boolean isReported;
     private boolean isLike;
+    private boolean followed;
+
     private int likeCount;
     private int commentCount;
 
@@ -32,7 +34,7 @@ public class BoardDetailResponse {
 
     private List<CommentResponse> comments;
 
-    public BoardDetailResponse(Board board, int likeCount, int commentCount, List<CommentResponse> comments, boolean isLike) {
+    public BoardDetailResponse(Board board, int likeCount, int commentCount, List<CommentResponse> comments, boolean isLike, boolean followed) {
         this.id = board.getId();
         this.nickname = board.getUser().getNickname();
         this.userImage = board.getUser().getImage();
@@ -47,6 +49,7 @@ public class BoardDetailResponse {
         this.isReported = board.getIsReported();
         this.likeCount = likeCount;
         this.isLike = isLike;
+        this.followed = followed;
         this.commentCount = commentCount;
         this.comments = comments;
     }

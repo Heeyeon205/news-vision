@@ -13,6 +13,7 @@ import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.user.entity.User;
+import com.newsvision.user.service.FollowService;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -45,6 +46,7 @@ public class BoardService {
     private final CommentService commentService;
     private final CategoryService categoryService;
     private final BoardLikeService boardLikeService;
+    private final FollowService followService;
 
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId)
@@ -78,8 +80,9 @@ public class BoardService {
         int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
         boolean isLike = userId != null && boardLikeService.existsByBoardIdAndUserId(board.getId(), userId);
+        boolean followed = userId != null && followService.existsFollow(userId, board.getUser().getId());
         List<CommentResponse> comments  = commentService.getCommentsByBoardId(board.getId());
-        return new BoardDetailResponse(board, likeCount, commentCount, comments, isLike);
+        return new BoardDetailResponse(board, likeCount, commentCount, comments, isLike, followed);
     }
 
     @Transactional(readOnly = true)

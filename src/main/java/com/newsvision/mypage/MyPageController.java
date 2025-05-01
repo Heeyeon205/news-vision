@@ -3,11 +3,13 @@ package com.newsvision.mypage;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.mypage.response.*;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,11 +21,22 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MyPageController {
     private final MypageService mypageService;
+    private final UserService userService;
 
     @GetMapping({"", "/"})
     public ResponseEntity<ApiResponse<MypageInfoResponse>> userInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
         MypageInfoResponse response = mypageService.getPortionUser(userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<ApiResponse<OtherUserInfoResponse>> otherUserInfo(
+            @PathVariable Long userId,
+            @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        Long logId = userDetails != null ? userDetails.getId() : null;
+        OtherUserInfoResponse response = mypageService.getPortionOtherUser(userId, logId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
@@ -73,6 +86,43 @@ public class MyPageController {
     ) {
         Long id = customUserDetails.getId();
         List<UserNoticeListResponse> response = mypageService.getMyPageNoticeList(id);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/news-list/{userId}")
+    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getUserPageNewsList(
+            @PathVariable Long userId) {
+        log.info("뉴스리스트 userId = {}", userId);
+        List<UserNewsListResponse> response = mypageService.getMypageNewsList(userId);
+        log.info("뉴스리스트 response = {}", response);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/board-list/{userId}")
+    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getUserPageBoardList(
+            @PathVariable Long userId) {
+        List<UserBoardListResponse> response = mypageService.getMypageBoardList(userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/scrap-list/{userId}")
+    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getUserPageScrapList(
+            @PathVariable Long userId) {
+        List<UserScrapListResponse> response = mypageService.getMypageScrapList(userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/follower-list/{userId}")
+    public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPagefollowerList(
+            @PathVariable Long userId) {
+        List<FollowResponse> response = mypageService.getFollowers(userId);
+        return ResponseEntity.ok(ApiResponse.success(response));
+    }
+
+    @GetMapping("/following-list/{userId}")
+    public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPagefollowingList(
+           @PathVariable Long userId) {
+        List<FollowResponse> response = mypageService.getFollowing(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

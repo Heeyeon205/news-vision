@@ -39,6 +39,15 @@ public class MypageService {
         return new MypageInfoResponse(user, followerCount, followingCount, badge);
     }
 
+    public OtherUserInfoResponse getPortionOtherUser(Long userId, Long logId) {
+        User user = userService.findByUserId(userId);
+        int followerCount = followService.getCountFollower(user);
+        int followingCount = followService.getCountFollowing(user);
+        Badge badge = badgeService.getBadgeByUser(user);
+        boolean followed = userId != null && followService.existsFollow(logId, userId);
+        return new OtherUserInfoResponse(user, followerCount, followingCount, badge, followed);
+    }
+
     public List<FollowResponse> getFollowers(Long id){
         User user = userService.findByUserId(id);
         return user.getFollowerList().stream()

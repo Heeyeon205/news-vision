@@ -15,31 +15,30 @@ import java.util.stream.Collectors;
 public class NewsListService {
     private final NewsRepository newsRepository;
 
-    public List<NewsResponse> getAllNews() {
-        List<News> newsList = newsRepository.findAll(); // 정렬 필요 시 Sort 추가
-        return newsList.stream()
-                .map(news -> NewsResponse.of(
-                        news,
-                        0,       // likeCount → 좋아요 연관 관계 없으므로 기본값
-                        false,   // liked → 인증 없이 false
-                        false  // scraped → 인증 없이 false
-                ))
-                .collect(Collectors.toList());
-    }
-
-    public List<NewsResponse> getMaxAllNews() {
-        List<News> newsList = newsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
-
-        return newsList.stream()
-                .map(news -> NewsResponse.of(
-                        news,
-                        0,       // likeCount → 좋아요 연관 관계 없으므로 기본값
-                        false,   // liked → 인증 없이 false
-                        false   // scraped → 인증 없이 false
-                ))
-                .collect(Collectors.toList());
-    }
-
-
-
+//    public List<NewsResponse> getAllNews() {
+//        List<News> newsList = newsRepository.findAll(); // 정렬 필요 시 Sort 추가
+//        return newsList.stream()
+//                .map(news -> NewsResponse.of(
+//                        news,
+//                        0,       // likeCount → 좋아요 연관 관계 없으므로 기본값
+//                        false,   // liked → 인증 없이 false
+//                        false,  // scraped → 인증 없이 false
+//                        false
+//                ))
+//                .collect(Collectors.toList());
+//    }
+//
+//    public List<NewsResponse> getMaxAllNews() {
+//        List<News> newsList = newsRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
+//
+//        return newsList.stream()
+//                .map(news -> NewsResponse.of(
+//                        news,
+//                        0,       // likeCount → 좋아요 연관 관계 없으므로 기본값
+//                        false,   // liked → 인증 없이 false
+//                        false,   // scraped → 인증 없이 false
+//                        false
+//                ))
+//                .collect(Collectors.toList());
+//    }
 }

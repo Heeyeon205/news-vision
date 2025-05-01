@@ -20,6 +20,7 @@ public class NewsResponse {
 
     private boolean liked;
     private boolean scraped;
+    private boolean followed;
 
     private Long userId;
     private String profileImage;
@@ -27,7 +28,7 @@ public class NewsResponse {
     private String icon;
     private String badgeTitle;
 
-    public static NewsResponse of(News news, int likeCount, boolean liked, boolean scraped) {
+    public static NewsResponse of(News news, int likeCount, boolean liked, boolean scraped, boolean followed) {
         return NewsResponse.builder()
                 .id(news.getId())
                 .title(news.getTitle())
@@ -43,6 +44,7 @@ public class NewsResponse {
                 .category(news.getCategory().getName())
                 .liked(liked)
                 .scraped(scraped)
+                .followed(followed)
                 .badgeTitle(news.getUser().getBadge().getTitle())
                 .build();
     }

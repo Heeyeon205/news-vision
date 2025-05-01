@@ -19,6 +19,7 @@ import com.newsvision.news.repository.ScrapRepository;
 import com.newsvision.poll.dto.response.PollListResponse;
 import com.newsvision.poll.service.PollService;
 import com.newsvision.user.entity.User;
+import com.newsvision.user.service.FollowService;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +67,7 @@ public class NewsService {
     private final CategoryService categoryService;
     private final UserService userService;
     private final PollService pollService;
+    private final FollowService followService;
 
     private final CategoryRepository categoryRepository;
     private final ScrapRepository scrapRepository;
@@ -95,13 +97,14 @@ public class NewsService {
         int likeCount = newsLikeService.countLikeByNews(news);
         boolean liked = userId != null && newsLikeService.existsLike(newsId, userId);
         boolean scraped = userId != null && scrapService.existsScrap(newsId, userId);
-        return NewsResponse.of(news, likeCount, liked, scraped);
+        boolean followed = userId != null && followService.existsFollow(userId, news.getUser().getId());
+        return NewsResponse.of(news, likeCount, liked, scraped, followed);
     }
 
     @Transactional
     public void addLike(Long newsId, Long userId) {
         News news = findByNewsId(newsId);
-        if(newsLikeService.existsLike(newsId, userId)) {
+        if (newsLikeService.existsLike(newsId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         newsLikeService.addLike(news, userService.findByUserId(userId));
@@ -110,7 +113,7 @@ public class NewsService {
     @Transactional
     public void removeLike(Long newsId, Long userId) {
         News news = findByNewsId(newsId);
-        if(!newsLikeService.existsLike(newsId, userId)) {
+        if (!newsLikeService.existsLike(newsId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         newsLikeService.removeLike(news, userService.findByUserId(userId));
@@ -119,16 +122,16 @@ public class NewsService {
     @Transactional
     public void addScrap(Long newsId, Long userId) {
         News news = findByNewsId(newsId);
-        if(scrapService.existsScrap(newsId, userId)){
+        if (scrapService.existsScrap(newsId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         scrapService.save(news, userService.findByUserId(userId));
     }
 
     @Transactional
-    public void removeScrap(Long newsId,  Long userId) {
+    public void removeScrap(Long newsId, Long userId) {
         News news = findByNewsId(newsId);
-        if(!scrapService.existsScrap(newsId,userId)){
+        if (!scrapService.existsScrap(newsId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         scrapService.deleteByUserAndNews(news, userService.findByUserId(userId));
@@ -266,7 +269,7 @@ public class NewsService {
                     .outputQuality(0.9)
                     .toOutputStream(outputStream);
             return outputStream.toByteArray();
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new CustomException(ErrorCode.NOT_FOUND);
         }
