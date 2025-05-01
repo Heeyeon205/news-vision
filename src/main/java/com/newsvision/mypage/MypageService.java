@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Slf4j
@@ -56,6 +57,7 @@ public class MypageService {
         User user = userService.findByUserId(userId);
         List<Board> boardList = user.getBoardList();
         return boardList.stream()
+                .sorted(Comparator.comparing(Board::getId).reversed())
                 .map(board -> {
                     int likeCount = boardService.countByBoardId(board.getId());
                     int commentCount = commentService.countByBoardId(board.getId());
@@ -67,6 +69,7 @@ public class MypageService {
         User user = userService.findByUserId(id);
         List<News> newsList = user.getNewsList();
         return newsList.stream()
+                .sorted(Comparator.comparing(News::getId).reversed())
                 .map(news -> {
                     int likeCount = newsService.countByNews(news);
                     return UserNewsListResponse.from(news, likeCount);
@@ -77,6 +80,7 @@ public class MypageService {
         User user = userService.findByUserId(id);
         List<Scrap> scrapList = user.getScrapList();
         return scrapList.stream()
+                .sorted(Comparator.comparing(Scrap::getId).reversed())
                 .map(scrap -> UserScrapListResponse.from(scrap.getNews()))
                 .toList();
     }

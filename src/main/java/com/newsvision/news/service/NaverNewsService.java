@@ -38,8 +38,8 @@ public class  NaverNewsService {
     private String clientSecret;
 
     private final NaverNewsRepository naverNewsRepository;
-    private RestTemplate restTemplate = new RestTemplate();
-    private ObjectMapper objectMapper = new ObjectMapper();
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     public List<NaverNewsInfoResponse> searchNews(String query, int display) {
         display = 30;
@@ -65,7 +65,7 @@ public class  NaverNewsService {
                             .description(decodeDescription(item.getDescription()))
                             .link(decodeDescription(item.getLink()))
                             .originallink(decodeDescription(item.getOriginallink()))
-                            .pubDate(TimeUtil.formatRelativeTime(TimeUtil.stringToLocalDateTime(item.getPubDate())))
+                            .pubDate(item.getPubDate())
                             .build())
 //                    .filter(news ->
 //                            news.getTitle().toLowerCase().contains(query.toLowerCase()) ||
@@ -75,10 +75,10 @@ public class  NaverNewsService {
                     .toList();
         } catch (org.springframework.web.client.RestClientResponseException e) {
             log.error("error: {},", e.getRawStatusCode());
-            log.error("error {}", e.getResponseBodyAsString());
+            log.error("error: {}", e.getResponseBodyAsString());
             throw new CustomException(ErrorCode.NOT_FOUND);
         } catch (Exception e) {
-            log.error("error_{}", e);
+            log.error("error: {}", e);
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
