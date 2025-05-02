@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,8 @@ public class BoardReportService {
     private final BoardRepository boardRepository;
 
     public List<BoardReportResponse> getAllReports() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         return boardReportRepository.findAll().stream()
                 .map(report -> {
                     Board board = report.getBoard();
@@ -30,15 +33,16 @@ public class BoardReportService {
                             .id(report.getId())
                             .boardId(board.getId())
                             .boardWriter(board.getUser().getNickname())
-                            .boardCreatedAt(board.getCreateAt().toString())
+                            .boardCreatedAt(board.getCreateAt().format(formatter)) // 포맷 적용
                             .userId(report.getUser().getId())
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
-
     public List<BoardReportResponse> getMaxAllReports() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
         return boardReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
                 .map(report -> {
                     Board board = report.getBoard();
@@ -46,7 +50,7 @@ public class BoardReportService {
                             .id(report.getId())
                             .boardId(board.getId())
                             .boardWriter(board.getUser().getNickname())
-                            .boardCreatedAt(board.getCreateAt().toString())
+                            .boardCreatedAt(board.getCreateAt().format(formatter)) // 포맷 적용
                             .userId(report.getUser().getId())
                             .build();
                 })
