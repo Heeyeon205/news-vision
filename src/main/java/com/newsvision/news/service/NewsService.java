@@ -16,6 +16,9 @@ import com.newsvision.news.repository.NaverNewsRepository;
 import com.newsvision.news.repository.NewsLikeRepository;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
+import com.newsvision.notice.Notice;
+import com.newsvision.notice.NoticeEventResponse;
+import com.newsvision.notice.NoticeService;
 import com.newsvision.poll.dto.response.PollListResponse;
 import com.newsvision.poll.service.PollService;
 import com.newsvision.user.entity.User;
@@ -68,6 +71,7 @@ public class NewsService {
     private final UserService userService;
     private final PollService pollService;
     private final FollowService followService;
+    private final NoticeService noticeService;
 
     private final CategoryRepository categoryRepository;
     private final ScrapRepository scrapRepository;
@@ -108,6 +112,31 @@ public class NewsService {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         newsLikeService.addLike(news, userService.findByUserId(userId));
+
+        // 뉴스 작성자에게 알림
+        Long receiverId = news.getUser().getId();
+        if (!receiverId.equals(userId)) { // 자기 자신에게는 알림 X
+            User sender = userService.findByUserId(userId);
+
+            Notice notice = Notice.builder()
+                    .senderId(sender)
+                    .receiver(news.getUser())
+                    .type(Notice.Type.NEWS_LIKE)
+                    .url("/news/" + newsId)
+                    .title("내 뉴스에 좋아요가 눌렸습니다!")
+                    .isRead(false)
+                    .build();
+            noticeService.save(notice);
+
+            NoticeEventResponse response = new NoticeEventResponse(
+                    "NEWS_LIKE",
+                    "내 뉴스에 좋아요가 눌렸습니다!",
+                    "/news/" + newsId,
+                    false
+            );
+
+            noticeService.sendNotification(receiverId, response);
+        }
     }
 
     @Transactional
@@ -178,7 +207,7 @@ public class NewsService {
     }
 
     @Transactional
-    public void createNews(Long userId, String title, String content, Long categoryId, Long naverNewsId, MultipartFile image) {
+    public Long createNews(Long userId, String title, String content, Long categoryId, Long naverNewsId, MultipartFile image) {
         User user = userService.findByUserId(userId);
         Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
@@ -212,6 +241,7 @@ public class NewsService {
         } catch (Exception e) {
             log.error("❌ Elasticsearch 저장 실패", e);
         }
+        return saved.getId();
     }
 
     @Transactional

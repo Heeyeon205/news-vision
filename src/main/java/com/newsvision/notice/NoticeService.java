@@ -1,24 +1,30 @@
 package com.newsvision.notice;
 
+import com.newsvision.global.Utils.TimeUtil;
+import com.newsvision.global.exception.CustomException;
+import com.newsvision.global.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class NoticeService {
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final NoticeRepository noticeRepository;
 
     public SseEmitter subscribe(Long userId) {
         SseEmitter emitter = new SseEmitter(5 * 60 * 1000L);
         emitters.put(userId, emitter);
-
         emitter.onCompletion(() -> emitters.remove(userId));
         emitter.onTimeout(() -> emitters.remove(userId));
         emitter.onError(e -> emitters.remove(userId));
@@ -29,7 +35,6 @@ public class NoticeService {
             log.error("SSE 연결 실패", e.getMessage());
             throw new RuntimeException("SSE 연결 실패", e);
         }
-
         return emitter;
     }
 
@@ -45,5 +50,36 @@ public class NoticeService {
                 emitters.remove(receiverId);
             }
         }
+    }
+
+    @Transactional
+    public void save(Notice notice) {
+        noticeRepository.save(notice);
+    }
+
+    public List<NoticeUserResponse> getAllNotice(Long userId){
+        List<Notice> notices = noticeRepository.findByReceiverId(userId);
+        return notices.stream()
+                .map(notice -> NoticeUserResponse.builder()
+                        .id(notice.getId())
+                        .title(notice.getTitle())
+                        .url(notice.getUrl())
+                        .isRead(notice.isRead())
+                        .createdAt(TimeUtil.formatRelativeTime(notice.getCreatedAt()))
+                        .userId(notice.getSenderId().getId())
+                        .image(notice.getSenderId().getImage())
+                        .nickname(notice.getSenderId().getNickname())
+                        .build())
+                .toList();
+    }
+
+    public Notice findById(Long id) {
+        return noticeRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.INVALID_INPUT));
+    }
+
+    @Transactional
+    public void checkRead(Long id) {
+        Notice notice = findById(id);
+        notice.updateRead(true);
     }
 }

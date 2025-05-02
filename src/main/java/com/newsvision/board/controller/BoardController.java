@@ -51,7 +51,7 @@ public class BoardController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 작성 API
-    public ResponseEntity<ApiResponse<BoardCreateResponse>> createBoard(
+    public ResponseEntity<ApiResponse<Long>> createBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart(value = "image", required = false) MultipartFile image,
             @RequestParam(value = "content")  String content,
@@ -59,7 +59,7 @@ public class BoardController {
     ) {
         Long userId = userDetails.getId();
         BoardCreateResponse createdBoard = boardService.createBoard(userId, image, content, categoryId);
-        return ResponseEntity.ok(ApiResponse.success(createdBoard));
+        return ResponseEntity.ok(ApiResponse.success(createdBoard.getId()));
     }
 
     @GetMapping("/update/{boardId}") // 유저가 수정하려면 해당 글쓴 유저인지

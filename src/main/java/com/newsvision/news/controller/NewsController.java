@@ -118,7 +118,7 @@ public class NewsController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<?>> createNews(
+    public ResponseEntity<ApiResponse<Long>> createNews(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart("title") String title,
             @RequestPart("content") String content,
@@ -133,8 +133,8 @@ public class NewsController {
         userService.validateRole(role);
         Long categoriesId = Long.parseLong(categoryId);
         Long naverNewsId = naverNewsService.saveNaverNews(new NaverNewsSaveRequest(naverTitle, naverLink, naverPubDate));
-        newsService.createNews(userId, title, content, categoriesId, naverNewsId, image);
-        return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 작성되었습니다."));
+        Long newsId = newsService.createNews(userId, title, content, categoriesId, naverNewsId, image);
+        return ResponseEntity.ok(ApiResponse.success(newsId));
     }
 
     @GetMapping(value = "/update/{newsId}")

@@ -17,7 +17,7 @@ public class BoardResponse {
     private String image; // 보드 이미지
     private String content;
     private Long categoryId;
-    private String createAt;
+    private String createdAt;
     private int view;
     private Long newsId;
     private Boolean isReported;
@@ -32,7 +32,7 @@ public class BoardResponse {
         this.image = board.getImage();
         this.content = board.getContent();
         this.categoryId = board.getCategory() != null ? board.getCategory().getId() : null;
-        this.createAt = TimeUtil.formatRelativeTime(board.getCreateAt()); // getCreateAt() -> getCreatedAt()
+        this.createdAt = TimeUtil.formatRelativeTime(board.getCreateAt()); // getCreateAt() -> getCreatedAt()
         this.view = board.getView();
         this.newsId = board.getNewsId();
         this.isReported = board.getIsReported();

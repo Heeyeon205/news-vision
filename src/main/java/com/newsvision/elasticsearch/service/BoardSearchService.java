@@ -81,9 +81,9 @@ public class BoardSearchService {
                     res.setContent(doc.getContent());
                     res.setCategoryId(null); // 카테고리 ID는 필요시 로직 수정
                     if (doc.getCreatedAt() != null) {
-                        res.setCreateAt(doc.getCreatedAt().format(FORMATTER));
+                        res.setCreatedAt(doc.getCreatedAt().format(FORMATTER));
                     } else {
-                        res.setCreateAt("날짜 없음");
+                        res.setCreatedAt("날짜 없음");
                     }
 //                    res.setView(doc.getView());
                     res.setNewsId(doc.getNewsId());

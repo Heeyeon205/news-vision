@@ -41,6 +41,10 @@ public class Notice {
 
     private LocalDateTime createdAt;
 
+    public void updateRead(boolean answer) {
+        this.isRead = answer;
+    }
+
     public enum Type {
         NEWS_SCRAP, NEWS_LIKE,
         BOARD_LIKE, BOARD_COMMENT, BOARD_REPORT, COMMENT_REPORT,

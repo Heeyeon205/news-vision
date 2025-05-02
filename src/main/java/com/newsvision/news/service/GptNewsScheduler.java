@@ -18,7 +18,7 @@ public class GptNewsScheduler {
     private final NewsRepository newsRepository;
     private final GptSummaryService gptSummaryService;
 
-    @Scheduled(cron = "0 14 0 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     public void summarizeTop10News() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<News> top10News = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
