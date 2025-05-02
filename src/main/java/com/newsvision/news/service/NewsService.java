@@ -113,9 +113,8 @@ public class NewsService {
         }
         newsLikeService.addLike(news, userService.findByUserId(userId));
 
-        // 뉴스 작성자에게 알림
         Long receiverId = news.getUser().getId();
-        if (!receiverId.equals(userId)) { // 자기 자신에게는 알림 X
+        if (!receiverId.equals(userId)) {
             User sender = userService.findByUserId(userId);
 
             Notice notice = Notice.builder()
@@ -123,14 +122,14 @@ public class NewsService {
                     .receiver(news.getUser())
                     .type(Notice.Type.NEWS_LIKE)
                     .url("/news/" + newsId)
-                    .title("내 뉴스에 좋아요가 눌렸습니다!")
+                    .title("회원님의 뉴스를 좋아합니다.")
                     .isRead(false)
                     .build();
             noticeService.save(notice);
 
             NoticeEventResponse response = new NoticeEventResponse(
                     "NEWS_LIKE",
-                    "내 뉴스에 좋아요가 눌렸습니다!",
+                    "회원님의 뉴스를 좋아합니다.",
                     "/news/" + newsId,
                     false
             );
