@@ -20,6 +20,8 @@ import com.newsvision.user.service.FollowService;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,6 +55,18 @@ public class PollService {
                 .map(PollListResponse::new)
                 .toList();
     }
+
+    public List<PollListResponse> getRecentList() {
+        LocalDateTime now = LocalDateTime.now();
+        Pageable topTen = PageRequest.of(0, 10);
+        List<Poll> polls = pollRepository
+                .findByExpiredAtAfterOrderByCreatedAtDesc(now, topTen)
+                .stream().toList();
+        return polls.stream()
+                .map(PollListResponse::new)
+                .toList();
+    }
+
 
     public PollResponse getPoll(Long pollId, Long userId) {
         Poll poll = findById(pollId);

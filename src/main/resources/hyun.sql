@@ -157,3 +157,4 @@ INSERT INTO polls_options (content,  poll_id) values
 ('탕수육',2),
 ('피자',2),
 ('치킨',2);
+

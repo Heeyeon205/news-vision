@@ -82,7 +82,7 @@ public class NewsService {
     public NewsMainDataResponse getNewsMain() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
         List<News> topNews = newsRepository.findTopNewsByAdminOnly(threeDaysAgo, PageRequest.of(0, 10));
-        List<PollListResponse> polls = pollService.getAllList();
+        List<PollListResponse> polls = pollService.getRecentList();
 
         return NewsMainDataResponse.builder()
                 .newsList(NewsMainResponse.fromList(topNews))
