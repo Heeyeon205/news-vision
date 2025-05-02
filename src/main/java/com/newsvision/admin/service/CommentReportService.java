@@ -31,6 +31,7 @@ public class CommentReportService {
                             .commentId(String.valueOf(comment.getId()))
                             .commentContent(comment.getContent())
                             .userId(String.valueOf(report.getUser().getId()))
+                            .commentWriter(comment.getUser().getNickname())
                             .userNickname(report.getUser().getNickname())
                             .boardId(comment.getBoard().getId()) // 게시글 ID 추가
                             .createdAt(comment.getCreateAt().toString()) // ISO 문자열로 변환
@@ -39,22 +40,22 @@ public class CommentReportService {
                 .collect(Collectors.toList());
     }
 
-    public List<CommentReportResponse> getMaxAllCommentReports() {
-        return commentReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
-                .map(report -> {
-                    Comment comment = report.getComment();
-                    return CommentReportResponse.builder()
-                            .id(report.getId())
-                            .commentId(String.valueOf(comment.getId()))
-                            .commentContent(comment.getContent())
-                            .userId(String.valueOf(report.getUser().getId()))
-                            .userNickname(report.getUser().getNickname())
-                            .boardId(comment.getBoard().getId()) // 게시글 ID 추가
-                            .createdAt(comment.getCreateAt().toString()) // 날짜 포맷은 프론트에서 처리
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
+//    public List<CommentReportResponse> getMaxAllCommentReports() {
+//        return commentReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
+//                .map(report -> {
+//                    Comment comment = report.getComment();
+//                    return CommentReportResponse.builder()
+//                            .id(report.getId())
+//                            .commentId(String.valueOf(comment.getId()))
+//                            .commentContent(comment.getContent())
+//                            .userId(String.valueOf(report.getUser().getId()))
+//                            .userNickname(report.getUser().getNickname())
+//                            .boardId(comment.getBoard().getId()) // 게시글 ID 추가
+//                            .createdAt(comment.getCreateAt().toString()) // 날짜 포맷은 프론트에서 처리
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
+//    }
 
 
 
