@@ -8,6 +8,8 @@ import com.newsvision.elasticsearch.service.NewsSearchService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.dto.response.NewsSummaryResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/search")
 @RequiredArgsConstructor
+@Tag(name = "SearchController", description = "검색 API")
 public class SearchController {
 
     private final NewsSearchService newsSearchService;
@@ -28,6 +31,7 @@ public class SearchController {
     private final ObjectMapper objectMapper;
     private static final org.slf4j.Logger searchLogger = org.slf4j.LoggerFactory.getLogger("SEARCH_LOGGER");
 
+    @Operation(summary = "뉴스 검색", description = "뉴스 검색")
     @GetMapping("/news")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> searchNews(@RequestParam String keyword) {
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -53,6 +57,7 @@ public class SearchController {
         }
     }
 
+    @Operation(summary = "커뮤니티 검색", description = "커뮤니티 검색")
     @GetMapping("/board")
     public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String keyword) {
         log.info("keyword: {}", keyword);

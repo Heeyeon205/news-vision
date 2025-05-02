@@ -4,6 +4,8 @@ import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.mypage.response.*;
 import com.newsvision.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,10 +21,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mypage")
 @RequiredArgsConstructor
+@Tag(name = "MyPageController", description = "MyPage API")
 public class MyPageController {
     private final MypageService mypageService;
     private final UserService userService;
 
+    @Operation(summary = "내 정보 보기", description = "내 정보 보기")
     @GetMapping({"", "/"})
     public ResponseEntity<ApiResponse<MypageInfoResponse>> userInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
@@ -30,6 +34,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "타 유저 정보 보기", description = "타 유저 정보 보기")
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<OtherUserInfoResponse>> otherUserInfo(
             @PathVariable Long userId,
@@ -40,6 +45,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "내 팔로워 보기", description = "내 팔로워 보기")
     @GetMapping("/follower-list")
     public ResponseEntity<ApiResponse<List<FollowResponse>>> followerList(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -48,6 +54,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "내 팔로잉 보기", description = "내 팔로잉 보기")
     @GetMapping("/following-list")
     public ResponseEntity<ApiResponse<List<FollowResponse>>> followingList(
             @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -56,6 +63,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "내가 작성한 뉴스 보기", description = "내가 작성한 뉴스 보기")
     @GetMapping("/news-list")
     public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getMypageNewsList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -64,6 +72,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "내가 작성한 커뮤니티 글 보기", description = "내가 작성한 커뮤니티 글 보기")
     @GetMapping("/board-list")
     public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -72,6 +81,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "내 스크랩 목록 보기", description = "내 스크랩 목록 보기")
     @GetMapping("/scrap-list")
     public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getMypageScrapList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails) {
@@ -79,7 +89,7 @@ public class MyPageController {
         List<UserScrapListResponse> response = mypageService.getMypageScrapList(id);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
-
+    @Operation(summary = "내 알람 목록 보기", description = "내 알람 목록 보기")
     @GetMapping("/notice-list")
     public ResponseEntity<ApiResponse<List<UserNoticeListResponse>>> getMyNoticeList(
             @AuthenticationPrincipal CustomUserDetails customUserDetails
@@ -89,6 +99,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "타 유저 작성 뉴스 목록 ", description = "타 유저 작성 뉴스 목록")
     @GetMapping("/news-list/{userId}")
     public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getUserPageNewsList(
             @PathVariable Long userId) {
@@ -98,6 +109,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "타 유저 작성 커뮤니티 글 목록", description = "타 유저 작성 커뮤니티 글 목록")
     @GetMapping("/board-list/{userId}")
     public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getUserPageBoardList(
             @PathVariable Long userId) {
@@ -105,6 +117,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "타 유저가 스크랩한 뉴스 목록", description = "타 유저가 스크랩한 뉴스 목록")
     @GetMapping("/scrap-list/{userId}")
     public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getUserPageScrapList(
             @PathVariable Long userId) {
@@ -112,6 +125,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "타 유저 팔로워 리스트 목록", description = "타 유저 팔로워 리스트 목록")
     @GetMapping("/follower-list/{userId}")
     public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPagefollowerList(
             @PathVariable Long userId) {
@@ -119,6 +133,7 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "타 유저 팔로잉 리스트 목록", description = "타 유저 팔로잉 리스트 목록")
     @GetMapping("/following-list/{userId}")
     public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPagefollowingList(
            @PathVariable Long userId) {

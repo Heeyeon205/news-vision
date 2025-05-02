@@ -3,6 +3,8 @@ package com.newsvision.admin.controller;
 import com.newsvision.admin.controller.response.CommentReportResponse;
 import com.newsvision.admin.service.CommentReportService;
 import com.newsvision.global.exception.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,10 +17,12 @@ import java.util.List;
 @RequestMapping("/admin/commentreports")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "CommentReportController", description = "댓글 신고 관리 API")
 public class CommentReportController {
 
     private final CommentReportService commentReportService;
 
+    @Operation(summary = "댓글 신고 모아보기", description = "댓글 신고 모아보기")
     @GetMapping
     public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getCommentReports(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -43,6 +47,7 @@ public class CommentReportController {
 //        return ResponseEntity.ok(ApiResponse.success(commentReportService.getMaxAllCommentReports()));
 //    }
 
+    @Operation(summary = "댓글 신고 삭제", description = "댓글 신고 삭제")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<String>> deleteCategory(
             @PathVariable Long id,
@@ -57,6 +62,7 @@ public class CommentReportController {
         return ResponseEntity.ok(ApiResponse.success("댓글 신고 카테고리(ID: " + id + ") 삭제 완료"));
     }
 
+    @Operation(summary = "댓글 신고 처리", description = "댓글 신고 처리")
     @PutMapping("/{reportId}/mark")
     public ResponseEntity<ApiResponse<String>> markCommentAsReported(
             @PathVariable Long reportId,

@@ -9,6 +9,7 @@ import com.newsvision.admin.service.BoardListService;
 import com.newsvision.board.dto.response.BoardResponse;
 import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -21,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/boards")
 @RequiredArgsConstructor
+@Tag(name = "BoradListController", description = "관리자용 커뮤니티 관리 API")
 public class BoardListController {
     private final BoardService boardService;
     private final BoardListService boardListService;

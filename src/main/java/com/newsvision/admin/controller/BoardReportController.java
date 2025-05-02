@@ -3,6 +3,8 @@ package com.newsvision.admin.controller;
 import com.newsvision.admin.controller.response.BoardReportResponse;
 import com.newsvision.admin.service.BoardReportService;
 import com.newsvision.global.exception.ApiResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -15,10 +17,12 @@ import java.util.List;
 @RequestMapping("/admin/boardreports")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*") // 개발 중 프론트 접근 허용
+@Tag(name = "BoardReportController", description = "커뮤니티 게시글 신고 관리 API")
 public class BoardReportController {
 
     private final BoardReportService boardReportService;
-
+    
+    @Operation(summary = "게시글 신고 모아보기", description = "게시글 신고 모아보기")
     @GetMapping
     public ResponseEntity<ApiResponse<List<BoardReportResponse>>> getAllReports(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -43,6 +47,7 @@ public class BoardReportController {
 //        return ResponseEntity.ok(ApiResponse.success(boardReportService.getMaxAllReports()));
 //    }
 
+    @Operation(summary = "게시글 신고 삭제", description = "게시글 신고 삭제")
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<String>> deleteCategory(
             @PathVariable Long id,
@@ -57,6 +62,7 @@ public class BoardReportController {
         return ResponseEntity.ok(ApiResponse.success(id + " 삭제 완료"));
     }
 
+    @Operation(summary = "게시글 신고 처리", description = "게시글 신고 처리")
     @PutMapping("/{reportId}/mark")
     public ResponseEntity<ApiResponse<String>> markBoardReported(
             @PathVariable Long reportId,

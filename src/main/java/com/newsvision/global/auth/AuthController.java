@@ -16,6 +16,8 @@ import com.newsvision.user.entity.User;
 import com.newsvision.user.service.EmailService;
 import com.newsvision.global.redis.TokenBlacklistService;
 import com.newsvision.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
+@Tag(name = "AuthController", description = "유저 인증 API")
 public class AuthController {
     private final UserService userService;
     private final EmailService emailService;
@@ -38,6 +41,7 @@ public class AuthController {
     private final RefreshTokenRepository refreshTokenRepository;
     private final TempTokenRepository tempTokenRepository;
 
+    @Operation(summary = "로그인", description = "로그인")
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginTokenUserResponse>> login(@RequestBody LoginUserRequest request) {
         User user = userService.findByUsername(request.getUsername());
@@ -55,6 +59,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "로그아웃", description = "로그아웃")
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(HttpServletRequest request) {
         String refreshToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
@@ -69,6 +74,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("로그아웃 성공"));
     }
 
+    @Operation(summary = "JWT 토큰 Refresh", description = "JWT 토큰 Refresh")
     @PostMapping("/refresh")
     public ResponseEntity<ApiResponse<String>> refreshAccessToken(HttpServletRequest request) {
         String refreshToken = request.getHeader("refreshToken");
@@ -90,6 +96,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(newAccessToken));
     }
 
+    @Operation(summary = "토큰 확인", description = "토큰 확인")
     @GetMapping("/check")
     public ResponseEntity<ApiResponse<String>> checkAccessToken(HttpServletRequest request) {
         String accessToken = JwtUtil.parsingToken(request.getHeader("Authorization"));
@@ -100,6 +107,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("ok"));
     }
 
+    @Operation(summary = "이메일 인증", description = "이메일 인증")
     @PostMapping("/email-auth")
     public ResponseEntity<ApiResponse<?>> emailAuth(@RequestBody VerifyEmailRequest request) {
         emailService.verifyCode(request.getEmail(), request.getEmailCode());
@@ -112,6 +120,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "임시 발급 토큰 확인", description = "임시 발급 토큰 확인")
     @GetMapping("/temp-check")
     public ResponseEntity<ApiResponse<String>> checkTempToken(HttpServletRequest request) {
         String tempToken = JwtUtil.parsingToken(request.getHeader("Authorization"));

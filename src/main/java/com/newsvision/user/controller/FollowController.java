@@ -28,9 +28,11 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/follow")
 @RequiredArgsConstructor
+@Tag(name = "FollowController", description = "유저 팔로우 API")
 public class FollowController {
     private final FollowService followService;
 
+    @Operation(summary = "타 유저 팔로우", description = "타 유저 팔로우")
     @PostMapping("{targetId}")
     public ResponseEntity<ApiResponse<Boolean>> follow(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
@@ -40,6 +42,7 @@ public class FollowController {
         return ResponseEntity.ok(ApiResponse.success(true));
     }
 
+    @Operation(summary = "타 유저 팔로우 취소", description = "타 유저 팔로우 취소")
     @DeleteMapping("{targetId}")
     public ResponseEntity<ApiResponse<Boolean>> unFollow(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
