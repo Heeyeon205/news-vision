@@ -31,17 +31,17 @@ public class CommentReportController {
         return ResponseEntity.ok(ApiResponse.success(commentReportService.getAllCommentReports()));
     }
 
-    @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getMaxCommentReports(
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        if (userDetails == null || !userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return ResponseEntity.status(403).body(null);
-        }
-
-        return ResponseEntity.ok(ApiResponse.success(commentReportService.getMaxAllCommentReports()));
-    }
+//    @GetMapping("/max")
+//    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getMaxCommentReports(
+//            @AuthenticationPrincipal UserDetails userDetails) {
+//
+//        if (userDetails == null || !userDetails.getAuthorities().stream()
+//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+//            return ResponseEntity.status(403).body(null);
+//        }
+//
+//        return ResponseEntity.ok(ApiResponse.success(commentReportService.getMaxAllCommentReports()));
+//    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<String>> deleteCategory(

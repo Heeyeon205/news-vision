@@ -34,28 +34,28 @@ public class BoardReportService {
                             .boardId(board.getId())
                             .boardWriter(board.getUser().getNickname())
                             .boardCreatedAt(board.getCreateAt().format(formatter)) // 포맷 적용
-                            .userId(report.getUser().getId())
+                            .userNickname(report.getUser().getNickname())
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
-    public List<BoardReportResponse> getMaxAllReports() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-        return boardReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
-                .map(report -> {
-                    Board board = report.getBoard();
-                    return BoardReportResponse.builder()
-                            .id(report.getId())
-                            .boardId(board.getId())
-                            .boardWriter(board.getUser().getNickname())
-                            .boardCreatedAt(board.getCreateAt().format(formatter)) // 포맷 적용
-                            .userId(report.getUser().getId())
-                            .build();
-                })
-                .collect(Collectors.toList());
-    }
+//    public List<BoardReportResponse> getMaxAllReports() {
+//        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+//
+//        return boardReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
+//                .map(report -> {
+//                    Board board = report.getBoard();
+//                    return BoardReportResponse.builder()
+//                            .id(report.getId())
+//                            .boardId(board.getId())
+//                            .boardWriter(board.getUser().getNickname())
+//                            .boardCreatedAt(board.getCreateAt().format(formatter)) // 포맷 적용
+//                            .userNickname()report.getUser().getNickname())
+//                            .build();
+//                })
+//                .collect(Collectors.toList());
+//    }
 
     // 카테고리 삭제
     public void deleteCategory(Long id) {

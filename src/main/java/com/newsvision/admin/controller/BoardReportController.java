@@ -31,17 +31,17 @@ public class BoardReportController {
         return ResponseEntity.ok(ApiResponse.success(boardReportService.getAllReports()));
     }
 
-    @GetMapping("/max")
-    public ResponseEntity<ApiResponse<List<BoardReportResponse>>> getMaxAllReports(
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        if (userDetails == null || !userDetails.getAuthorities().stream()
-                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-            return ResponseEntity.status(403).body(null);
-        }
-
-        return ResponseEntity.ok(ApiResponse.success(boardReportService.getMaxAllReports()));
-    }
+//    @GetMapping("/max")
+//    public ResponseEntity<ApiResponse<List<BoardReportResponse>>> getMaxAllReports(
+//            @AuthenticationPrincipal UserDetails userDetails) {
+//
+//        if (userDetails == null || !userDetails.getAuthorities().stream()
+//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
+//            return ResponseEntity.status(403).body(null);
+//        }
+//
+//        return ResponseEntity.ok(ApiResponse.success(boardReportService.getMaxAllReports()));
+//    }
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<String>> deleteCategory(
