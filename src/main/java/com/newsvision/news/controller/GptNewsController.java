@@ -5,6 +5,8 @@ import com.newsvision.news.dto.response.GptNewsSummaryResponse;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.repository.GptNewsRepository;
 import com.newsvision.news.repository.NewsRepository;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +20,12 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/gpt-news")
+@Tag(name="GptNewsController", description = "GPT 뉴스 요약 API")
 public class GptNewsController {
     private final NewsRepository newsRepository;
     private final GptNewsRepository gptNewsRepository;
 
+    @Operation(summary = "GPT로 뉴스 content 요약", description = "GPT로 뉴스 content 요약")
     @GetMapping("/main-summary")
     public ResponseEntity<ApiResponse<List<GptNewsSummaryResponse>>> getMainNewsSummaries() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);

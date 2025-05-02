@@ -35,7 +35,7 @@ public class NewsSearchService {
                 .titleChosung(JasoUtils.extractChosung(news.getTitle()))
                 .content(news.getContent())
                 .categoryName(news.getCategory().getName())
-                .username(news.getUser().getUsername())
+                .username(news.getUser().getNickname())
                 .image(news.getImage())
                 .createdAt(news.getCreatedAt().format(formatter))
                 .build();

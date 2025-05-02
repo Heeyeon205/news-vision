@@ -7,6 +7,8 @@ import com.newsvision.board.service.CommentService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,16 +21,19 @@ import java.util.List;
 @RequestMapping("/api/comments")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name= "CommentController", description = "댓글 API")
 public class CommentController {
     private final CommentService commentService;
     private final UserService userService;
 
+    @Operation(summary = "특정 게시글 댓글 조회", description = "특정 게시글 댓글 조회")
     @GetMapping("/boards/{boardId}") //(특정 게시글 댓글 목록 조회)
     public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByBoardId(@PathVariable Long boardId) {
         List<CommentResponse> comments = commentService.getCommentsByBoardId(boardId);
         return ResponseEntity.ok(ApiResponse.success(comments));
     }
 
+    @Operation(summary = "댓글 작성", description = "댓글 작성")
     @PostMapping("/boards/{boardId}") // (댓글 작성)
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @PathVariable Long boardId,
@@ -40,6 +45,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success(comment));
     }
 
+    @Operation(summary = "댓글 삭제", description = "댓글 삭제")
     @DeleteMapping("/{commentId}") // (댓글 삭제)
     public ResponseEntity<ApiResponse<Void>> deleteComment(
             @PathVariable Long commentId,
@@ -50,6 +56,7 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "댓글 수정", description = "댓글 수정")
     @PutMapping("/{commentId}") // (댓글 수정)
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable Long commentId,

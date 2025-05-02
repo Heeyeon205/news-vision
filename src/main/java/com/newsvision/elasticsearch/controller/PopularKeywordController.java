@@ -2,6 +2,8 @@ package com.newsvision.elasticsearch.controller;
 
 import com.newsvision.elasticsearch.dto.PopularKeywordResponse;
 import com.newsvision.elasticsearch.service.PopularKeywordService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,9 +15,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/popular")
+@Tag(name = "PopularKeywordController", description = "인기 검색어")
 public class PopularKeywordController {
     private final PopularKeywordService popularKeywordService;
 
+    @Operation(summary = "인기 검색어", description = "인기 검색어")
     @GetMapping("/{type}")
     public ResponseEntity<List<PopularKeywordResponse>> getPopularKeywords(@PathVariable String type) {
             log.info("일단 여기는 들어옴 파퓰러 컨트롤러");

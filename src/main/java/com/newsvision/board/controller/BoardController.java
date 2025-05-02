@@ -9,6 +9,8 @@ import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.user.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -23,11 +25,13 @@ import java.util.List;
 @RequestMapping("/api/board")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "BoardController", description = "커뮤니티 API")
 public class BoardController {
     private final BoardService boardService;
     private final UserService userService;
     private final BoardLikeService boardLikeService;
 
+    @Operation(summary = "커뮤니티 글 불러오기", description = "커뮤니티 글 불러오기")
     @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
     public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoards(
             @RequestParam(defaultValue = "0") int page, // 페이지 번호 파라미터, 기본값 0
@@ -38,6 +42,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(boards)); // 200 OK 상태 코드와 함께 게시글 목록 반환
     }
 
+    @Operation(summary = "커뮤니티 글 상세보기", description = "커뮤니티 글 상세보기")
     @GetMapping("/{boardId}")
     public ResponseEntity<ApiResponse<BoardDetailResponse>> getBoardDetail(
             @PathVariable Long boardId,
@@ -50,6 +55,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(boardDetail));
     }
 
+    @Operation(summary = "커뮤니티 글 작성", description = "커뮤니티 글 작성")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE) // 게시글 작성 API
     public ResponseEntity<ApiResponse<BoardCreateResponse>> createBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -62,6 +68,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(createdBoard));
     }
 
+    @Operation(summary = "커뮤니티 글 수정 폼", description = "커뮤니티 글 수정 폼")
     @GetMapping("/update/{boardId}") // 유저가 수정하려면 해당 글쓴 유저인지
     public ResponseEntity<ApiResponse<BoardUpdateResponse>> updateBoard(
             @AuthenticationPrincipal CustomUserDetails userDetails,
@@ -73,6 +80,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    @Operation(summary = "커뮤니티 글 수정", description = "커뮤니티 글 수정")
     @PutMapping(value = "/{boardId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ApiResponse<BoardUpdateResponse>> updateBoard(
             @PathVariable Long boardId,
@@ -87,6 +95,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(updatedBoard));
     }
 
+    @Operation(summary = "커뮤니티 글 삭제", description = "커뮤니티 글 삭제")
     @DeleteMapping("/{boardId}") // 게시글 삭제 API
     public ResponseEntity<ApiResponse<Void>> deleteBoard(
             @PathVariable Long boardId,
@@ -97,6 +106,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success());
     }
 
+    @Operation(summary = "커뮤니티 글 좋아요 추가", description = "커뮤니티 글 좋아요 추가")
     @PostMapping("/{boardId}/like")
     public ResponseEntity<ApiResponse<BoardLikeResponse>> addLike(
             @PathVariable Long boardId,
@@ -108,6 +118,7 @@ public class BoardController {
         return ResponseEntity.ok(ApiResponse.success(new BoardLikeResponse(LikeCount, isLike)));
     }
 
+    @Operation(summary = "커뮤니티 글 좋아요 삭제", description = "커뮤니티 글 좋아요 삭제")
     @DeleteMapping("/{boardId}/like")
     public ResponseEntity<ApiResponse<BoardLikeResponse>> removeLike(
             @PathVariable Long boardId,
