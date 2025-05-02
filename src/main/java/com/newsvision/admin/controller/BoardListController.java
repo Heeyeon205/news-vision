@@ -11,6 +11,10 @@ import com.newsvision.board.service.BoardService;
 import com.newsvision.global.exception.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -27,10 +31,9 @@ public class BoardListController {
     private final BoardService boardService;
     private final BoardListService boardListService;
     @GetMapping
-    public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoardList(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size,
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> getBoardList(
             @RequestParam(required = false) Long categoryId,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails == null || !userDetails.getAuthorities().stream()
@@ -38,7 +41,7 @@ public class BoardListController {
             return ResponseEntity.status(403).body(null);
         }
 
-        List<BoardResponse> boardList = boardService.getBoardsList(page, size, categoryId);
+        Page<BoardResponse> boardList = boardService.getBoardsList(categoryId,pageable);
         return ResponseEntity.ok(ApiResponse.success(boardList));
     }
 
