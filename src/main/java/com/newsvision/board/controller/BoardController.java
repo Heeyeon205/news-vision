@@ -13,6 +13,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,12 +37,11 @@ public class BoardController {
 
     @Operation(summary = "커뮤니티 글 불러오기", description = "커뮤니티 글 불러오기")
     @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
-    public ResponseEntity<ApiResponse<List<BoardResponse>>> getBoards(
-            @RequestParam(defaultValue = "0") int page, // 페이지 번호 파라미터, 기본값 0
-            @RequestParam(defaultValue = "10") int size, // 페이지 크기 파라미터, 기본값 10
-            @RequestParam(required = false) Long categoryId
+    public ResponseEntity<ApiResponse<Page<BoardResponse>>> getBoards(
+            @RequestParam(required = false) Long categoryId,
+            @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        List<BoardResponse> boards = boardService.getBoardsList(page, size , categoryId);
+        Page<BoardResponse> boards = boardService.getBoardsList(categoryId,pageable);
         return ResponseEntity.ok(ApiResponse.success(boards)); // 200 OK 상태 코드와 함께 게시글 목록 반환
     }
 

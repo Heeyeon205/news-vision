@@ -53,26 +53,21 @@ public class BoardService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
-    public List<BoardResponse> getBoardsList(int page, int size, Long categoryId) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+    public Page<BoardResponse> getBoardsList(Long categoryId, Pageable pageable) {
         Page<Board> boardPage;
-
-        if(categoryId != null){
+        if (categoryId != null) {
             log.info("특정 카테고리 게시글 조회 - categoryId: {}", categoryId);
-            log.info("BoardRepository.findByCategoryId 호출 전 - categoryId: {}, pageable: {}", categoryId, pageable);
-            boardPage = boardRepository.findByCategoryId(categoryId, pageable); // 카테고리 ID로 조회
-            log.info("BoardRepository.findByCategoryId 호출 후 - 반환된 Page 객체: {}", boardPage);
-        }else{
+            boardPage = boardRepository.findByCategoryId(categoryId, pageable);
+        } else {
             log.info("전체 게시글 조회");
             boardPage = boardRepository.findAll(pageable);
         }
 
-        List<Board> boards = boardPage.getContent();
-        return boards.stream().map(board -> {
-            int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
-            int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
+        return boardPage.map(board -> {
+            int likeCount = boardLikeService.countByBoardId(board.getId()); // BoardLikeService로 좋아요 수 계산
+            int commentCount = commentService.countByBoardId(board.getId()); // CommentService로 댓글 수 계산
             return new BoardResponse(board, likeCount, commentCount);
-        }).collect(Collectors.toList());
+        });
     }
 
     @Transactional(readOnly = true)
