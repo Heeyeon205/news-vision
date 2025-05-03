@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface NewsRepository extends JpaRepository<News, Long> {
+    Page<News> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     // 메인에서 공식뉴스 3일안 뉴스 좋아요 탑10 보여주기
     @Query("""

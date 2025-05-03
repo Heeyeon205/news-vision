@@ -7,14 +7,19 @@ import com.newsvision.mypage.dto.response.*;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
 import com.newsvision.news.service.NewsService;
+import com.newsvision.news.service.ScrapService;
 import com.newsvision.notice.entity.Notice;
+import com.newsvision.notice.service.NoticeService;
 import com.newsvision.user.entity.Badge;
+import com.newsvision.user.entity.Follow;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.service.BadgeService;
 import com.newsvision.user.service.FollowService;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -30,6 +35,8 @@ public class MypageService {
     private final CommentService commentService;
     private final BoardService boardService;
     private final NewsService newsService;
+    private final ScrapService scrapService;
+    private final NoticeService noticeService;
 
     public MypageInfoResponse getPortionUser(Long userId) {
         User user = userService.findByUserId(userId);
@@ -48,56 +55,40 @@ public class MypageService {
         return new OtherUserInfoResponse(user, followerCount, followingCount, badge, followed);
     }
 
-    public List<FollowResponse> getFollowers(Long id){
-        User user = userService.findByUserId(id);
-        return user.getFollowerList().stream()
-                .map(follow -> FollowResponse.from(follow.getFollower()))
-                .toList();
+    public Page<FollowResponse> getFollowers(Long id, Pageable pageable) {
+        Page<Follow> followerPage = followService.findByFollowingId(id, pageable);
+        return followerPage.map(follow -> FollowResponse.from(follow.getFollower()));
     }
 
-    public List<FollowResponse> getFollowing(Long id){
-        User user = userService.findByUserId(id);
-        return user.getFollowingList().stream()
-                .map(follow -> FollowResponse.from(follow.getFollowing()))
-                .toList();
+    public Page<FollowResponse> getFollowing(Long id, Pageable pageable) {
+        Page<Follow> followingPage = followService.findByFollowerId(id, pageable);
+        return followingPage.map(follow -> FollowResponse.from(follow.getFollower()));
     }
 
-    public List<UserBoardListResponse> getMypageBoardList(Long userId) {
-        User user = userService.findByUserId(userId);
-        List<Board> boardList = user.getBoardList();
-        return boardList.stream()
-                .sorted(Comparator.comparing(Board::getId).reversed())
-                .map(board -> {
+    public Page<UserNewsListResponse> getMypageNewsList(Long id, Pageable pageable) {
+        Page<News> newsPage = newsService.getMypageNewsList(id, pageable);
+        return newsPage.map(news -> {
+            int likeCount = newsService.countByNews(news);
+            return UserNewsListResponse.from(news, likeCount);
+        });
+    }
+
+    public Page<UserBoardListResponse> getMypageBoardList(Long id, Pageable pageable) {
+        Page<Board> boardPage = boardService.getMypageBoardList(id, pageable);
+        return boardPage.map(board -> {
                     int likeCount = boardService.countByBoardId(board.getId());
                     int commentCount = commentService.countByBoardId(board.getId());
                     return UserBoardListResponse.from(board, likeCount, commentCount);
-                }).toList();
+                });
     }
 
-    public List<UserNewsListResponse> getMypageNewsList(Long id) {
-        User user = userService.findByUserId(id);
-        List<News> newsList = user.getNewsList();
-        return newsList.stream()
-                .sorted(Comparator.comparing(News::getId).reversed())
-                .map(news -> {
-                    int likeCount = newsService.countByNews(news);
-                    return UserNewsListResponse.from(news, likeCount);
-                }).toList();
+    public Page<UserScrapListResponse> getMypageScrapList(Long id, Pageable pageable) {
+        Page<Scrap> scrapList = scrapService.getMypageScrapList(id, pageable);
+        return scrapList.map(scrap -> UserScrapListResponse.from(scrap.getNews()));
     }
 
-    public List<UserScrapListResponse> getMypageScrapList(Long id) {
-        User user = userService.findByUserId(id);
-        List<Scrap> scrapList = user.getScrapList();
-        return scrapList.stream()
-                .sorted(Comparator.comparing(Scrap::getId).reversed())
-                .map(scrap -> UserScrapListResponse.from(scrap.getNews()))
-                .toList();
-    }
-
-    public List<UserNoticeListResponse> getMyPageNoticeList(Long id) {
-        User user = userService.findByUserId(id);
-        List<Notice> noticeList = user.getNoticeList();
-        return noticeList.stream()
-                .map(UserNoticeListResponse::from).toList();
+    public Page<UserNoticeListResponse> getMyPageNoticeList(Long id, Pageable pageable) {
+        Page<Notice> noticeList = noticeService.getMypageNoticeService(id, pageable);
+        return noticeList.map(UserNoticeListResponse::from);
     }
 }

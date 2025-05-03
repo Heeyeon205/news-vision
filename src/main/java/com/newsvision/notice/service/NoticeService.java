@@ -10,6 +10,8 @@ import com.newsvision.notice.repository.NoticeRepository;
 import com.newsvision.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -62,11 +64,9 @@ public class NoticeService {
         noticeRepository.save(notice);
     }
 
-    public List<NoticeUserResponse> getAllNotice(Long userId){
-        List<Notice> notices = noticeRepository.findByReceiverId(userId);
-        return notices.stream()
-                .sorted(Comparator.comparing(Notice::getCreatedAt).reversed())
-                .map(notice -> NoticeUserResponse.builder()
+    public Page<NoticeUserResponse> getAllNotice(Long userId, Pageable pageable) {
+        Page<Notice> notices = noticeRepository.findByReceiverIdOrderByCreatedAtDesc(userId, pageable);
+        return notices.map(notice -> NoticeUserResponse.builder()
                         .id(notice.getId())
                         .title(notice.getTitle())
                         .url(notice.getUrl())
@@ -75,8 +75,7 @@ public class NoticeService {
                         .userId(notice.getSenderId().getId())
                         .image(notice.getSenderId().getImage())
                         .nickname(notice.getSenderId().getNickname())
-                        .build())
-                .toList();
+                        .build());
     }
 
     public Notice findById(Long id) {
@@ -113,4 +112,7 @@ public class NoticeService {
         sendNotification(receiver.getId(), response);
     }
 
+    public Page<Notice> getMypageNoticeService(Long id, Pageable pageable) {
+        return noticeRepository.findByReceiver_IdOrderByIdDesc(id, pageable);
+    }
 }

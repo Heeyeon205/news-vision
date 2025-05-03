@@ -5,7 +5,6 @@ import com.newsvision.board.entity.Board;
 import com.newsvision.board.entity.BoardReport;
 import com.newsvision.board.repository.BoardReportRepository;
 import com.newsvision.board.repository.BoardRepository;
-import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

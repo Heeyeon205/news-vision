@@ -172,21 +172,17 @@ public class NewsService {
         Page<News> result;
         switch (type) {
             case "popular":
-                result = newsRepository.findAllOrderByLikeCountDesc(pageable);
-                break;
+                result = newsRepository.findAllOrderByLikeCountDesc(pageable); break;
             case "follow":
                 if (user == null) throw new CustomException(ErrorCode.UNAUTHORIZED);
                 result = newsRepository.findByFollowingUsers(user.getId(), pageable);
                 break;
             case "category":
-                result = newsRepository.findByCategoryId(categoryId, pageable);
-                break;
+                result = newsRepository.findByCategoryId(categoryId, pageable); break;
             case "recent":
             default:
-                result = newsRepository.findAllByOrderByCreatedAtDesc(pageable);
-                break;
+                result = newsRepository.findAllByOrderByCreatedAtDesc(pageable); break;
         }
-
         return result.map(NewsSummaryResponse::from);
     }
 
@@ -310,5 +306,9 @@ public class NewsService {
         News news = findByNewsId(newsId);
         List<CategoryResponse> categories = categoryService.findAll();
         return NewsDetailInfoResponse.from(news, categories);
+    }
+
+    public Page<News> getMypageNewsList(Long newsId, Pageable pageable) {
+        return newsRepository.findByUserIdOrderByCreatedAtDesc(newsId, pageable);
     }
 }

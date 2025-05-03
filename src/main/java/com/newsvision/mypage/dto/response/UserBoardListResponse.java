@@ -19,11 +19,10 @@ public class UserBoardListResponse {
     private final int commentCount;
 
     public static UserBoardListResponse from(Board board, int likeCount, int commentCount) {
-        User user = board.getUser();
         return UserBoardListResponse.builder()
                 .boardId(board.getId())
-                .nickname(user.getNickname())
-                .icon(user.getBadge() != null ? user.getBadge().getIcon() : null)
+                .nickname(board.getUser().getNickname())
+                .icon(board.getUser().getBadge() != null ? board.getUser().getBadge().getIcon() : null)
                 .content(board.getContent())
                 .image(board.getImage())
                 .createAt(TimeUtil.formatRelativeTime(board.getCreateAt()))

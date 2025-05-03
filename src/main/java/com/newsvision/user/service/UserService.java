@@ -5,16 +5,19 @@ import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.jwt.JwtTokenProvider;
+import com.newsvision.mypage.dto.response.FollowResponse;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
 import com.newsvision.user.entity.Badge;
+import com.newsvision.user.entity.Follow;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -167,4 +170,5 @@ public class UserService {
             throw new CustomException(ErrorCode.FORBIDDEN_USER);
         }
     }
+
 }

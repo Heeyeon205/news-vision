@@ -17,13 +17,12 @@ public class UserScrapListResponse {
     private String createAt;
 
     public static UserScrapListResponse from(News news) {
-        User user = news.getUser();
         return UserScrapListResponse.builder()
                 .newsId(news.getId())
                 .image(news.getImage())
                 .categoryName(news.getCategory().getName())
                 .title(news.getTitle())
-                .nickname(user.getNickname())
+                .nickname(news.getUser().getNickname())
                 .createAt(TimeUtil.formatRelativeTime(news.getCreatedAt()))
                 .build();
     }

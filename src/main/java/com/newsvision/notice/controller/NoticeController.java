@@ -8,6 +8,10 @@ import com.newsvision.notice.service.NoticeService;
 import com.newsvision.notice.dto.response.NoticeUserResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,9 +38,11 @@ public class NoticeController {
     }
 
     @GetMapping("/open")
-    public ResponseEntity<ApiResponse<List<NoticeUserResponse>>> open(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
-        Long userId = customUserDetails.getId();
-       List<NoticeUserResponse> response = noticeService.getAllNotice(userId);
+    public ResponseEntity<ApiResponse<Page<NoticeUserResponse>>> open(
+            @AuthenticationPrincipal CustomUserDetails customUserDetails,
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        Page<NoticeUserResponse> response = noticeService.getAllNotice(customUserDetails.getId(), pageable);
        return ResponseEntity.ok(ApiResponse.success(response));
     }
 

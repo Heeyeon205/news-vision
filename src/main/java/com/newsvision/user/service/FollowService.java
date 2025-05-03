@@ -1,5 +1,6 @@
 package com.newsvision.user.service;
 
+import com.newsvision.mypage.dto.response.FollowResponse;
 import com.newsvision.notice.entity.Notice;
 import com.newsvision.notice.service.NoticeService;
 import com.newsvision.user.entity.Follow;
@@ -7,6 +8,8 @@ import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,5 +51,13 @@ public class FollowService {
 
     public boolean existsFollow(Long followerId, Long followingId) {
         return followRepository.existsByFollower_IdAndFollowing_Id(followerId, followingId);
+    }
+
+    public Page<Follow> findByFollowingId(Long id, Pageable pageable) {
+        return followRepository.findByFollowingId(id, pageable);
+    }
+
+    public Page<Follow> findByFollowerId(Long id, Pageable pageable) {
+        return followRepository.findByFollowerId(id, pageable);
     }
 }

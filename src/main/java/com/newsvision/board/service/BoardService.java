@@ -242,6 +242,10 @@ public class BoardService {
         }
         boardLikeService.delete(boardId, userId);
     }
+
+    public Page<Board> getMypageBoardList(Long userId, Pageable pageable) {
+        return boardRepository.findByUserIdOrderByCreateAtDesc(userId, pageable);
+    }
 }
 
 

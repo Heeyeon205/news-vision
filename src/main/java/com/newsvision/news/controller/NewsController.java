@@ -120,8 +120,8 @@ public class NewsController {
     public ResponseEntity<ApiResponse<Page<NewsSummaryResponse>>> getFilteredArticles(
             @RequestParam(defaultValue = "recent") String type,
             @RequestParam(required = false) Long categoryId,
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         User user = userDetails != null ? userDetails.getUser() : null;
         return ResponseEntity.ok(ApiResponse.success(

@@ -42,7 +42,7 @@ public class BoardController {
             @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<BoardResponse> boards = boardService.getBoardsList(categoryId,pageable);
-        return ResponseEntity.ok(ApiResponse.success(boards)); // 200 OK 상태 코드와 함께 게시글 목록 반환
+        return ResponseEntity.ok(ApiResponse.success(boards));
     }
 
     @Operation(summary = "커뮤니티 글 상세보기", description = "커뮤니티 글 상세보기")

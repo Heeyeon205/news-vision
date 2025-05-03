@@ -7,6 +7,8 @@ import com.newsvision.news.repository.ScrapRepository;
 import com.newsvision.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,5 +39,9 @@ public class ScrapService {
     @Transactional
     public void deleteByUserAndNews(News news, User user) {
         scrapRepository.deleteByUserAndNews(user, news);
+    }
+
+    public Page<Scrap> getMypageScrapList(Long id, Pageable pageable) {
+        return scrapRepository.findByUserIdOrderByIdDesc(id, pageable);
     }
 }
