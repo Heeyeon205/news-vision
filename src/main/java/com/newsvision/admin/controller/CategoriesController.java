@@ -4,6 +4,7 @@ import com.newsvision.admin.controller.response.CategoriesResponse;
 import com.newsvision.admin.service.CategoriesService;
 import com.newsvision.category.Categories;
 import com.newsvision.global.exception.ApiResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+@Hidden
 @CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin/categories")

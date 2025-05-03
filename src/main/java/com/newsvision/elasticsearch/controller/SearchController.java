@@ -23,7 +23,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/search")
 @RequiredArgsConstructor
-@Tag(name = "SearchController", description = "검색 API")
+@Tag(name = "검색 컨트롤러", description = "뉴스 및 커뮤니티 검색 API")
 public class SearchController {
 
     private final NewsSearchService newsSearchService;
@@ -31,7 +31,10 @@ public class SearchController {
     private final ObjectMapper objectMapper;
     private static final org.slf4j.Logger searchLogger = org.slf4j.LoggerFactory.getLogger("SEARCH_LOGGER");
 
-    @Operation(summary = "뉴스 검색", description = "뉴스 검색")
+    @Operation(
+            summary = "뉴스 검색",
+            description = "입력된 키워드로 뉴스 제목과 내용을 검색합니다."
+    )
     @GetMapping("/news")
     public ResponseEntity<ApiResponse<List<NewsSummaryResponse>>> searchNews(@RequestParam String keyword) {
         if (keyword != null && !keyword.trim().isEmpty()) {
@@ -42,14 +45,12 @@ public class SearchController {
                 String jsonLog = objectMapper.writeValueAsString(logMap);
                 searchLogger.info(jsonLog);
             } catch (JsonProcessingException e) {
-                log.error("error: ", e);
-                e.printStackTrace();
+                log.error("❌ 검색 로그 직렬화 실패", e);
             }
         }
 
         try {
             List<NewsSummaryResponse> result = newsSearchService.searchNews(keyword);
-            log.info("검색결과: {}", result);
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
             log.error("❌ 뉴스 검색 중 오류 발생", e);
@@ -57,10 +58,12 @@ public class SearchController {
         }
     }
 
-    @Operation(summary = "커뮤니티 검색", description = "커뮤니티 검색")
+    @Operation(
+            summary = "커뮤니티 검색",
+            description = "입력된 키워드로 커뮤니티 게시글 내용을 검색합니다."
+    )
     @GetMapping("/board")
     public ResponseEntity<ApiResponse<List<BoardResponse>>> searchBoard(@RequestParam String keyword) {
-        log.info("keyword: {}", keyword);
         if (keyword != null && !keyword.trim().isEmpty()) {
             Map<String, String> logMap = new HashMap<>();
             logMap.put("type", "board");
@@ -75,7 +78,6 @@ public class SearchController {
 
         try {
             List<BoardResponse> result = boardSearchService.searchBoard(keyword);
-            log.info("게시글 검색 결과 수: {}", result.size());
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
             log.error("❌ 게시글 검색 중 오류 발생", e);
@@ -83,7 +85,10 @@ public class SearchController {
         }
     }
 
-    // 자동완성기능 (애매함, 이상한거 검색됨, 안써도됨)
+    @Operation(
+            summary = "뉴스 제목 자동완성",
+            description = "입력된 키워드를 기반으로 뉴스 제목 자동완성 추천 리스트를 반환합니다."
+    )
     @GetMapping("/news/autocomplete")
     public ResponseEntity<ApiResponse<List<String>>> autocompleteNews(@RequestParam String keyword) {
         try {

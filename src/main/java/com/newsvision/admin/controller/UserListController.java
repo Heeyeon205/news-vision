@@ -4,6 +4,7 @@ import com.newsvision.admin.controller.response.UserListResponse;
 import com.newsvision.admin.service.UserListService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.user.service.UserService;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Hidden
 @CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor

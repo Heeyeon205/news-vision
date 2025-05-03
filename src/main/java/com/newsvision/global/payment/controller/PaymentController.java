@@ -10,6 +10,8 @@ import com.newsvision.global.security.CustomUserDetails;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +27,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "결제 컨트롤러", description = "결제 및 환불 관련 API")
 public class PaymentController {
+
     private final PaymentService paymentService;
 
+    @Operation(summary = "결제 초기화", description = "결제를 위한 임시 주문 정보를 저장하고 응답 정보를 반환합니다.")
     @PostMapping("/init")
     public ResponseEntity<ApiResponse<Map<String, Object>>> initiatePayment(
             @RequestBody PaymentInitRequest request,
@@ -47,7 +52,7 @@ public class PaymentController {
             response.put("amount", request.getPrice());
             response.put("buyer_name", userDetails.getUsername());
             response.put("isPaid", userDetails.getUser().getIsPaid());
-            response.put("subscription_period",request.getSubcriptionPeriod()); // 구독기간
+            response.put("subscription_period", request.getSubcriptionPeriod());
 
             OrderDto orderDto = new OrderDto();
             orderDto.setProductId(request.getProductId());
@@ -69,7 +74,7 @@ public class PaymentController {
         }
     }
 
-
+    @Operation(summary = "결제 검증", description = "아임포트 imp_uid를 통해 결제 내역을 검증합니다.")
     @PostMapping("/validation/{imp_uid}")
     public IamportResponse<Payment> validateIamport(
             @PathVariable String imp_uid,
@@ -79,16 +84,18 @@ public class PaymentController {
         return paymentService.validateIamport(imp_uid);
     }
 
+    @Operation(summary = "주문 최종 처리", description = "결제가 완료된 주문 정보를 저장합니다.")
     @PostMapping("/order")
     public ResponseEntity<ApiResponse<String>> processOrder(
             @RequestBody OrderDto orderDto,
             @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
         log.info("Received order: {}, userId: {}", orderDto.toString(), userDetails.getId());
-        String result = paymentService.saveOrder(orderDto,userDetails.getId());
+        String result = paymentService.saveOrder(orderDto, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    @Operation(summary = "결제 취소", description = "아임포트 결제건을 취소 요청합니다.")
     @PostMapping("/cancel/{imp_uid}")
     public IamportResponse<Payment> cancelPayment(
             @PathVariable String imp_uid,
@@ -98,7 +105,7 @@ public class PaymentController {
         return paymentService.cancelPayment(imp_uid);
     }
 
-    // 환불 요청 api
+    @Operation(summary = "환불 요청", description = "유저가 결제한 내역에 대해 환불을 요청합니다.")
     @PostMapping("/refund/request/{imp_uid}")
     public ResponseEntity<ApiResponse<String>> requestRefund(
             @PathVariable("imp_uid") String impUid,
@@ -112,6 +119,7 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
+    @Operation(summary = "환불 승인", description = "관리자가 환불 요청을 승인합니다.")
     @PostMapping("/refund/approve/{imp_uid}")
     public ResponseEntity<ApiResponse<String>> approveRefund(
             @PathVariable("imp_uid") String impUid,
@@ -126,13 +134,13 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    // 여기부터 하면됨
+    @Operation(summary = "환불 거부", description = "관리자가 환불 요청을 거부합니다.")
     @PostMapping("/refund/reject/{imp_uid}")
     public ResponseEntity<ApiResponse<String>> rejectRefund(
             @PathVariable("imp_uid") String impUid,
             @AuthenticationPrincipal CustomUserDetails userDetails
-    ){
-        if(userDetails == null || !userDetails.getAuthorities().stream()
+    ) {
+        if (userDetails == null || !userDetails.getAuthorities().stream()
                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
             return ResponseEntity.status(403).body(ApiResponse.fail(ErrorCode.FORBIDDEN));
         }
@@ -141,7 +149,7 @@ public class PaymentController {
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    // 환불 요청 리스트 조회
+    @Operation(summary = "환불 요청 리스트 조회", description = "관리자가 모든 환불 요청 내역을 조회합니다.")
     @GetMapping("/refund/requests")
     public ResponseEntity<ApiResponse<List<RefundRequestDto>>> getRefundRequests(
             @AuthenticationPrincipal CustomUserDetails userDetails

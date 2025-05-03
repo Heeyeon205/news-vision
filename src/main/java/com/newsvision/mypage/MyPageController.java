@@ -5,15 +5,13 @@ import com.newsvision.global.security.CustomUserDetails;
 import com.newsvision.mypage.response.*;
 import com.newsvision.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,20 +19,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/mypage")
 @RequiredArgsConstructor
-@Tag(name = "MyPageController", description = "MyPage API")
+@Tag(name = "마이페이지", description = "마이페이지 관련 API")
 public class MyPageController {
+
     private final MypageService mypageService;
     private final UserService userService;
 
-    @Operation(summary = "내 정보 보기", description = "내 정보 보기")
-    @GetMapping({"", "/"})
+    @Operation(summary = "내 정보", description = "현재 로그인한 유저의 정보를 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("")
     public ResponseEntity<ApiResponse<MypageInfoResponse>> userInfo(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long userId = userDetails.getId();
         MypageInfoResponse response = mypageService.getPortionUser(userId);
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @Operation(summary = "타 유저 정보 보기", description = "타 유저 정보 보기")
+    @Operation(summary = "다른 유저 정보", description = "지정한 유저 ID의 정보를 조회합니다.")
     @GetMapping("/{userId}")
     public ResponseEntity<ApiResponse<OtherUserInfoResponse>> otherUserInfo(
             @PathVariable Long userId,
@@ -45,99 +45,81 @@ public class MyPageController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
-    @Operation(summary = "내 팔로워 보기", description = "내 팔로워 보기")
+    @Operation(summary = "내 팔로워 목록", description = "내 팔로워 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/follower-list")
-    public ResponseEntity<ApiResponse<List<FollowResponse>>> followerList(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponse<List<FollowResponse>>> followerList(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long id = userDetails.getId();
-        List<FollowResponse> response = mypageService.getFollowers(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getFollowers(id)));
     }
 
-    @Operation(summary = "내 팔로잉 보기", description = "내 팔로잉 보기")
+    @Operation(summary = "내 팔로잉 목록", description = "내가 팔로우한 유저 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/following-list")
-    public ResponseEntity<ApiResponse<List<FollowResponse>>> followingList(
-            @AuthenticationPrincipal CustomUserDetails userDetails) {
+    public ResponseEntity<ApiResponse<List<FollowResponse>>> followingList(@AuthenticationPrincipal CustomUserDetails userDetails) {
         Long id = userDetails.getId();
-        List<FollowResponse> response = mypageService.getFollowing(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getFollowing(id)));
     }
 
-    @Operation(summary = "내가 작성한 뉴스 보기", description = "내가 작성한 뉴스 보기")
+    @Operation(summary = "내 뉴스 목록", description = "내가 작성한 뉴스 글 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/news-list")
-    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getMypageNewsList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getMypageNewsList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long id = customUserDetails.getId();
-        List<UserNewsListResponse> response = mypageService.getMypageNewsList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMypageNewsList(id)));
     }
 
-    @Operation(summary = "내가 작성한 커뮤니티 글 보기", description = "내가 작성한 커뮤니티 글 보기")
+    @Operation(summary = "내 커뮤니티 글 목록", description = "내가 작성한 커뮤니티 글 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/board-list")
-    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getMypageBoardList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long id = customUserDetails.getId();
-        List<UserBoardListResponse> response = mypageService.getMypageBoardList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMypageBoardList(id)));
     }
 
-    @Operation(summary = "내 스크랩 목록 보기", description = "내 스크랩 목록 보기")
+    @Operation(summary = "내 스크랩 목록", description = "내가 스크랩한 뉴스 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/scrap-list")
-    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getMypageScrapList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails) {
+    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getMypageScrapList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long id = customUserDetails.getId();
-        List<UserScrapListResponse> response = mypageService.getMypageScrapList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMypageScrapList(id)));
     }
-    @Operation(summary = "내 알람 목록 보기", description = "내 알람 목록 보기")
+
+    @Operation(summary = "내 알림 목록", description = "나에게 온 알림 목록을 조회합니다.")
+    @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/notice-list")
-    public ResponseEntity<ApiResponse<List<UserNoticeListResponse>>> getMyNoticeList(
-            @AuthenticationPrincipal CustomUserDetails customUserDetails
-    ) {
+    public ResponseEntity<ApiResponse<List<UserNoticeListResponse>>> getMyNoticeList(@AuthenticationPrincipal CustomUserDetails customUserDetails) {
         Long id = customUserDetails.getId();
-        List<UserNoticeListResponse> response = mypageService.getMyPageNoticeList(id);
-        return ResponseEntity.ok(ApiResponse.success(response));
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMyPageNoticeList(id)));
     }
 
-    @Operation(summary = "타 유저 작성 뉴스 목록 ", description = "타 유저 작성 뉴스 목록")
+    @Operation(summary = "다른 유저 뉴스", description = "다른 유저가 작성한 뉴스 목록을 조회합니다.")
     @GetMapping("/news-list/{userId}")
-    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getUserPageNewsList(
-            @PathVariable Long userId) {
-        log.info("뉴스리스트 userId = {}", userId);
-        List<UserNewsListResponse> response = mypageService.getMypageNewsList(userId);
-        log.info("뉴스리스트 response = {}", response);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<ApiResponse<List<UserNewsListResponse>>> getUserPageNewsList(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMypageNewsList(userId)));
     }
 
-    @Operation(summary = "타 유저 작성 커뮤니티 글 목록", description = "타 유저 작성 커뮤니티 글 목록")
+    @Operation(summary = "다른 유저 커뮤니티 글", description = "다른 유저가 작성한 커뮤니티 글 목록을 조회합니다.")
     @GetMapping("/board-list/{userId}")
-    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getUserPageBoardList(
-            @PathVariable Long userId) {
-        List<UserBoardListResponse> response = mypageService.getMypageBoardList(userId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<ApiResponse<List<UserBoardListResponse>>> getUserPageBoardList(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMypageBoardList(userId)));
     }
 
-    @Operation(summary = "타 유저가 스크랩한 뉴스 목록", description = "타 유저가 스크랩한 뉴스 목록")
+    @Operation(summary = "다른 유저 스크랩 목록", description = "다른 유저가 스크랩한 뉴스 목록을 조회합니다.")
     @GetMapping("/scrap-list/{userId}")
-    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getUserPageScrapList(
-            @PathVariable Long userId) {
-        List<UserScrapListResponse> response = mypageService.getMypageScrapList(userId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<ApiResponse<List<UserScrapListResponse>>> getUserPageScrapList(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getMypageScrapList(userId)));
     }
 
-    @Operation(summary = "타 유저 팔로워 리스트 목록", description = "타 유저 팔로워 리스트 목록")
+    @Operation(summary = "다른 유저 팔로워 목록", description = "다른 유저의 팔로워 목록을 조회합니다.")
     @GetMapping("/follower-list/{userId}")
-    public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPagefollowerList(
-            @PathVariable Long userId) {
-        List<FollowResponse> response = mypageService.getFollowers(userId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPageFollowerList(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getFollowers(userId)));
     }
 
-    @Operation(summary = "타 유저 팔로잉 리스트 목록", description = "타 유저 팔로잉 리스트 목록")
+    @Operation(summary = "다른 유저 팔로잉 목록", description = "다른 유저가 팔로우한 유저 목록을 조회합니다.")
     @GetMapping("/following-list/{userId}")
-    public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPagefollowingList(
-           @PathVariable Long userId) {
-        List<FollowResponse> response = mypageService.getFollowing(userId);
-        return ResponseEntity.ok(ApiResponse.success(response));
+    public ResponseEntity<ApiResponse<List<FollowResponse>>> getUserPageFollowingList(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.success(mypageService.getFollowing(userId)));
     }
 }

@@ -20,27 +20,30 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/naver-news")
-@Tag(name = "NaverNewsController", description = "네이버 뉴스 API")
+@Tag(name = "네이버 뉴스 컨트롤러", description = "네이버 뉴스 관련 기능 API")
 public class NaverNewsController {
+
     private final NaverNewsService naverNewsService;
     private final UserService userService;
 
-    @Operation(summary = "네이버 뉴스 검색", description = "네이버 뉴스 검색")
+    @Operation(summary = "네이버 뉴스 검색", description = "네이버 API를 통해 뉴스 검색")
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<NaverNewsInfoResponse>>> searchNews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
             @RequestParam String query,
-            @RequestParam(defaultValue = "10") int display) {
+            @RequestParam(defaultValue = "10") int display
+    ) {
         userService.validateRole(customUserDetails.getRole());
         List<NaverNewsInfoResponse> result = naverNewsService.searchNews(query, display);
         return ResponseEntity.ok(ApiResponse.success(result));
     }
 
-    @Operation(summary = "네이버 뉴스 불러와 저장", description = "네이버 뉴스 불러와 저장")
+    @Operation(summary = "네이버 뉴스 저장", description = "프론트에서 전달된 네이버 뉴스 정보를 DB에 저장")
     @PostMapping("/save")
     public ResponseEntity<ApiResponse<Long>> saveNews(
             @AuthenticationPrincipal CustomUserDetails customUserDetails,
-            @RequestBody NaverNewsSaveRequest request) {
+            @RequestBody NaverNewsSaveRequest request
+    ) {
         userService.validateRole(customUserDetails.getRole());
         Long savedId = naverNewsService.saveNaverNews(request);
         return ResponseEntity.ok(ApiResponse.success(savedId));

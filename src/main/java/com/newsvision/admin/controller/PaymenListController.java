@@ -7,6 +7,7 @@ import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.payment.dto.RefundRequestDto;
 import com.newsvision.global.payment.service.PaymentService;
 import com.newsvision.global.security.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+@Hidden
 @RestController
 @CrossOrigin(origins = "*")
 

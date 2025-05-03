@@ -3,6 +3,7 @@ package com.newsvision.admin.controller;
 import com.newsvision.admin.service.PollListServicer;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.poll.dto.response.PollResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Hidden
 @RestController
 @RequestMapping("/admin/polls")
 @RequiredArgsConstructor
