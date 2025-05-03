@@ -1,6 +1,6 @@
 package com.newsvision.admin.controller;
 
-import com.newsvision.admin.controller.response.CommentReportResponse;
+import com.newsvision.admin.dto.response.CommentReportResponse;
 import com.newsvision.admin.service.CommentReportService;
 import com.newsvision.global.exception.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/commentreports")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "CommentReportController", description = "댓글 신고 관리 API")
 public class CommentReportController {
 
@@ -34,18 +33,6 @@ public class CommentReportController {
 
         return ResponseEntity.ok(ApiResponse.success(commentReportService.getAllCommentReports()));
     }
-
-//    @GetMapping("/max")
-//    public ResponseEntity<ApiResponse<List<CommentReportResponse>>> getMaxCommentReports(
-//            @AuthenticationPrincipal UserDetails userDetails) {
-//
-//        if (userDetails == null || !userDetails.getAuthorities().stream()
-//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-//            return ResponseEntity.status(403).body(null);
-//        }
-//
-//        return ResponseEntity.ok(ApiResponse.success(commentReportService.getMaxAllCommentReports()));
-//    }
 
     @Operation(summary = "댓글 신고 삭제", description = "댓글 신고 삭제")
     @DeleteMapping("/delete/{id}")

@@ -13,7 +13,6 @@ import java.util.List;
 @Getter
 @RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
-    // 명보가 추가
     private final User user;
 
     @Override
@@ -34,7 +33,6 @@ public class CustomUserDetails implements UserDetails {
         return user.getUsername();
     }
 
-    // 계정 상태 설정
     @Override public boolean isAccountNonExpired() { return true; }
     @Override public boolean isAccountNonLocked() { return true; }
     @Override public boolean isCredentialsNonExpired() { return true; }

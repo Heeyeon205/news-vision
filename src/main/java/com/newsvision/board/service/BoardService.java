@@ -12,6 +12,8 @@ import com.newsvision.elasticsearch.service.BoardSearchService;
 import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
+import com.newsvision.notice.entity.Notice;
+import com.newsvision.notice.service.NoticeService;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.service.FollowService;
 import com.newsvision.user.service.UserService;
@@ -19,9 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +30,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +37,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class BoardService {
     private final BoardRepository boardRepository;
-    private final BoardLikeRepository boardLikeRepository;
-    private final CategoryRepository categoryRepository;
     private final BoardSearchService boardSearchService;
     private final UserService userService;
     private final FileUploaderService fileUploaderService;
@@ -47,6 +44,10 @@ public class BoardService {
     private final CategoryService categoryService;
     private final BoardLikeService boardLikeService;
     private final FollowService followService;
+    private final NoticeService noticeService;
+
+    private final BoardLikeRepository boardLikeRepository;
+    private final CategoryRepository categoryRepository;
 
     public Board findById(Long boardId) {
         return boardRepository.findById(boardId)
@@ -64,8 +65,8 @@ public class BoardService {
         }
 
         return boardPage.map(board -> {
-            int likeCount = boardLikeService.countByBoardId(board.getId()); // BoardLikeService로 좋아요 수 계산
-            int commentCount = commentService.countByBoardId(board.getId()); // CommentService로 댓글 수 계산
+            int likeCount = boardLikeService.countByBoardId(board.getId());
+            int commentCount = commentService.countByBoardId(board.getId());
             return new BoardResponse(board, likeCount, commentCount);
         });
     }
@@ -130,10 +131,8 @@ public class BoardService {
     }
 
     @Transactional(readOnly = true)
-    public BoardUpdateResponse getBoardUpdate(Board board) { // 게시글 상세 조회
-        // 좋아요 수 계산 - null 체크 추가
+    public BoardUpdateResponse getBoardUpdate(Board board) {
         int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
-        // 댓글 수 계산 - null 체크 추가
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
 
         List<CategoryResponse> categoryies = categoryService.findAll();
@@ -229,6 +228,11 @@ public class BoardService {
         Board board = findById(boardId);
         User user = userService.findByUserId(userId);
         boardLikeService.save(board, user);
+
+        User sender = userService.findByUserId(userId);
+        User receiver = userService.findByUserId(board.getUser().getId());
+        String url = "/board/" + board.getId();
+        noticeService.createAndSendNotice(sender, receiver, Notice.Type.BOARD_LIKE, url, "회원님의 게시글을 좋아합니다.");
     }
 
     @Transactional

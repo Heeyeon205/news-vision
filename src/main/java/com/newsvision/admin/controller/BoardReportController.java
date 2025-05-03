@@ -1,6 +1,6 @@
 package com.newsvision.admin.controller;
 
-import com.newsvision.admin.controller.response.BoardReportResponse;
+import com.newsvision.admin.dto.response.BoardReportResponse;
 import com.newsvision.admin.service.BoardReportService;
 import com.newsvision.global.exception.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/boardreports")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // 개발 중 프론트 접근 허용
 @Tag(name = "BoardReportController", description = "커뮤니티 게시글 신고 관리 API")
 public class BoardReportController {
 
@@ -34,18 +33,6 @@ public class BoardReportController {
 
         return ResponseEntity.ok(ApiResponse.success(boardReportService.getAllReports()));
     }
-
-//    @GetMapping("/max")
-//    public ResponseEntity<ApiResponse<List<BoardReportResponse>>> getMaxAllReports(
-//            @AuthenticationPrincipal UserDetails userDetails) {
-//
-//        if (userDetails == null || !userDetails.getAuthorities().stream()
-//                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"))) {
-//            return ResponseEntity.status(403).body(null);
-//        }
-//
-//        return ResponseEntity.ok(ApiResponse.success(boardReportService.getMaxAllReports()));
-//    }
 
     @Operation(summary = "게시글 신고 삭제", description = "게시글 신고 삭제")
     @DeleteMapping("/delete/{id}")

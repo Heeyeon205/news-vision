@@ -1,6 +1,6 @@
 package com.newsvision.admin.service;
 
-import com.newsvision.admin.controller.response.GptNewsResponse;
+import com.newsvision.admin.dto.response.GptNewsResponse;
 import com.newsvision.news.entity.GptNews;
 import com.newsvision.news.repository.GptNewsRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,9 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
-
-
 @Service
 public class GptNewsListService {
 
@@ -24,7 +21,6 @@ public class GptNewsListService {
     public GptNewsListService(GptNewsRepository gptNewsRepository) {
         this.gptNewsRepository = gptNewsRepository;
     }
-
 
     public List<GptNewsResponse> getAllGptNews() {
         List<GptNews> gptNewsList = gptNewsRepository.findAll();

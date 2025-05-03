@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 public class PayDeleteService {
     private final RefundRequestRepository refundRequestRepository;
 
-    //삭제 서버스
     public void deleteRefundRequest(Long id) {
         RefundRequest request = refundRequestRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 환불 요청이 존재하지 않습니다. id=" + id));

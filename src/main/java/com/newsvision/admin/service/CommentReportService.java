@@ -1,13 +1,12 @@
 package com.newsvision.admin.service;
 
-import com.newsvision.admin.controller.response.CommentReportResponse;
+import com.newsvision.admin.dto.response.CommentReportResponse;
 import com.newsvision.board.entity.Comment;
 import com.newsvision.board.entity.CommentReport;
 import com.newsvision.board.repository.CommentReportRepository;
 import com.newsvision.board.repository.CommentRepository;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,10 +16,8 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class CommentReportService {
-
     private final CommentReportRepository commentReportRepository;
     private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
 
     public List<CommentReportResponse> getAllCommentReports() {
         return commentReportRepository.findAll().stream()
@@ -33,37 +30,16 @@ public class CommentReportService {
                             .userId(String.valueOf(report.getUser().getId()))
                             .commentWriter(comment.getUser().getNickname())
                             .userNickname(report.getUser().getNickname())
-                            .boardId(comment.getBoard().getId()) // 게시글 ID 추가
-                            .createdAt(comment.getCreateAt().toString()) // ISO 문자열로 변환
+                            .boardId(comment.getBoard().getId())
+                            .createdAt(comment.getCreateAt().toString())
                             .build();
                 })
                 .collect(Collectors.toList());
     }
 
-//    public List<CommentReportResponse> getMaxAllCommentReports() {
-//        return commentReportRepository.findAll(Sort.by(Sort.Direction.DESC, "id")).stream()
-//                .map(report -> {
-//                    Comment comment = report.getComment();
-//                    return CommentReportResponse.builder()
-//                            .id(report.getId())
-//                            .commentId(String.valueOf(comment.getId()))
-//                            .commentContent(comment.getContent())
-//                            .userId(String.valueOf(report.getUser().getId()))
-//                            .userNickname(report.getUser().getNickname())
-//                            .boardId(comment.getBoard().getId()) // 게시글 ID 추가
-//                            .createdAt(comment.getCreateAt().toString()) // 날짜 포맷은 프론트에서 처리
-//                            .build();
-//                })
-//                .collect(Collectors.toList());
-//    }
-
-
-
     public void deleteCategory(Long id) {
         commentReportRepository.deleteById(id);
     }
-
-
 
     @Transactional
     public void markCommentAsReported(Long reportId) {
@@ -77,5 +53,4 @@ public class CommentReportService {
 
         commentReportRepository.deleteByComment(comment);
     }
-
 }

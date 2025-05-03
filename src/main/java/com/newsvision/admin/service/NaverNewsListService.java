@@ -1,7 +1,7 @@
 package com.newsvision.admin.service;
 
 
-import com.newsvision.admin.controller.response.NaverNewsResponse;
+import com.newsvision.admin.dto.response.NaverNewsResponse;
 import com.newsvision.news.entity.NaverNews;
 import com.newsvision.news.repository.NaverNewsRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,10 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 public class NaverNewsListService {
-
    private final NaverNewsRepository naverNewsRepository;
 
   @Autowired
@@ -37,7 +35,6 @@ public class NaverNewsListService {
                 .map(NaverNewsResponse::of)
                 .collect(Collectors.toList());
     }
-
 
   @Transactional
    public void deleteNaverNews(Long id) {

@@ -6,7 +6,7 @@ import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.news.entity.News;
 import com.newsvision.news.entity.Scrap;
-import com.newsvision.notice.Notice;
+import com.newsvision.notice.entity.Notice;
 import com.newsvision.poll.entity.Poll;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

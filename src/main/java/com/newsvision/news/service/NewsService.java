@@ -16,9 +16,8 @@ import com.newsvision.news.repository.NaverNewsRepository;
 import com.newsvision.news.repository.NewsLikeRepository;
 import com.newsvision.news.repository.NewsRepository;
 import com.newsvision.news.repository.ScrapRepository;
-import com.newsvision.notice.Notice;
-import com.newsvision.notice.NoticeEventResponse;
-import com.newsvision.notice.NoticeService;
+import com.newsvision.notice.entity.Notice;
+import com.newsvision.notice.service.NoticeService;
 import com.newsvision.poll.dto.response.PollListResponse;
 import com.newsvision.poll.service.PollService;
 import com.newsvision.user.entity.User;
@@ -113,28 +112,10 @@ public class NewsService {
         }
         newsLikeService.addLike(news, userService.findByUserId(userId));
 
-        Long receiverId = news.getUser().getId();
-        if (!receiverId.equals(userId)) {
-            User sendUser = userService.findByUserId(userId);
-
-            Notice notice = Notice.builder()
-                    .senderId(sendUser)
-                    .receiver(news.getUser())
-                    .type(Notice.Type.NEWS_LIKE)
-                    .url("/news/" + newsId)
-                    .title("회원님의 뉴스를 좋아합니다.")
-                    .isRead(false)
-                    .build();
-            noticeService.save(notice);
-
-            NoticeEventResponse response = new NoticeEventResponse(
-                    "NEWS_LIKE",
-                    "회원님의 뉴스를 좋아합니다.",
-                    "/news/" + newsId,
-                    false
-            );
-            noticeService.sendNotification(receiverId, response);
-        }
+        User sender = userService.findByUserId(userId);
+        User receiver = userService.findByUserId(news.getUser().getId());
+        String url = "/news/" + news.getId();
+        noticeService.createAndSendNotice(sender, receiver, Notice.Type.NEWS_LIKE, url, "회원님의 뉴스를 좋아합니다.");
     }
 
     @Transactional
@@ -153,6 +134,11 @@ public class NewsService {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         scrapService.save(news, userService.findByUserId(userId));
+
+        User sender = userService.findByUserId(userId);
+        User receiver = userService.findByUserId(news.getUser().getId());
+        String url = "/news/" + news.getId();
+        noticeService.createAndSendNotice(sender, receiver, Notice.Type.NEWS_SCRAP, url, "회원님의 뉴스를 스크랩했습니다.");
     }
 
     @Transactional
@@ -237,7 +223,7 @@ public class NewsService {
         try {
             newsSearchService.saveNews(saved);
         } catch (Exception e) {
-            log.error("❌ Elasticsearch 저장 실패", e);
+            log.error("Elasticsearch 저장 실패", e);
         }
         return saved.getId();
     }
@@ -304,15 +290,15 @@ public class NewsService {
 
     private String getDefaultImageForCategoryId(Long categoryId) {
         return switch (categoryId.intValue()) {
-            case 2 -> defaultEconomyImage; // 경제
-            case 3 -> defaultPoliticsImage; // 정치, 사회
-            case 4 -> defaultCultureImage; // 문화
-            case 5 -> defaultGlobalImage; // 글로벌
-            case 6 -> defaultArtImage; // 예술
-            case 7 -> defaultScienceImage; // 과학기술
-            case 8 -> defaultHistoryImage; // 역사
-            case 9 -> defaultBookImage; // 도서, 문학
-            default -> defaultGlobalImage; // 미분류 또는 기타
+            case 2 -> defaultEconomyImage;
+            case 3 -> defaultPoliticsImage;
+            case 4 -> defaultCultureImage;
+            case 5 -> defaultGlobalImage;
+            case 6 -> defaultArtImage;
+            case 7 -> defaultScienceImage;
+            case 8 -> defaultHistoryImage;
+            case 9 -> defaultBookImage;
+            default -> defaultGlobalImage;
         };
     }
 

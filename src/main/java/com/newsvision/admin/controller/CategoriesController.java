@@ -1,6 +1,6 @@
 package com.newsvision.admin.controller;
 
-import com.newsvision.admin.controller.response.CategoriesResponse;
+import com.newsvision.admin.dto.response.CategoriesResponse;
 import com.newsvision.admin.service.CategoriesService;
 import com.newsvision.category.Categories;
 import com.newsvision.global.exception.ApiResponse;
@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/admin/categories")
 @RequiredArgsConstructor

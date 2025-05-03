@@ -1,13 +1,12 @@
 package com.newsvision.admin.controller;
 
-import com.newsvision.admin.controller.response.UserListResponse;
+import com.newsvision.admin.dto.response.UserListResponse;
 import com.newsvision.admin.service.UserListService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/users")
@@ -24,9 +22,6 @@ public class UserListController {
     private final UserService userService;
 
     private static final Logger log = LoggerFactory.getLogger(UserListController.class);
-
-
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<UserListResponse>>> getUserList(   @AuthenticationPrincipal UserDetails userDetails) {
@@ -49,8 +44,6 @@ public class UserListController {
         List<UserListResponse> users = userListService.getMaxAllUsers();
         return ResponseEntity.ok(ApiResponse.success(users));
     }
-
-
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {

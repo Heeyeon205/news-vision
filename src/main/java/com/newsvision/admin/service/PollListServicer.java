@@ -10,11 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class PollListServicer {
     private final PollRepository pollRepository;
-
 
     public List<PollResponse> getAllPolls() {
         return pollRepository.findAll().stream()

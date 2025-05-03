@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/news") // 관리자용 뉴스 경로
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class NewsListController {
     private final NewsListService newsListService; // 목록 조회용 서비스
     private final NewsService newsService;       // 개별 뉴스 처리용 서비스

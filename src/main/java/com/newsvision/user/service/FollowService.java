@@ -1,5 +1,7 @@
 package com.newsvision.user.service;
 
+import com.newsvision.notice.entity.Notice;
+import com.newsvision.notice.service.NoticeService;
 import com.newsvision.user.entity.Follow;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.FollowRepository;
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FollowService {
     private final FollowRepository followRepository;
     private final UserService userService;
+    private final NoticeService noticeService;
 
     public int getCountFollower(User user) {
         return followRepository.countByFollowing(user);
@@ -24,19 +27,8 @@ public class FollowService {
         return followRepository.countByFollower(user);
     }
 
-    public boolean isFollowing(Long myId, Long targetId) {
-        // 내가 저 사람을 팔로우하고 있는지? →
-        return followRepository.existsByFollower_IdAndFollowing_Id(myId, targetId);
-    }
-
-    public boolean isFollowedBy(Long myId, Long targetId) {
-        // 저 사람이 나를 팔로우하고 있는지?
-        return followRepository.existsByFollower_IdAndFollowing_Id(targetId, myId);
-    }
-
     @Transactional
     public void follow(Long myId, Long targetId) {
-
         User my = userService.findByUserId(myId);
         User target = userService.findByUserId(targetId);
         Follow follow = Follow.builder()
@@ -44,6 +36,9 @@ public class FollowService {
                 .following(target)
                 .build();
         followRepository.save(follow);
+
+        String url = "/userPage/" + myId;
+        noticeService.createAndSendNotice(my, target, Notice.Type.FOLLOW, url, "회원님을 팔로우하기 시작했습니다.");
     }
 
     @Transactional

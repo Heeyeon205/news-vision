@@ -6,13 +6,12 @@ import com.newsvision.board.entity.BoardReport;
 import com.newsvision.board.entity.Comment;
 import com.newsvision.board.entity.CommentReport;
 import com.newsvision.board.repository.BoardReportRepository;
-import com.newsvision.board.repository.BoardRepository;
 import com.newsvision.board.repository.CommentReportRepository;
-import com.newsvision.board.repository.CommentRepository;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
+import com.newsvision.notice.service.NoticeService;
 import com.newsvision.user.entity.User;
-import com.newsvision.user.repository.UserRepository;
+import com.newsvision.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,22 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReportService {
     private final BoardReportRepository boardReportRepository;
     private final CommentReportRepository commentReportRepository;
-    private final BoardRepository boardRepository;
-    private final CommentRepository commentRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final BoardService boardService;
+    private final CommentService commentService;
+    private final NoticeService noticeService;
 
     @Transactional
     public void reportBoard(Long boardId, Long userId) {
-        boolean alreadyReported = boardReportRepository.existsByBoardIdAndUserId(boardId, userId);
-        if (alreadyReported) {
+        if (boardReportRepository.existsByBoardIdAndUserId(boardId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
-
-        Board board = boardRepository.findById(boardId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-
+        Board board = boardService.findById(boardId);
+        User user = userService.findByUserId(userId);
         BoardReport boardReport = new BoardReport();
         boardReport.setBoard(board);
         boardReport.setUser(user);
@@ -52,10 +47,8 @@ public class ReportService {
         if (alreadyReported) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
+        Comment comment = commentService.findById(commentId);
+        User user = userService.findByUserId(userId);
 
         CommentReport commentReport = new CommentReport();
         commentReport.setComment(comment);

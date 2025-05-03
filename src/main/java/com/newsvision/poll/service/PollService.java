@@ -60,13 +60,12 @@ public class PollService {
         LocalDateTime now = LocalDateTime.now();
         Pageable topTen = PageRequest.of(0, 10);
         List<Poll> polls = pollRepository
-                .findByExpiredAtAfterOrderByCreatedAtDesc(now, topTen)
+                .findByExpiredAtAfterOrderByExpiredAtAsc(now, topTen)
                 .stream().toList();
         return polls.stream()
                 .map(PollListResponse::new)
                 .toList();
     }
-
 
     public PollResponse getPoll(Long pollId, Long userId) {
         Poll poll = findById(pollId);
@@ -126,7 +125,6 @@ public class PollService {
         Poll poll = findById(pollId);
         userService.matchUserId(userId, poll.getUser().getId());
 
-        // 만료일 검증
         LocalDateTime newExpiredAt = request.getExpiredAt();
         if (newExpiredAt == null) {
             newExpiredAt = poll.getExpiredAt(); // 기존 값 유지
@@ -134,22 +132,17 @@ public class PollService {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
 
-        // 선택지 검증 (컨트롤러에서 이미 검증됨, 추가 확인)
         if (request.getOptions() == null || request.getOptions().size() < 2) {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
 
-        // 투표 정보 업데이트
         poll.setTitle(request.getTitle());
         poll.setExpiredAt(newExpiredAt);
 
-        // 기존 선택지 삭제 (DB에서 직접 삭제)
         pollOptionRepository.deleteByPollId(pollId);
 
-        // poll 객체의 pollOptions 리스트 초기화 (삭제된 객체 참조 방지)
         poll.getPollOptions().clear();
 
-        // 새 선택지 추가
         List<PollOption> newOptions = request.getOptions().stream()
                 .map(optionContent -> {
                     PollOption option = new PollOption();
@@ -160,10 +153,8 @@ public class PollService {
                 })
                 .collect(Collectors.toList());
 
-        // 새로운 선택지를 pollOptions에 추가
         poll.getPollOptions().addAll(newOptions);
 
-        // poll 저장 (cascade로 인해 pollOptions도 함께 저장됨)
         pollRepository.save(poll);
         return convertToPollResponse(poll, userId);
     }

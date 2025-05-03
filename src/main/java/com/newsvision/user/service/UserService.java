@@ -114,7 +114,6 @@ public class UserService {
                     fileUploaderService.deleteFile(oldImageUrl);
                 }
             } catch (IOException e) {
-                log.error("이미지 처리 실패: {}", e.getMessage());
                 throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
         }

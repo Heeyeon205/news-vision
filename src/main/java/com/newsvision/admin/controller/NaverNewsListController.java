@@ -1,6 +1,6 @@
 package com.newsvision.admin.controller;
 
-import com.newsvision.admin.controller.response.NaverNewsResponse;
+import com.newsvision.admin.dto.response.NaverNewsResponse;
 import com.newsvision.admin.service.NaverNewsListService;
 import com.newsvision.global.exception.ApiResponse;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +19,6 @@ public class NaverNewsListController {
     public NaverNewsListController(NaverNewsListService naverNewsService) {
         this.naverNewsService = naverNewsService;
     }
-
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<NaverNewsResponse>>> getAllNaverNews(

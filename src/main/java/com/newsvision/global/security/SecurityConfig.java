@@ -66,7 +66,7 @@ public class SecurityConfig {
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                         // basic
-                        "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**", "/api/auth/**",
+                        "/", "news/main","/user/login", "/user/join", "/api/auth/**", "/oauth2/**", "/email/**", "/api/auth/**", "/admin/**",
                         // dev
                         "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**", "/payment/payments","/api/v1/payment/validation/**",
                         // auth

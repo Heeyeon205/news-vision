@@ -1,6 +1,6 @@
 package com.newsvision.admin.controller;
 
-import com.newsvision.admin.controller.response.GptNewsResponse;
+import com.newsvision.admin.dto.response.GptNewsResponse;
 import com.newsvision.admin.service.GptNewsListService;
 import com.newsvision.global.exception.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +18,6 @@ public class GptNewsListController {
     public GptNewsListController(GptNewsListService gptNewsService) {
         this.gptNewsService = gptNewsService;
     }
-
-
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<GptNewsResponse>>> getAllGptNews(
@@ -60,5 +58,4 @@ public class GptNewsListController {
         gptNewsService.deleteGptNews(id);
         return ResponseEntity.ok(ApiResponse.success("GPT 뉴스(ID: " + id + ") 삭제 완료"));
     }
-
 }

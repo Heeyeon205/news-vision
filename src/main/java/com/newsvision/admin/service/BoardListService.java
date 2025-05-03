@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class BoardListService {
-
     private final BoardRepository boardRepository;
 
     @Autowired
@@ -28,7 +27,6 @@ public class BoardListService {
         int page = 0;
         int size = 10;
 
-        //Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id")); 최대
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id")); //최저
         Page<Board> boardPage = boardRepository.findAll(pageable);
 
