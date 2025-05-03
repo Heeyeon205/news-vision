@@ -3,6 +3,7 @@ package com.newsvision.notice;
 import com.newsvision.global.Utils.TimeUtil;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
+import com.newsvision.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -82,4 +83,30 @@ public class NoticeService {
         Notice notice = findById(id);
         notice.updateRead(true);
     }
+
+    @Transactional
+    public void createAndSendNotice(User sender, User receiver, Notice.Type type, String url, String title) {
+        if (sender.getId().equals(receiver.getId())) {
+            return;
+        }
+
+        Notice notice = Notice.builder()
+                .senderId(sender)
+                .receiver(receiver)
+                .type(type)
+                .url(url)
+                .title(title)
+                .isRead(false)
+                .build();
+        save(notice);
+
+        NoticeEventResponse response = new NoticeEventResponse(
+                type.name(),
+                title,
+                url,
+                false
+        );
+        sendNotification(receiver.getId(), response);
+    }
+
 }

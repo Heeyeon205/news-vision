@@ -24,13 +24,10 @@ public class Poll {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String content;
-
-    @Column(name = "created_at") // 생성일
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @Column(name = "expired_at") // 종료일
+    @Column(name = "expired_at")
     private LocalDateTime expiredAt;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -79,7 +79,6 @@ public class PollService {
         return PollResponse.builder()
                 .id(poll.getId())
                 .title(poll.getTitle())
-                .content(poll.getContent())
                 .createdAt(TimeUtil.formatRelativeTime(poll.getCreatedAt()))
                 .expiredAt(TimeUtil.dDayCaculate(poll.getExpiredAt()))
                 .userId(poll.getUser().getId())
@@ -104,7 +103,6 @@ public class PollService {
             User user = userService.findByUserId(userId);
             Poll poll = new Poll();
             poll.setTitle(request.getTitle());
-            poll.setContent(request.getContent());
             poll.setExpiredAt(request.getExpiredAt());
             poll.setUser(user);
             pollRepository.save(poll);
@@ -143,7 +141,6 @@ public class PollService {
 
         // 투표 정보 업데이트
         poll.setTitle(request.getTitle());
-        poll.setContent(request.getContent());
         poll.setExpiredAt(newExpiredAt);
 
         // 기존 선택지 삭제 (DB에서 직접 삭제)

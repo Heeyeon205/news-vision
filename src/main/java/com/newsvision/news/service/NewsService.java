@@ -115,10 +115,10 @@ public class NewsService {
 
         Long receiverId = news.getUser().getId();
         if (!receiverId.equals(userId)) {
-            User sender = userService.findByUserId(userId);
+            User sendUser = userService.findByUserId(userId);
 
             Notice notice = Notice.builder()
-                    .senderId(sender)
+                    .senderId(sendUser)
                     .receiver(news.getUser())
                     .type(Notice.Type.NEWS_LIKE)
                     .url("/news/" + newsId)
@@ -133,7 +133,6 @@ public class NewsService {
                     "/news/" + newsId,
                     false
             );
-
             noticeService.sendNotification(receiverId, response);
         }
     }
