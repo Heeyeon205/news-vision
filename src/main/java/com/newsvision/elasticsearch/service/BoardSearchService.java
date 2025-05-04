@@ -28,7 +28,7 @@ public class BoardSearchService {
     // 게시글 저장
     public void saveBoard(Board board, int likeCount, int commentCount) {
         // createdAt 포맷 보장
-        LocalDateTime formattedDateTime = LocalDateTime.parse(board.getCreateAt().format(FORMATTER), FORMATTER);
+        LocalDateTime formattedDateTime = LocalDateTime.parse(board.getCreatedAt().format(FORMATTER), FORMATTER);
 
         BoardDocument doc = BoardDocument.builder()
                 .id(board.getId())

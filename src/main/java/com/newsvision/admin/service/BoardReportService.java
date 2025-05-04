@@ -28,7 +28,7 @@ public class BoardReportService {
                             .id(report.getId())
                             .boardId(board.getId())
                             .boardWriter(board.getUser().getNickname())
-                            .boardCreatedAt(board.getCreateAt().format(formatter))
+                            .boardCreatedAt(board.getCreatedAt().format(formatter))
                             .userNickname(report.getUser().getNickname())
                             .build();
                 })

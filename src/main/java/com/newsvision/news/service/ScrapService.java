@@ -42,6 +42,6 @@ public class ScrapService {
     }
 
     public Page<Scrap> getMypageScrapList(Long id, Pageable pageable) {
-        return scrapRepository.findByUserIdOrderByIdDesc(id, pageable);
+        return scrapRepository.findByUserIdOrderByCreatedAtDesc(id, pageable);
     }
 }

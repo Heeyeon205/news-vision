@@ -14,6 +14,6 @@ public interface ScrapRepository extends JpaRepository<Scrap, Long> {
     List<Scrap> findAllByUser(User user);
     void deleteByNews(News news);
     boolean existsByNewsIdAndUserId(Long newsId, Long userId);
-    Page<Scrap> findByUserIdOrderByIdDesc(Long id, Pageable pageable);
+    Page<Scrap> findByUserIdOrderByCreatedAtDesc(Long id, Pageable pageable);
 }
 

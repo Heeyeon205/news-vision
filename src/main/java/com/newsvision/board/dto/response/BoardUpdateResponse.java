@@ -38,7 +38,7 @@ public class BoardUpdateResponse {
         this.icon = board.getUser().getBadge() != null ? board.getUser().getBadge().getIcon() : null;
         this.content = board.getContent();
         this.categoryId = board.getCategory() != null ? board.getCategory().getId() : null;
-        this.createdAt = TimeUtil.formatRelativeTime(board.getCreateAt());
+        this.createdAt = TimeUtil.formatRelativeTime(board.getCreatedAt());
         this.userId = board.getUser().getId();
         this.image = board.getImage();
         this.view = board.getView();

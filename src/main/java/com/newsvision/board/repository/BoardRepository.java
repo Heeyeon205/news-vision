@@ -12,7 +12,7 @@ import java.util.Optional;
 
 public interface BoardRepository extends JpaRepository<Board,Long> {
     Page<Board> findByCategoryId(Long categoryId, Pageable pageable);
-    Page<Board> findByUserIdOrderByCreateAtDesc(Long userId, Pageable pageable);
+    Page<Board> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 
     @Modifying
     @Query("UPDATE Board b SET b.category.id = :defaultId WHERE b.category.id = :categoryId")

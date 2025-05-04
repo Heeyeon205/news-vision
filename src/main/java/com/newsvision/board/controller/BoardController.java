@@ -39,7 +39,7 @@ public class BoardController {
     @GetMapping // GET 요청을 처리하는 엔드포인트 (기본 경로 "/api/boards" + GET)
     public ResponseEntity<ApiResponse<Page<BoardResponse>>> getBoards(
             @RequestParam(required = false) Long categoryId,
-            @PageableDefault(size = 10, sort = "createAt", direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable
     ) {
         Page<BoardResponse> boards = boardService.getBoardsList(categoryId,pageable);
         return ResponseEntity.ok(ApiResponse.success(boards));

@@ -32,7 +32,7 @@ public class BoardResponse {
         this.image = board.getImage();
         this.content = board.getContent();
         this.categoryId = board.getCategory() != null ? board.getCategory().getId() : null;
-        this.createdAt = TimeUtil.formatRelativeTime(board.getCreateAt()); // getCreateAt() -> getCreatedAt()
+        this.createdAt = TimeUtil.formatRelativeTime(board.getCreatedAt()); // getCreateAt() -> getCreatedAt()
         this.view = board.getView();
         this.newsId = board.getNewsId();
         this.isReported = board.getIsReported();

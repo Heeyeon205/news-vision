@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -77,7 +76,7 @@ public class BoardService {
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
         boolean isLike = userId != null && boardLikeService.existsByBoardIdAndUserId(board.getId(), userId);
         boolean followed = userId != null && followService.existsFollow(userId, board.getUser().getId());
-        List<CommentResponse> comments  = commentService.getCommentsByBoardId(board.getId());
+        List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
         return new BoardDetailResponse(board, likeCount, commentCount, comments, isLike, followed);
     }
 
@@ -91,27 +90,26 @@ public class BoardService {
     }
 
     @Transactional
-    public BoardCreateResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 작성
-        if(content.isEmpty()){
+    public BoardCreateResponse createBoard(Long userId, MultipartFile image, String content, Long categoryId) {
+        if (content.isEmpty()) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         try {
-        log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
-        User user = userService.findByUserId(userId);
-        String imageUrl = null;
-        if(image != null && !image.isEmpty()){
-            try{
-                byte[] resizedBoardImage = resizeBoardImage(image);
-                imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage,user.getId());
-                log.info("이미지 업로드 성공: URL - {}", imageUrl);
+            log.info("사용자 ID {} 로 사용자 찾기 시도", userId);
+            User user = userService.findByUserId(userId);
+            String imageUrl = null;
+            if (image != null && !image.isEmpty()) {
+                try {
+                    byte[] resizedBoardImage = resizeBoardImage(image);
+                    imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage, user.getId());
+                    log.info("이미지 업로드 성공: URL - {}", imageUrl);
 
-            }catch(IOException e){
-                log.error("이미지 처리 실패:{}", e.getMessage());
+                } catch (IOException e) {
+                    log.error("이미지 처리 실패:{}", e.getMessage());
+                }
             }
-        }
 
-        log.info("사용자 찾음: 사용자 이름 - {}", user.getUsername());
-        Categories category = categoryRepository.findById(categoryId)
+            Categories category = categoryRepository.findById(categoryId)
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
             Board board = new Board();
@@ -121,11 +119,11 @@ public class BoardService {
             board.setImage(imageUrl);
             Board savedBoard = boardRepository.save(board);
             boardSearchService.saveBoard(board, 0, 0);
-        log.info("게시글 저장 성공! ID - {}", savedBoard.getId()); // 로그 추가
+            log.info("게시글 저장 성공! ID - {}", savedBoard.getId());
             return getBoardCreate(savedBoard);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-            log.error("게시글 생성 중 예외 발생!",e);
+            log.error("게시글 생성 중 예외 발생!", e);
             throw e;
         }
     }
@@ -145,30 +143,26 @@ public class BoardService {
         User user = userService.findByUserId(userId);
 
         String imageUrl = null;
-        if(image != null && !image.isEmpty()){
+        if (image != null && !image.isEmpty()) {
             String oldImageUrl = board.getImage();
-            try{
+            try {
                 byte[] resizedBoardImage = resizeBoardImage(image);
-                imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage,user.getId());
+                imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage, user.getId());
                 board.setImage(imageUrl);
 
-                if(oldImageUrl != null && !oldImageUrl.isEmpty()){
+                if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
                     fileUploaderService.deleteFile(oldImageUrl);
                 }
                 log.info("이미지 업로드 성공: URL - {}", imageUrl);
 
-            }catch(IOException e){
+            } catch (IOException e) {
                 log.error("이미지 처리 실패:{}", e.getMessage());
             }
         }
-        log.info("카테고리 ID {} 로 카테고리 찾기 시도", categoryId);
-        Categories category = categoryRepository.findById(categoryId) // 카테고리 ID로 카테고리 조회
+        Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
-        log.info("카테고리 찾음: 카테고리 이름 - {}", category.getName()); // 로그 추가
-        // 게시글 작성자와 수정 요청자가 동일인인지 확인 (본인 게시글만 수정 가능)
-        if (!Objects.equals(board.getUser().getId(), userId)) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED); // 권한 없음 에러
-        }
+
+        userService.matchUserId(board.getUser().getId(), userId);
 
         board.setContent(content);
         board.setCategory(category);
@@ -177,31 +171,28 @@ public class BoardService {
         boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
         return getBoardUpdate(updatedBoard);
     }
-    @Transactional
-    public void deleteBoard(Long boardId, Long userId) { // 게시글 삭제
-        Board board = findById(boardId);
-        User user = userService.findByUserId(userId);
 
-        // 게시글 작성자 본인 또는 관리자만 삭제 가능하도록 권한 체크 (isAdminUser()는 관리자 권한 체크 함수)
-        if (!Objects.equals(board.getUser().getId(), userId) /* && !isAdminUser(userId) */) {
-            throw new CustomException(ErrorCode.UNAUTHORIZED); // 권한 없음 에러
-        }
+    @Transactional
+    public void deleteBoard(Long boardId, Long userId) {
+        Board board = findById(boardId);
+
+        userService.matchUserId(board.getUser().getId(), userId);
 
         String imageUrl = board.getImage();
-        if(imageUrl != null && !imageUrl.isEmpty()){
-            try{
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
                 fileUploaderService.deleteFile(imageUrl);
                 log.info("S3에서 이미지 삭제 성공: URL - {}", imageUrl);
-            }catch (Exception e){
+            } catch (Exception e) {
                 log.error("S3 이미지 삭제 실패: URL - {}, 오류: {}", imageUrl, e.getMessage());
             }
         }
-        boardRepository.delete(board); // 게시글 삭제
+        boardRepository.delete(board);
         boardSearchService.deleteBoard(boardId);
     }
 
     @Transactional
-    public void incrementViewCount(Board board) { // 조회수 증가 기능
+    public void incrementViewCount(Board board) {
         board.updateView(board.getView() + 1);
         boardRepository.save(board);
     }
@@ -222,7 +213,7 @@ public class BoardService {
 
     @Transactional
     public void addLike(Long boardId, Long userId) {
-        if(boardLikeService.existsByBoardIdAndUserId(boardId, userId)) {
+        if (boardLikeService.existsByBoardIdAndUserId(boardId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         Board board = findById(boardId);
@@ -237,14 +228,14 @@ public class BoardService {
 
     @Transactional
     public void removeLike(Long boardId, Long userId) {
-        if(!boardLikeService.existsByBoardIdAndUserId(boardId, userId)) {
+        if (!boardLikeService.existsByBoardIdAndUserId(boardId, userId)) {
             throw new CustomException(ErrorCode.INVALID_INPUT);
         }
         boardLikeService.delete(boardId, userId);
     }
 
     public Page<Board> getMypageBoardList(Long userId, Pageable pageable) {
-        return boardRepository.findByUserIdOrderByCreateAtDesc(userId, pageable);
+        return boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
     }
 }
 

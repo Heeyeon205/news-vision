@@ -25,7 +25,7 @@ public class UserBoardListResponse {
                 .icon(board.getUser().getBadge() != null ? board.getUser().getBadge().getIcon() : null)
                 .content(board.getContent())
                 .image(board.getImage())
-                .createAt(TimeUtil.formatRelativeTime(board.getCreateAt()))
+                .createAt(TimeUtil.formatRelativeTime(board.getCreatedAt()))
                 .likeCount(likeCount)
                 .commentCount(commentCount)
                 .build();

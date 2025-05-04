@@ -26,8 +26,8 @@ public class Board {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private Categories category;
-    @Column(name = "create_at")
-    private LocalDateTime createAt;
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", referencedColumnName = "id") // user_id 외래 키 설정
     private User user;
@@ -40,26 +40,20 @@ public class Board {
     @Column(name = "is_reported")
     private Boolean isReported;
 
-    //BoardLike 엔티티와 관계 설정
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<BoardLike> boardLikes;
 
-    //Comment 엔티티와 관계 설정
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;
 
-    // BoardReport 엔티티와 관계 설정
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BoardReport> boardReports;
 
-
-
-
-    @PrePersist // 엔티티가 persist 되기 전에 실행
+    @PrePersist
     public void prePersist() {
-        this.createAt = LocalDateTime.now();
-        this.view = this.view == 0 ? 0 : this.view; // view 초기값 설정 (null이면 0으로)
-        this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
+        this.createdAt = LocalDateTime.now();
+        this.view = this.view == 0 ? 0 : this.view;
+        this.isReported = this.isReported == null ? false : this.isReported;
     }
 
     public void updateView(int view) {

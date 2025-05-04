@@ -51,7 +51,6 @@ public class CategoriesService {
         return categoriesRepository.save(category);
     }
 
-
     @Transactional
     public void deleteCategory(Long id) {
         Categories category = categoriesRepository.findById(id)
