@@ -20,12 +20,16 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/gpt-news")
-@Tag(name="GptNewsController", description = "GPT 뉴스 요약 API")
+@Tag(name = "GPT 뉴스 컨트롤러", description = "GPT 기반 뉴스 요약 API")
 public class GptNewsController {
+
     private final NewsRepository newsRepository;
     private final GptNewsRepository gptNewsRepository;
 
-    @Operation(summary = "GPT로 뉴스 content 요약", description = "GPT로 뉴스 content 요약")
+    @Operation(
+            summary = "최근 뉴스 GPT 요약 리스트",
+            description = "3일 이내 등록된 관리자 뉴스 중 상위 10개를 GPT로 요약하여 반환합니다. 요약이 없을 경우 기본 문구를 표시합니다."
+    )
     @GetMapping("/main-summary")
     public ResponseEntity<ApiResponse<List<GptNewsSummaryResponse>>> getMainNewsSummaries() {
         LocalDateTime threeDaysAgo = LocalDateTime.now().minusDays(3);
@@ -33,9 +37,10 @@ public class GptNewsController {
 
         List<GptNewsSummaryResponse> response = newsList.stream()
                 .map(news -> gptNewsRepository.findByNewsId(news.getId())
-                .map(gptNews -> new GptNewsSummaryResponse(news.getId(), gptNews.getImage(), gptNews.getTitle(), gptNews.getSummary()))
-                .orElse(new GptNewsSummaryResponse(news.getId(), news.getImage(), news.getTitle(), "요약이 존재하지 않습니다."))
-            ) .toList();
+                        .map(gptNews -> new GptNewsSummaryResponse(news.getId(), gptNews.getImage(), gptNews.getTitle(), gptNews.getSummary()))
+                        .orElse(new GptNewsSummaryResponse(news.getId(), news.getImage(), news.getTitle(), "요약이 존재하지 않습니다."))
+                ).toList();
+
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

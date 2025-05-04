@@ -1,10 +1,14 @@
 package com.newsvision.admin.controller;
 
+import ch.qos.logback.classic.Logger;
+import com.newsvision.admin.controller.response.BoardReportResponse;
 import com.newsvision.admin.service.PayDeleteService;
 import com.newsvision.global.exception.ApiResponse;
 import com.newsvision.global.payment.dto.RefundRequestDto;
 import com.newsvision.global.payment.service.PaymentService;
 import com.newsvision.global.security.CustomUserDetails;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -12,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+@Hidden
 @RestController
 @CrossOrigin(origins = "*")
 
@@ -39,6 +44,8 @@ public class PaymenListController {
         payDeleteService.deleteRefundRequest(id);
         return ResponseEntity.ok(ApiResponse.success("환불 요청(ID: " + id + ") 삭제 완료"));
     }
+
+
 
     @GetMapping("/refund/requests/max")
     public ResponseEntity<ApiResponse<List<RefundRequestDto>>> getMaxRefundRequests(

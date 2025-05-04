@@ -17,12 +17,16 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/email")
-@Tag(name = "EmailController", description = "이메일 인증 API")
+@Tag(name = "이메일 인증 컨트롤러", description = "이메일 인증 및 코드 검증 API")
 public class EmailController {
+
     private final EmailService emailService;
     private final UserService userService;
 
-    @Operation(summary = "인증코드 전송", description = "인증코드 전송")
+    @Operation(
+            summary = "이메일 인증코드 전송",
+            description = "입력된 이메일로 인증코드를 전송하며, 이미 가입된 이메일인지 여부를 함께 확인합니다."
+    )
     @PostMapping("/send-code")
     public ResponseEntity<ApiResponse<?>> sendCode(@RequestBody EmailRequest request) {
         Boolean exists = userService.existsByEmail(request.getEmail());
@@ -33,14 +37,20 @@ public class EmailController {
         return ResponseEntity.ok(ApiResponse.success(request));
     }
 
-    @Operation(summary = "인증코드 식별", description = "인증코드 식별")
+    @Operation(
+            summary = "이메일 인증코드 검증",
+            description = "입력된 이메일과 인증코드를 비교하여 일치 여부를 검증합니다."
+    )
     @PostMapping("/verify")
     public ResponseEntity<ApiResponse<VerifyEmailRequest>> verifyCode(@RequestBody VerifyEmailRequest request) {
         emailService.verifyCode(request.getEmail(), request.getEmailCode());
         return ResponseEntity.ok(ApiResponse.success(request));
     }
 
-    @Operation(summary = "프로필 업데이트시 인증코드 전송", description = "프로필 업데이트시 인증코드 전송")
+    @Operation(
+            summary = "프로필 이메일 변경 시 인증코드 전송",
+            description = "프로필 수정 시 새로운 이메일로 인증코드를 전송합니다."
+    )
     @PostMapping("/update/send-code")
     public ResponseEntity<ApiResponse<?>> updateSendCode(@RequestBody EmailRequest request) {
         emailService.sendVerificationCode(request.getEmail());
