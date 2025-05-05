@@ -86,7 +86,7 @@ public class UserController {
     @Operation(summary = "유저 정보 수정", description = "닉네임, 이메일, 자기소개, 프로필 이미지를 수정합니다.")
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping(value = "/{userId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ApiResponse<Long>> update(
+    public ResponseEntity<ApiResponse<UpdateResultResponse>> update(
             @PathVariable Long userId,
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @RequestPart(value = "image", required = false) MultipartFile image,
@@ -96,7 +96,8 @@ public class UserController {
     ) {
         userService.matchUserId(userId, userDetails.getId());
         userService.updateUserProfile(userId, image, nickname, email, introduce);
-        return ResponseEntity.ok(ApiResponse.success(userId));
+
+        return ResponseEntity.ok(ApiResponse.success(new UpdateResultResponse(userService.findByUserId(userId))));
     }
 
     @Operation(summary = "비밀번호 수정폼 데이터", description = "임시 토큰을 기반으로 사용자 ID(아이디)를 반환합니다.")

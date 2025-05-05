@@ -113,9 +113,10 @@ public class UserService {
                 String imageUrl = fileUploaderService.uploadUserProfile(resizedImage, user.getId());
                 user.updateImage(imageUrl);
 
-                if (oldImageUrl != null && !oldImageUrl.isEmpty() && !oldImageUrl.equals("default-profile.png")) {
+                if (oldImageUrl != null && !oldImageUrl.isEmpty() && !oldImageUrl.contains("default-profile.png")) {
                     fileUploaderService.deleteFile(oldImageUrl);
                 }
+
             } catch (IOException e) {
                 throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
             }
@@ -127,7 +128,7 @@ public class UserService {
         if (email != null && !email.equals(user.getEmail())) {
             user.updateEmail(email);
         }
-        if (introduce != null && !introduce.equals(user.getIntroduce()) && introduce.equals("null")) {
+        if (introduce != null && !introduce.equals(user.getIntroduce()) && !introduce.equals("null")) {
             user.updateIntroduce(introduce);
         }
     }
@@ -170,5 +171,4 @@ public class UserService {
             throw new CustomException(ErrorCode.FORBIDDEN_USER);
         }
     }
-
 }
