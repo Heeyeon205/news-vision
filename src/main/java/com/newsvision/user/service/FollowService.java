@@ -34,6 +34,9 @@ public class FollowService {
     public void follow(Long myId, Long targetId) {
         User my = userService.findByUserId(myId);
         User target = userService.findByUserId(targetId);
+        if(myId == target.getId()){
+            return;
+        }
         Follow follow = Follow.builder()
                 .follower(my)
                 .following(target)

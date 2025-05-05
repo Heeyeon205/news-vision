@@ -62,7 +62,7 @@ public class MypageService {
 
     public Page<FollowResponse> getFollowing(Long id, Pageable pageable) {
         Page<Follow> followingPage = followService.findByFollowerId(id, pageable);
-        return followingPage.map(follow -> FollowResponse.from(follow.getFollower()));
+        return followingPage.map(follow -> FollowResponse.from(follow.getFollowing()));
     }
 
     public Page<UserNewsListResponse> getMypageNewsList(Long id, Pageable pageable) {

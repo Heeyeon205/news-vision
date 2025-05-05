@@ -45,7 +45,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "badge_id")
     private Badge badge;
     @Enumerated(EnumType.STRING)
@@ -61,6 +61,18 @@ public class User {
         this.role = this.role == null ? Role.ROLE_USER : this.role;
         this.provider = this.provider == null ? Provider.LOCAL : this.provider;
         this.isPaid = this.isPaid == null ? false : this.isPaid;
+    }
+
+    public void updateRole(Badge creatorBadge) {
+        if (this.role == Role.ROLE_USER) {
+            this.role = Role.ROLE_CREATOR;
+            this.badge = creatorBadge; // 크리에이터용 배지 할당
+        } else if (this.role == Role.ROLE_CREATOR) {
+            this.role = Role.ROLE_USER;
+            this.badge = null;
+        } else {
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
     }
 
     public enum Role {

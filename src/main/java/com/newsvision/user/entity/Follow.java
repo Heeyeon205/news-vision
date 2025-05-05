@@ -30,4 +30,11 @@ public class Follow {
     @JsonBackReference("user-followers")
     private User following;
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
 }

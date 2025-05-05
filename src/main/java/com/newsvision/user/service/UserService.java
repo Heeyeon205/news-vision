@@ -5,19 +5,16 @@ import com.newsvision.global.aws.FileUploaderService;
 import com.newsvision.global.exception.CustomException;
 import com.newsvision.global.exception.ErrorCode;
 import com.newsvision.global.jwt.JwtTokenProvider;
-import com.newsvision.mypage.dto.response.FollowResponse;
 import com.newsvision.user.dto.request.JoinUserRequest;
 import com.newsvision.user.dto.request.UpdatePasswordRequest;
 import com.newsvision.user.dto.response.*;
 import com.newsvision.user.entity.Badge;
-import com.newsvision.user.entity.Follow;
 import com.newsvision.user.entity.User;
 import com.newsvision.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,6 +29,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class UserService {
+    private final BadgeService badgeService;
     @Value("${custom.default-image-url}")
     private String defaultProfileImage;
     private final UserRepository userRepository;
@@ -169,6 +167,23 @@ public class UserService {
     public void matchUserId(Long userId, Long id) {
         if(!userId.equals(id)){
             throw new CustomException(ErrorCode.FORBIDDEN_USER);
+        }
+    }
+
+    public void checkAdminByUserId(String role) {
+        if(!role.equals("ROLE_ADMIN")){
+            throw new CustomException(ErrorCode.FORBIDDEN);
+        }
+    }
+
+    @Transactional
+    public void updateUserRole(Long id) {
+        User user = findByUserId(id);
+        if (user.getRole().name().equals("ROLE_USER") || user.getRole().name().equals("ROLE_CREATOR")) {
+            Badge creatorBadge = badgeService.findByBadgeId(2L);
+            user.updateRole(creatorBadge);
+        } else {
+            throw new CustomException(ErrorCode.FORBIDDEN);
         }
     }
 }
