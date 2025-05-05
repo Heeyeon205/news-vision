@@ -1,14 +1,13 @@
 package com.newsvision.poll.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "polls_options")
 public class PollOption {
     @Id
@@ -24,4 +23,12 @@ public class PollOption {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "poll_id", referencedColumnName = "id", nullable = false)
     private Poll poll;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
+
+    public void updateCount(int count) {
+        this.count = count;
+    }
 }

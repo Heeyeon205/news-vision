@@ -103,7 +103,6 @@ public class BoardService {
                     byte[] resizedBoardImage = resizeBoardImage(image);
                     imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage, user.getId());
                     log.info("이미지 업로드 성공: URL - {}", imageUrl);
-
                 } catch (IOException e) {
                     log.error("이미지 처리 실패:{}", e.getMessage());
                 }
@@ -112,11 +111,13 @@ public class BoardService {
             Categories category = categoryRepository.findById(categoryId)
                     .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
-            Board board = new Board();
-            board.setContent(content);
-            board.setCategory(category);
-            board.setUser(user);
-            board.setImage(imageUrl);
+            Board board = Board.builder()
+                    .content(content)
+                    .category(category)
+                    .user(user)
+                    .image(imageUrl)
+                    .build();
+
             Board savedBoard = boardRepository.save(board);
             boardSearchService.saveBoard(board, 0, 0);
             log.info("게시글 저장 성공! ID - {}", savedBoard.getId());
@@ -133,39 +134,38 @@ public class BoardService {
         int likeCount = (board.getBoardLikes() != null) ? board.getBoardLikes().size() : 0;
         int commentCount = (board.getComments() != null) ? board.getComments().size() : 0;
 
-        List<CategoryResponse> categoryies = categoryService.findAll();
+        List<CategoryResponse> categories = categoryService.findAll();
         List<CommentResponse> comments = commentService.getCommentsByBoardId(board.getId());
-        return new BoardUpdateResponse(board, likeCount, commentCount, comments, categoryies);
+        return new BoardUpdateResponse(board, likeCount, commentCount, comments, categories);
     }
 
     @Transactional
-    public BoardUpdateResponse updateBoard(Board board, Long userId, MultipartFile image, String content, Long categoryId) { // 게시글 수정
+    public BoardUpdateResponse updateBoard(Board board, Long userId, MultipartFile image, String content, Long categoryId) {
         User user = userService.findByUserId(userId);
+        String imageUrl = board.getImage();
 
-        String imageUrl = null;
         if (image != null && !image.isEmpty()) {
             String oldImageUrl = board.getImage();
             try {
                 byte[] resizedBoardImage = resizeBoardImage(image);
                 imageUrl = fileUploaderService.uploadBoardImage(resizedBoardImage, user.getId());
-                board.setImage(imageUrl);
-
                 if (oldImageUrl != null && !oldImageUrl.isEmpty()) {
                     fileUploaderService.deleteFile(oldImageUrl);
                 }
                 log.info("이미지 업로드 성공: URL - {}", imageUrl);
-
             } catch (IOException e) {
                 log.error("이미지 처리 실패:{}", e.getMessage());
             }
         }
+
         Categories category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
 
         userService.matchUserId(board.getUser().getId(), userId);
 
-        board.setContent(content);
-        board.setCategory(category);
+        board.updateContent(content);
+        board.updateCategory(category);
+        board.updateImage(imageUrl);
 
         Board updatedBoard = boardRepository.save(board);
         boardSearchService.saveBoard(board, board.getBoardLikes().size(), board.getComments().size());
@@ -175,7 +175,6 @@ public class BoardService {
     @Transactional
     public void deleteBoard(Long boardId, Long userId) {
         Board board = findById(boardId);
-
         userService.matchUserId(board.getUser().getId(), userId);
 
         String imageUrl = board.getImage();
@@ -238,7 +237,3 @@ public class BoardService {
         return boardRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
     }
 }
-
-
-
-

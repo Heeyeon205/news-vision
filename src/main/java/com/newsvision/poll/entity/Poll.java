@@ -4,17 +4,17 @@ package com.newsvision.poll.entity;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "polls")
 public class Poll {
     @Id
@@ -35,11 +35,19 @@ public class Poll {
     @JsonBackReference("user-polls")
     private User user;
 
-    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PollOption> pollOptions;
+    @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PollOption> pollOptions = new ArrayList<>();
 
     @PrePersist
     public void prePersist() {
         this.createdAt = LocalDateTime.now();
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateExpiredAt(LocalDateTime expiredAt) {
+        this.expiredAt = expiredAt;
     }
 }

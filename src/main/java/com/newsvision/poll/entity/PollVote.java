@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @Builder
 @AllArgsConstructor
@@ -32,5 +31,9 @@ public class PollVote {
     @PrePersist
     public void prePersist() {
         this.votedAt = LocalDateTime.now();
+    }
+
+    public void updateVotedAt(LocalDateTime votedAt) {
+        this.votedAt = votedAt;
     }
 }

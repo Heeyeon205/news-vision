@@ -50,7 +50,7 @@ public class CommentService {
     public CommentResponse updateComment (Long commentId, Long userId, String commentContent) {
         Comment comment = findById(commentId);
         userService.matchUserId(comment.getUser().getId(), userId);
-        comment.setContent(commentContent);
+        comment.updateContent(commentContent);
         Comment updatedComment = commentRepository.save(comment);
         return new CommentResponse(updatedComment);
 

@@ -35,9 +35,10 @@ public class ReportService {
         }
         Board board = boardService.findById(boardId);
         User user = userService.findByUserId(userId);
-        BoardReport boardReport = new BoardReport();
-        boardReport.setBoard(board);
-        boardReport.setUser(user);
+        BoardReport boardReport = BoardReport.builder()
+                    .board(board)
+                    .user(user)
+                    .build();
         boardReportRepository.save(boardReport);
     }
 
@@ -50,9 +51,10 @@ public class ReportService {
         Comment comment = commentService.findById(commentId);
         User user = userService.findByUserId(userId);
 
-        CommentReport commentReport = new CommentReport();
-        commentReport.setComment(comment);
-        commentReport.setUser(user);
+        CommentReport commentReport = CommentReport.builder()
+                .comment(comment)
+                .user(user)
+                .build();
         commentReportRepository.save(commentReport);
     }
 

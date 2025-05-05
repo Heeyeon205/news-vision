@@ -45,8 +45,8 @@ public class BoardReportService {
                 .orElseThrow(() -> new IllegalArgumentException("신고 ID 없음: " + reportId));
 
         Board board = report.getBoard();
-        board.setIsReported(true);
-        board.setContent("관리자로 인해 삭제된 게시글 입니다.");
+        board.updateIsReported(true);
+        board.updateContent("관리자로 인해 삭제된 게시글 입니다.");
         boardRepository.save(board);
         boardReportRepository.deleteByBoard(board);
     }
