@@ -24,15 +24,15 @@
 
 ### Back-End
 - Java 17
-- Spring Boot 3.4.4
+- Spring Boot 3.4
 - IntelliJ
 
 ### Front-End
 - React 19
 - Vite 6
 - Tailwindcss 4.1
-- Node.js 22.13.1
-- npm 10.9.2
+- Node.js 22.13
+- npm 10.9
 - Visual Studio Code
 
 ### Communication
