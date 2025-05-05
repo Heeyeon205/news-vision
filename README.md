@@ -1,4 +1,4 @@
-# 📘 쉽게 보는 지식 플랫폼 NEWSION
+# 📙 쉽게 보는 지식 플랫폼 NEWSION
 <p align="center"> <b>2025.04.15 ~ 2025.05.08</b> </p>
 <img src="https://github.com/user-attachments/assets/2c8c72c6-a0d2-4797-84a3-27e3a664ec66" width="100%" />
 <p>URL : </p>
