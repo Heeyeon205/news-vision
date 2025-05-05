@@ -108,7 +108,7 @@
 <br/>
 
 ## Preview
-
+👉 [클라이언트 리포지토리 바로가기](https://github.com/Heeyeon205/newsion-client)
 <br/>
 
 ## Troubleshooting
