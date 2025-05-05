@@ -1,6 +1,7 @@
 # 📙 쉽게 보는 지식 플랫폼 NEWSION
 <p align="center"> <b>2025.04.15 ~ 2025.05.08</b> </p>
-<img src="src/main/resources/static/image/readme-title.png" width="100%" />
+<img width="1534" alt="newsion-title" src="https://github.com/user-attachments/assets/4e7707c8-1999-4bd0-b50a-aacb25c63b49" />
+
 <p>URL : </p>
 <p>Test ID : </p>
 <p>Test PW : </p>
