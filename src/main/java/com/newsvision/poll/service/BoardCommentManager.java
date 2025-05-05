@@ -26,10 +26,11 @@ public class BoardCommentManager {
         Board board = boardService.findById(boardId);
         User user = userService.findByUserId(userId);
 
-        Comment comment = new Comment();
-        comment.setBoard(board);
-        comment.setUser(user);
-        comment.setContent(commentContent);
+        Comment comment = Comment.builder()
+                .board(board)
+                .user(user)
+                .content(commentContent)
+                .build();
         Comment savedComment = commentService.save(comment);
 
 

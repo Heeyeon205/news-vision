@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,12 +36,10 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class PollService {
     private final PollRepository pollRepository;
-
     private final UserService userService;
     private final PollOptionService pollOptionService;
     private final PollVoteService pollVoteService;
     private final FollowService followService;
-
     private final PollOptionRepository pollOptionRepository;
     private final PollVoteRepository pollVoteRepository;
 
@@ -75,6 +74,13 @@ public class PollService {
     private PollResponse convertToPollResponse(Poll poll, Long userId) {
         boolean voted = userId != null && pollVoteService.existsByPollVote(poll.getId(), userId);
         boolean followed = userId != null && followService.existsFollow(userId, poll.getUser().getId());
+
+        // pollOptions를 repository에서 직접 조회
+        List<PollOption> pollOptions = pollOptionRepository.findByPoll(poll);
+        if (pollOptions == null) {
+            pollOptions = new ArrayList<>();
+        }
+
         return PollResponse.builder()
                 .id(poll.getId())
                 .title(poll.getTitle())
@@ -87,7 +93,7 @@ public class PollService {
                 .badgeTitle(poll.getUser().getBadge().getTitle())
                 .isVote(voted)
                 .followed(followed)
-                .pollOptions(poll.getPollOptions().stream()
+                .pollOptions(pollOptions.stream()
                         .map(option -> PollOptionResponse.builder()
                                 .id(option.getId())
                                 .content(option.getContent())
@@ -99,25 +105,24 @@ public class PollService {
 
     @Transactional
     public PollResponse createPoll(CreatePollRequest request, Long userId) {
-            User user = userService.findByUserId(userId);
-            Poll poll = new Poll();
-            poll.setTitle(request.getTitle());
-            poll.setExpiredAt(request.getExpiredAt());
-            poll.setUser(user);
-            pollRepository.save(poll);
+        User user = userService.findByUserId(userId);
+        Poll poll = Poll.builder()
+                .title(request.getTitle())
+                .expiredAt(request.getExpiredAt())
+                .user(user)
+                .build();
+        Poll savedPoll = pollRepository.save(poll);
 
-            List<PollOption> pollOptions = request.getOptions().stream()
-                    .map(optionContent->{
-                        PollOption option = new PollOption();
-                        option.setContent(optionContent);
-                        option.setPoll(poll);
-                        return option;
-                    })
-                    .collect(Collectors.toList());
-            pollOptionRepository.saveAll(pollOptions);
-            poll.setPollOptions(pollOptions);
+        List<PollOption> pollOptions = request.getOptions().stream()
+                .map(optionContent -> PollOption.builder()
+                        .content(optionContent)
+                        .poll(savedPoll)
+                        .count(0)
+                        .build())
+                .collect(Collectors.toList());
+        pollOptionRepository.saveAll(pollOptions);
 
-            return convertToPollResponse(poll, userId);
+        return convertToPollResponse(savedPoll, userId);
     }
 
     @Transactional
@@ -136,21 +141,18 @@ public class PollService {
             throw new CustomException(ErrorCode.INVALID_REQUEST);
         }
 
-        poll.setTitle(request.getTitle());
-        poll.setExpiredAt(newExpiredAt);
+        poll.updateTitle(request.getTitle());
+        poll.updateExpiredAt(newExpiredAt);
 
         pollOptionRepository.deleteByPollId(pollId);
-
         poll.getPollOptions().clear();
 
         List<PollOption> newOptions = request.getOptions().stream()
-                .map(optionContent -> {
-                    PollOption option = new PollOption();
-                    option.setContent(optionContent);
-                    option.setPoll(poll);
-                    option.setCount(0);
-                    return option;
-                })
+                .map(optionContent -> PollOption.builder()
+                        .content(optionContent)
+                        .poll(poll)
+                        .count(0)
+                        .build())
                 .collect(Collectors.toList());
 
         poll.getPollOptions().addAll(newOptions);
@@ -169,16 +171,17 @@ public class PollService {
         PollOption pollOption = pollOptionService.findById(request.getOptionId());
         Poll poll = pollOption.getPoll();
 
-        if(checkVote(user.getId(), poll.getId())){
+        if (checkVote(user.getId(), poll.getId())) {
             throw new CustomException(ErrorCode.DUPLICATE_VOTE);
         }
 
-        PollVote pollVote = new PollVote();
-        pollVote.setUser(user);
-        pollVote.setPollOption(pollOption);
+        PollVote pollVote = PollVote.builder()
+                .user(user)
+                .pollOption(pollOption)
+                .build();
         pollVoteRepository.save(pollVote);
 
-        pollOption.setCount(pollOption.getCount() + 1);
+        pollOption.updateCount(pollOption.getCount() + 1);
         pollOptionRepository.save(pollOption);
     }
 

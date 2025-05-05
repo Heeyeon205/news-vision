@@ -3,19 +3,16 @@ package com.newsvision.board.entity;
 import com.newsvision.category.Categories;
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Table(name = "boards")
 public class Board {
     @Id
@@ -56,7 +53,11 @@ public class Board {
         this.isReported = this.isReported == null ? false : this.isReported;
     }
 
+    public void updateContent(String content){this.content = content;}
+    public void updateCategory(Categories category){this.category = category;}
+    public void updateImage(String image){this.image = image;}
     public void updateView(int view) {
         this.view = view;
     }
+    public void updateIsReported(Boolean isReported) { this.isReported = isReported; }
 }

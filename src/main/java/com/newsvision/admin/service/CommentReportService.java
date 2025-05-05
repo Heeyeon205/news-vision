@@ -47,8 +47,8 @@ public class CommentReportService {
                 .orElseThrow(() -> new IllegalArgumentException("신고 ID가 존재하지 않습니다: " + reportId));
 
         Comment comment = report.getComment();
-        comment.setIsReported(true);
-        comment.setContent("관리자로 인해 삭제된 댓글 입니다.");
+        comment.updateIsReported(true);
+        comment.updateContent("관리자로 인해 삭제된 댓글 입니다.");
         commentRepository.save(comment);
 
         commentReportRepository.deleteByComment(comment);

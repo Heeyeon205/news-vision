@@ -2,15 +2,16 @@ package com.newsvision.board.entity;
 
 import com.newsvision.user.entity.User;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Table(name = "comments")
 public class Comment {
     @Id
@@ -43,5 +44,11 @@ public class Comment {
     public void prePersist() {
         this.isReported = this.isReported == null ? false : this.isReported; // isReported 초기값 설정 (null이면 false로)
         this.createAt = LocalDateTime.now();
+    }
+    public void updateContent(String content) {
+        this.content = content;
+    }
+    public void updateIsReported(Boolean isReported) {
+        this.isReported = isReported;
     }
 }
