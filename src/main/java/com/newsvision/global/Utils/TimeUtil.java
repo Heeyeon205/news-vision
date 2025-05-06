@@ -53,10 +53,4 @@ public class TimeUtil {
             return (seconds / (365 * 86400)) + "년 남았어요!";
         }
     }
-
-    public static LocalDateTime stringToLocalDateTime(String strTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH);
-        ZonedDateTime dateTime = ZonedDateTime.parse(strTime, formatter);
-        return dateTime.toLocalDateTime();
-    }
 }
