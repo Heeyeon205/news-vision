@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Install JDK 11
+      - name: Install JDK 17
         uses: actions/setup-java@v3
         with:
           java-version: '17'
@@ -53,10 +53,10 @@ jobs:
             --build-arg NAVER_NEWS_CLIENT_ID=${{ secrets.NAVER_NEWS_CLIENT_ID }} \
             --build-arg NAVER_NEWS_CLIENT_SECRET=${{ secrets.NAVER_NEWS_CLIENT_SECRET }} \
             --build-arg OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }} \
-            --build-arg POAT_CORD=${{ secrets.POAT_CORD }} \
+            --build-arg PORT_CORD=${{ secrets.PORT_CORD }} \
             --build-arg POAT_KEY=${{ secrets.POAT_KEY }} \
             --build-arg POAT_SECRET_KEY=${{ secrets.POAT_SECRET_KEY }} \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/newsion-live-server .
+          -t ${{ secrets.DOCKERHUB_USERNAME }}/newsion-live-server .
       - name: Push Docker
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/newsion-live-server:latest
         
@@ -103,7 +103,7 @@ jobs:
         with:
           url: http://${{ secrets.LIVE_SERVER_IP }}:${{env.STOPPED_PORT}}/env
           max-attempts: 5
-          retry-delay: 10s
+          retry-delay: 15s
 
       - name: Change nginx upstream
         uses: appleboy/ssh-action@master
