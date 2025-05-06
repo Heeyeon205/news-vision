@@ -74,28 +74,28 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            export SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
-            export SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
-            export SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
-            export SPRING_JWT_ISSUER="${{ secrets.SPRING_JWT_ISSUER }}"
-            export SPRING_JWT_SECRET_KEY="${{ secrets.SPRING_JWT_SECRET_KEY }}"
-            export OAUTH2_GOOGLE_CLIENT_ID="${{ secrets.OAUTH2_GOOGLE_CLIENT_ID }}"
-            export OAUTH2_GOOGLE_CLIENT_SECRET="${{ secrets.OAUTH2_GOOGLE_CLIENT_SECRET }}"
-            export OAUTH2_NAVER_CLIENT_ID="${{ secrets.OAUTH2_NAVER_CLIENT_ID }}"
-            export OAUTH2_NAVER_CLIENT_SECRET="${{ secrets.OAUTH2_NAVER_CLIENT_SECRET }}"
-            export OAUTH2_KAKAO_CLIENT_ID="${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}"
-            export OAUTH2_KAKAO_CLIENT_SECRET="${{ secrets.OAUTH2_KAKAO_CLIENT_SECRET }}"
-            export AWS_SES_MAIL_USERNAME="${{ secrets.AWS_SES_MAIL_USERNAME }}"
-            export AWS_SES_MAIL_PASSWORD="${{ secrets.AWS_SES_MAIL_PASSWORD }}"
-            export AWS_S3_BUCKET_NAME="${{ secrets.AWS_S3_BUCKET_NAME }}"
-            export AWS_S3_ACCESS_KEY="${{ secrets.AWS_S3_ACCESS_KEY }}"
-            export AWS_S3_SECRET_KEY="${{ secrets.AWS_S3_SECRET_KEY }}"
-            export NAVER_NEWS_CLIENT_ID="${{ secrets.NAVER_NEWS_CLIENT_ID }}"
-            export NAVER_NEWS_CLIENT_SECRET="${{ secrets.NAVER_NEWS_CLIENT_SECRET }}"
-            export OPEN_AI_KEY="${{ secrets.OPEN_AI_KEY }}"
-            export PORT_CORD="${{ secrets.PORT_CORD }}"
-            export PORT_KEY="${{ secrets.PORT_KEY }}"
-            export PORT_SECRET_KEY="${{ secrets.PORT_SECRET_KEY }}"
+            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env
+            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+            echo "SPRING_JWT_ISSUER=${{ secrets.SPRING_JWT_ISSUER }}" >> .env
+            echo "SPRING_JWT_SECRET_KEY=${{ secrets.SPRING_JWT_SECRET_KEY }}" >> .env
+            echo "OAUTH2_GOOGLE_CLIENT_ID=${{ secrets.OAUTH2_GOOGLE_CLIENT_ID }}" >> .env
+            echo "OAUTH2_GOOGLE_CLIENT_SECRET=${{ secrets.OAUTH2_GOOGLE_CLIENT_SECRET }}" >> .env
+            echo "OAUTH2_NAVER_CLIENT_ID=${{ secrets.OAUTH2_NAVER_CLIENT_ID }}" >> .env
+            echo "OAUTH2_NAVER_CLIENT_SECRET=${{ secrets.OAUTH2_NAVER_CLIENT_SECRET }}" >> .env
+            echo "OAUTH2_KAKAO_CLIENT_ID=${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}" >> .env
+            echo "OAUTH2_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH2_KAKAO_CLIENT_SECRET }}" >> .env
+            echo "AWS_SES_MAIL_USERNAME=${{ secrets.AWS_SES_MAIL_USERNAME }}" >> .env
+            echo "AWS_SES_MAIL_PASSWORD=${{ secrets.AWS_SES_MAIL_PASSWORD }}" >> .env
+            echo "AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}" >> .env
+            echo "AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}" >> .env
+            echo "AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}" >> .env
+            echo "NAVER_NEWS_CLIENT_ID=${{ secrets.NAVER_NEWS_CLIENT_ID }}" >> .env
+            echo "NAVER_NEWS_CLIENT_SECRET=${{ secrets.NAVER_NEWS_CLIENT_SECRET }}" >> .env
+            echo "OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}" >> .env
+            echo "PORT_CORD=${{ secrets.PORT_CORD }}" >> .env
+            echo "PORT_KEY=${{ secrets.PORT_KEY }}" >> .env
+            echo "PORT_SECRET_KEY=${{ secrets.PORT_SECRET_KEY }}" >> .env
             
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/newsion-live-server:latest
             sudo docker-compose -f docker-compose-${{ env.TARGET_UPSTREAM }}.yml up -d
