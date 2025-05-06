@@ -1,18 +1,10 @@
 package com.newsvision.admin.controller;
 
 import com.newsvision.admin.service.NewsListService;
-import com.newsvision.global.exception.ApiResponse;
-import com.newsvision.news.dto.response.NewsResponse;
 import com.newsvision.news.service.NewsService;
-import com.newsvision.poll.service.PollService;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Hidden
 @RestController
