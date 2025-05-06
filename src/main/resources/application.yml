@@ -2,7 +2,13 @@ spring:
   config:
     import: optional:env[.env]
   profiles:
-    active: dev
+    active: local
+    group:
+      local: local, common, secret
+      blue: blue, common, secret
+      green: green, common, secret
 
 server:
+  address: 0.0.0.0
   port: 8080
+  env: blue

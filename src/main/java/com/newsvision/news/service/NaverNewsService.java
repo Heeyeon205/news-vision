@@ -45,7 +45,7 @@ public class  NaverNewsService {
         display = 30;
         String encodedQuery = UriUtils.encode(query, StandardCharsets.UTF_8);
         String url = "https://openapi.naver.com/v1/search/news.json?query=" + encodedQuery
-                + "&display=" + display + "&start=1&sort=date"; // sim(정확도), date(최신순)
+                + "&display=" + display + "&start=1&sort=sim"; // sim(정확도), date(최신순)
 
         HttpHeaders headers = new HttpHeaders();
         headers.set("X-Naver-Client-Id", clientId);
@@ -67,10 +67,6 @@ public class  NaverNewsService {
                             .originallink(decodeDescription(item.getOriginallink()))
                             .pubDate(item.getPubDate())
                             .build())
-//                    .filter(news ->
-//                            news.getTitle().toLowerCase().contains(query.toLowerCase()) ||
-//                                    news.getDescription().toLowerCase().contains(query.toLowerCase())
-//                    )
                     .distinct()
                     .toList();
         } catch (org.springframework.web.client.RestClientResponseException e) {
