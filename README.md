@@ -80,7 +80,7 @@
 <br/>
 
 ## ERD Diagram
-<img width="1768" alt="erd-diagram" src="https://github.com/user-attachments/assets/044e90d9-696d-493c-814c-10c46bb14010" />
+<img width="1072" alt="erd-diagram" src="https://github.com/user-attachments/assets/77df6220-c25c-4f4c-b780-59f54237bc6c" />
 <br/>
 
 ## Responsibilities
