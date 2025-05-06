@@ -24,16 +24,16 @@
         </encoder>
     </appender>
 
-    <!-- logstash 전송용 -->
-    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>localhost:5044</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
-    </appender>
+<!--    &lt;!&ndash; logstash 전송용 &ndash;&gt;-->
+<!--    <appender name="LOGSTASH" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--        <destination>localhost:5044</destination>-->
+<!--        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>-->
+<!--    </appender>-->
 
-    <!-- 검색 로그만 logstash로 전송 -->
-    <logger name="SEARCH_LOGGER" level="INFO" additivity="false">
-        <appender-ref ref="LOGSTASH"/>
-    </logger>
+<!--    &lt;!&ndash; 검색 로그만 logstash로 전송 &ndash;&gt;-->
+<!--    <logger name="SEARCH_LOGGER" level="INFO" additivity="false">-->
+<!--        <appender-ref ref="LOGSTASH"/>-->
+<!--    </logger>-->
 
     <!-- 나머지 로그는 콘솔에 출력 -->
     <root level="INFO">
