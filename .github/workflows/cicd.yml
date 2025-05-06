@@ -73,32 +73,32 @@ jobs:
           host: ${{ secrets.LIVE_SERVER_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
-          envs: |
-            SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}
-            SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}
-            SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-            SPRING_JWT_ISSUER=${{ secrets.SPRING_JWT_ISSUER }}
-            SPRING_JWT_SECRET_KEY=${{ secrets.SPRING_JWT_SECRET_KEY }}
-            OAUTH2_GOOGLE_CLIENT_ID=${{ secrets.OAUTH2_GOOGLE_CLIENT_ID }}
-            OAUTH2_GOOGLE_CLIENT_SECRET=${{ secrets.OAUTH2_GOOGLE_CLIENT_SECRET }}
-            OAUTH2_NAVER_CLIENT_ID=${{ secrets.OAUTH2_NAVER_CLIENT_ID }}
-            OAUTH2_NAVER_CLIENT_SECRET=${{ secrets.OAUTH2_NAVER_CLIENT_SECRET }}
-            OAUTH2_KAKAO_CLIENT_ID=${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}
-            OAUTH2_KAKAO_CLIENT_SECRET=${{ secrets.OAUTH2_KAKAO_CLIENT_SECRET }}
-            AWS_SES_MAIL_USERNAME=${{ secrets.AWS_SES_MAIL_USERNAME }}
-            AWS_SES_MAIL_PASSWORD=${{ secrets.AWS_SES_MAIL_PASSWORD }}
-            AWS_S3_BUCKET_NAME=${{ secrets.AWS_S3_BUCKET_NAME }}
-            AWS_S3_ACCESS_KEY=${{ secrets.AWS_S3_ACCESS_KEY }}
-            AWS_S3_SECRET_KEY=${{ secrets.AWS_S3_SECRET_KEY }}
-            NAVER_NEWS_CLIENT_ID=${{ secrets.NAVER_NEWS_CLIENT_ID }}
-            NAVER_NEWS_CLIENT_SECRET=${{ secrets.NAVER_NEWS_CLIENT_SECRET }}
-            OPEN_AI_KEY=${{ secrets.OPEN_AI_KEY }}
-            PORT_CORD=${{ secrets.PORT_CORD }}
-            PORT_KEY=${{ secrets.PORT_KEY }}
-            PORT_SECRET_KEY=${{ secrets.PORT_SECRET_KEY }}
           script: |
+            export SPRING_DATASOURCE_URL="${{ secrets.SPRING_DATASOURCE_URL }}"
+            export SPRING_DATASOURCE_USERNAME="${{ secrets.SPRING_DATASOURCE_USERNAME }}"
+            export SPRING_DATASOURCE_PASSWORD="${{ secrets.SPRING_DATASOURCE_PASSWORD }}"
+            export SPRING_JWT_ISSUER="${{ secrets.SPRING_JWT_ISSUER }}"
+            export SPRING_JWT_SECRET_KEY="${{ secrets.SPRING_JWT_SECRET_KEY }}"
+            export OAUTH2_GOOGLE_CLIENT_ID="${{ secrets.OAUTH2_GOOGLE_CLIENT_ID }}"
+            export OAUTH2_GOOGLE_CLIENT_SECRET="${{ secrets.OAUTH2_GOOGLE_CLIENT_SECRET }}"
+            export OAUTH2_NAVER_CLIENT_ID="${{ secrets.OAUTH2_NAVER_CLIENT_ID }}"
+            export OAUTH2_NAVER_CLIENT_SECRET="${{ secrets.OAUTH2_NAVER_CLIENT_SECRET }}"
+            export OAUTH2_KAKAO_CLIENT_ID="${{ secrets.OAUTH2_KAKAO_CLIENT_ID }}"
+            export OAUTH2_KAKAO_CLIENT_SECRET="${{ secrets.OAUTH2_KAKAO_CLIENT_SECRET }}"
+            export AWS_SES_MAIL_USERNAME="${{ secrets.AWS_SES_MAIL_USERNAME }}"
+            export AWS_SES_MAIL_PASSWORD="${{ secrets.AWS_SES_MAIL_PASSWORD }}"
+            export AWS_S3_BUCKET_NAME="${{ secrets.AWS_S3_BUCKET_NAME }}"
+            export AWS_S3_ACCESS_KEY="${{ secrets.AWS_S3_ACCESS_KEY }}"
+            export AWS_S3_SECRET_KEY="${{ secrets.AWS_S3_SECRET_KEY }}"
+            export NAVER_NEWS_CLIENT_ID="${{ secrets.NAVER_NEWS_CLIENT_ID }}"
+            export NAVER_NEWS_CLIENT_SECRET="${{ secrets.NAVER_NEWS_CLIENT_SECRET }}"
+            export OPEN_AI_KEY="${{ secrets.OPEN_AI_KEY }}"
+            export PORT_CORD="${{ secrets.PORT_CORD }}"
+            export PORT_KEY="${{ secrets.PORT_KEY }}"
+            export PORT_SECRET_KEY="${{ secrets.PORT_SECRET_KEY }}"
+            
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/newsion-live-server:latest
-            sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
+            sudo docker-compose -f docker-compose-${{ env.TARGET_UPSTREAM }}.yml up -d
       
       - name: Check deploy server URL
         uses: jtalk/url-health-check-action@v3
