@@ -31,9 +31,13 @@ public class JwtTokenProvider {
 
     @PostConstruct
     public void init() {
-        // secret key 초기화 -> BASE64로 인코딩된 키를 디코딩하여 Key 객체 생성
-        byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
-        this.key = Keys.hmacShaKeyFor(keyBytes); // HMAC-SHA256 키 생성
+        try {
+            byte[] keyBytes = Decoders.BASE64.decode(jwtProperties.getSecret());
+            this.key = Keys.hmacShaKeyFor(keyBytes);
+        }catch (Exception e) {
+            log.error("JWT 초기화 실패: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     public String createToken(Long userId, String username, String role) {
