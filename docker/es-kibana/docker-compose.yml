@@ -32,7 +32,7 @@ services:
       - "5601:5601"
     depends_on:
       - elasticsearch
-      - logstash  # ✅ 문자열 리스트로 작성
+      - logstash
 
   logstash:
     image: docker.elastic.co/logstash/logstash:8.18.0
