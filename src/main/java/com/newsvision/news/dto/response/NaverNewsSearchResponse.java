@@ -12,9 +12,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class NaverNewsSearchResponse {
-    private String lastBuildDate;   // 응답 생성 시각
-    private int total;              // 전체 검색 결과 수
-    private int start;              // 시작 index
-    private int display;            // 반환된 결과 수
-    private List<NaverNewsInfoResponse> items;  // 뉴스 리스트
+    private String lastBuildDate;
+    private int total;
+    private int start;
+    private int display;
+    private List<NaverNewsInfoResponse> items;
 }
