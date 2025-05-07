@@ -4,6 +4,10 @@
 <br/>
 
 ## Overview
+뉴스는 넘쳐나고, 커뮤니티는 시끄럽고, 지식은 어렵습니다.
+뉴션은 쉽고, 재미있게 세상의 지식을 연결하는 플랫폼입니다.
+뉴션과 함께 나만의 세상을 확장해보세요.
+<br/>
 - 뉴션(NEWSION)은 읽기 어려운 뉴스를 공식 계정 및 크리에이터들이 쉽고 명확하게 풀어주는 뉴스 플랫폼입니다.
 - 바쁜 현대인을 위해 하루 10개의 주요 뉴스를 3줄 요약으로 핵심 정보를 빠르게 제공합니다.
 - 커뮤니티 기능을 통해 뉴스에 대한 지적인 소통과 다양한 경험을 자유롭게 공유할 수 있습니다.
@@ -79,9 +83,12 @@
 <img width="1072" alt="erd-diagram" src="https://github.com/user-attachments/assets/77df6220-c25c-4f4c-b780-59f54237bc6c" />
 <br/>
 
+## 3 Tier - Architecture
+<img width="1045" alt="스크린샷 2025-05-07 12 48 01" src="https://github.com/user-attachments/assets/bc6e4478-d4fd-4217-b006-edf24be35b9e" />
+<br/>
+
 ## API Docs
 👉 [API Docs 바로가기](https://meek-squirrel-beb71b.netlify.app/)
-<br/>
 <br/>
 
 ## Responsibilities
