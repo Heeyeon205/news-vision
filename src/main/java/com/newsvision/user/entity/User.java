@@ -111,28 +111,28 @@ public class User {
 
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-followers")
-    private List<Follow> followerList = new ArrayList<>();
+    private List<Follow> followerList;
 
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-followings")
-    private List<Follow> followingList = new ArrayList<>();
+    private List<Follow> followingList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-news")
-    private List<News> newsList = new ArrayList<>();
+    private List<News> newsList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-board")
-    private List<Board> boardList = new ArrayList<>();
+    private List<Board> boardList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-scraps")
-    private List<Scrap> scrapList = new ArrayList<>();
+    private List<Scrap> scrapList;
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Notice> noticeList = new ArrayList<>();
+    private List<Notice> noticeList;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference("user-polls")
-    private List<Poll> pollList = new ArrayList<>();
+    private List<Poll> pollList;
 }
