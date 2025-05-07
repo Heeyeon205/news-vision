@@ -107,7 +107,6 @@ public class JwtTokenProvider {
         return parseClaims(token).get("role", String.class);
     }
 
-    // 토큰에서 payload 파싱
     private Claims parseClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(key)

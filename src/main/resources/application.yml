@@ -7,6 +7,9 @@ spring:
       local: local, common, secret
       blue: blue, common, secret
       green: green, common, secret
+  output:
+    ansi:
+      enabled: ALWAYS
 
 server:
   address: 0.0.0.0

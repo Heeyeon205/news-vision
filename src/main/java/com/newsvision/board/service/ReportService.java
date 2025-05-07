@@ -26,7 +26,6 @@ public class ReportService {
     private final UserService userService;
     private final BoardService boardService;
     private final CommentService commentService;
-    private final NoticeService noticeService;
 
     @Transactional
     public void reportBoard(Long boardId, Long userId) {

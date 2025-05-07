@@ -1,11 +1,13 @@
 package com.newsvision.global.redis;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TokenBlacklistService {
@@ -19,9 +21,12 @@ public class TokenBlacklistService {
                 expirationMillis,
                 TimeUnit.MILLISECONDS
         );
+        log.info("[블랙리스트 등록] token: {}, ttl(ms): {}", token, expirationMillis);
     }
 
     public boolean isBlacklisted(String token) {
-        return redisTemplate.hasKey(TOKEN_PREFIX + token);
+        boolean result = redisTemplate.hasKey(TOKEN_PREFIX + token);
+        log.info("[블랙리스트 조회] token: {}, isBlacklisted: {}", token, result);
+        return result;
     }
 }

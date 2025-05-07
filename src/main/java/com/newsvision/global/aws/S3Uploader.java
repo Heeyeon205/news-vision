@@ -33,7 +33,6 @@ public class S3Uploader {
                     .bucket(bucketName)
                     .key(keyName)
                     .contentType("image/jpeg")
-//              .acl(ObjectCannedACL.PUBLIC_READ) // 일단 필요 없는듯?
                     .build();
 
             s3Client.putObject(putRequest, RequestBody.fromBytes(imageBytes));
@@ -41,12 +40,16 @@ public class S3Uploader {
             return "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + keyName;
         } catch (Exception e) {
             log.error("S3 업로드 실패: " + keyName + " - " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("S3 업로드 실패", e);
         }
     }
 
     public void delete(String fileUrl) {
         String key = extractKeyFromUrl(fileUrl);
+        if (key.endsWith("default-profile.png")) {
+            return;
+        }
         try {
             DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
                     .bucket(bucketName)
@@ -56,6 +59,7 @@ public class S3Uploader {
             log.info("S3 삭제 완료: {}", key);
         } catch (Exception e) {
             log.error("S3 삭제 실패: {} - {}", key, e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("S3 삭제 실패", e);
         }
     }

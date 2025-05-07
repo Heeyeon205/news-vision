@@ -45,7 +45,7 @@ public class SearchController {
                 String jsonLog = objectMapper.writeValueAsString(logMap);
                 searchLogger.info(jsonLog);
             } catch (JsonProcessingException e) {
-                log.error("❌ 검색 로그 직렬화 실패", e);
+                log.error("검색 로그 직렬화 실패", e);
             }
         }
 
@@ -53,7 +53,7 @@ public class SearchController {
             List<NewsSummaryResponse> result = newsSearchService.searchNews(keyword);
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
-            log.error("❌ 뉴스 검색 중 오류 발생", e);
+            log.error("뉴스 검색 중 오류 발생", e);
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
@@ -72,7 +72,7 @@ public class SearchController {
                 String jsonLog = objectMapper.writeValueAsString(logMap);
                 searchLogger.info(jsonLog);
             } catch (JsonProcessingException e) {
-                log.warn("❌ 검색 로그 JSON 직렬화 실패", e);
+                log.warn("검색 로그 JSON 직렬화 실패", e);
             }
         }
 
@@ -80,7 +80,8 @@ public class SearchController {
             List<BoardResponse> result = boardSearchService.searchBoard(keyword);
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
-            log.error("❌ 게시글 검색 중 오류 발생", e);
+            log.error("게시글 검색 중 오류 발생", e);
+            e.printStackTrace();
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }
@@ -95,7 +96,7 @@ public class SearchController {
             List<String> result = newsSearchService.autocompleteTitle(keyword);
             return ResponseEntity.ok(ApiResponse.success(result));
         } catch (Exception e) {
-            log.error("❌ 자동완성 중 오류 발생", e);
+            log.error("자동완성 중 오류 발생", e);
             return ResponseEntity.status(500).body(ApiResponse.fail(ErrorCode.INTERNAL_SERVER_ERROR));
         }
     }

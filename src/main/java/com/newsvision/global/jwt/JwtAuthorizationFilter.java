@@ -36,7 +36,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             String token = bearerToken.split(" ")[1];
 
             if (jwtTokenProvider.validateToken(token)) {
-                log.warn("유효한 토큰입니다.");
+                log.info("유효한 토큰입니다.");
 
                 if (tokenBlacklistService.isBlacklisted(token)) {
                     filterChain.doFilter(request, response);
