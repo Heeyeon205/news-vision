@@ -20,7 +20,7 @@
 ## Members
 |PL|BE|BE|BE|
 |:--:|:--:|:--:|:--:|
-|<img src="https://avatars.githubusercontent.com/u/1?v=4" width="200" heigth="300"/>|<img src="https://avatars.githubusercontent.com/u/2?v=4" width="200" heigth="300"/>|<img src="https://avatars.githubusercontent.com/u/3?v=4" width="200" heigth="300"/>|<img src="https://avatars.githubusercontent.com/u/4?v=4" width="200" heigth="300"/>|
+|<img src="https://github.com/user-attachments/assets/3d7136a6-b120-4124-8aea-82d0cc91c21f" width="200" heigth="300"/>|<img src="https://github.com/user-attachments/assets/5efcb405-a6ce-4c29-aba4-f48e940296d7" width="200" heigth="300"/>|<img src="https://github.com/user-attachments/assets/ca0d6ba4-7a50-477f-a984-4816121ea2e5" width="200" heigth="300"/>|<img src="https://github.com/user-attachments/assets/096a54a2-f2c9-47e6-b418-530b2eca7c19" width="200" heigth="300"/>|
 |[이종현](https://github.com/Heeyeon205)|[구승회](https://github.com/shoot3957)|[송명보](https://github.com/Songmyungbo)|[정지원](https://github.com/jiwon0324)|
 <br/>
 
