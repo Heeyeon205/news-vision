@@ -90,4 +90,5 @@ public class GptSummaryService {
             throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
         }
     }
+    
 }
