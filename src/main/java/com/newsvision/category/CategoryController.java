@@ -1,6 +1,7 @@
 package com.newsvision.category;
 
 import com.newsvision.global.exception.ApiResponse;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Hidden
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/category")
@@ -48,6 +50,7 @@ public class CategoryController {
         categoryService.delete(id);
         return ResponseEntity.ok(ApiResponse.success("카테고리 삭제 완료 (id: " + id + ")"));
     }
+
 
     @Operation(
             summary = "카테고리 수정",
