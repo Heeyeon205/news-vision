@@ -85,6 +85,7 @@ public class UserService {
                     .email(request.getEmail())
                     .image(defaultProfileImage)
                     .nickname(nickname)
+                    .isDeleted(false)
                     .build();
             userRepository.save(user);
 
