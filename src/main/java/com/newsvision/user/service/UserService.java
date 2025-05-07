@@ -93,7 +93,9 @@ public class UserService {
     @Transactional
     public void delete(Long userId) {
         deleteProfileImage(userId, findByUserId(userId).getImage());
-        userRepository.deleteById(userId);
+        User user = findByUserId(userId);
+        user.stateIsDeleted(true);
+        userRepository.save(user);
     }
 
     public UpdateUserResponse userInfo(Long id) {
@@ -159,7 +161,7 @@ public class UserService {
     @Transactional
     public void deleteProfileImage(Long id, String imageUrl) {
         User user = findByUserId(id);
-        if (!user.getImage().equals("default-profile.png")) {
+        if (!user.getImage().contains("default-profile.png")) {
             fileUploaderService.deleteFile(user.getImage());
         }
     }

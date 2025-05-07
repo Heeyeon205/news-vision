@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @Document(indexName = "boards")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BoardDocument {
-
     @Id
     private Long id;
 
@@ -38,7 +37,7 @@ public class BoardDocument {
     private String image;
 
     @Field(type = FieldType.Date, format = DateFormat.date_hour_minute_second)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
 
     @Field(type = FieldType.Integer)

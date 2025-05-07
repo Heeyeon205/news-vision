@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-
 public class UserListService {
     private final UserRepository userRepository;
 
@@ -28,7 +27,7 @@ public class UserListService {
     }
 
     public List<UserListResponse> getAllUsers() {
-        return userRepository.findAll().stream()
+        return userRepository.findAllByIsDeletedFalse().stream()
                 .map(UserListResponse::new)
                 .collect(Collectors.toList());
     }

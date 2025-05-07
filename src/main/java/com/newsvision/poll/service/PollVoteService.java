@@ -36,4 +36,9 @@ public class PollVoteService {
     public boolean existsByPollVote(Long pollId, Long userId) {
         return pollVoteRepository.existsByPollOption_Poll_IdAndUser_Id(pollId, userId);
     }
+
+    @Transactional
+    public void deleteByUserId(Long id) {
+        pollVoteRepository.deleteByUserId(id);
+    }
 }

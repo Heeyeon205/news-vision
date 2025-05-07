@@ -14,6 +14,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -54,6 +58,8 @@ public class User {
     private String providerId;
     @Column(name = "is_paid")
     private Boolean isPaid;
+    @Column(name = "is_deleted")
+    private Boolean isDeleted = false;
 
     @PrePersist
     public void prePersist() {
@@ -73,6 +79,10 @@ public class User {
         } else {
             throw new CustomException(ErrorCode.FORBIDDEN);
         }
+    }
+
+    public void stateIsDeleted(boolean b) {
+        this.isDeleted = b;
     }
 
     public enum Role {

@@ -60,4 +60,9 @@ public class CommentService {
     public void delete(Comment comment) {
         commentRepository.delete(comment);
     }
+
+    @Transactional
+    public void deleteByUserId(Long id) {
+        commentRepository.deleteByUserId(id);
+    }
 }
