@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -58,42 +59,56 @@ public class BoardSearchService {
     // 게시글 검색 (content 기준)
     public List<BoardResponse> searchBoard(String keyword) throws Exception {
         String analyzerSuffix = getAnalyzerSuffix(keyword);
+        log.info("🔍 검색 필드: content.{}", analyzerSuffix);
+        log.info("🔍 검색어: {}", keyword);
 
-        SearchResponse<BoardDocument> response = elasticsearchClient.search(s -> s
-                        .index("boards")
-                        .query(q -> q
-                                .match(m -> m
-                                        .field("content." + analyzerSuffix)
-                                        .query(keyword)
-                                )
-                        ),
-                BoardDocument.class);
+        try {
+            SearchResponse<BoardDocument> response = elasticsearchClient.search(s -> s
+                            .index("boards")
+                            .query(q -> q
+                                    .match(m -> m
+                                            .field("content." + analyzerSuffix)
+                                            .query(keyword)
+                                    )
+                            ),
+                    BoardDocument.class);
 
-        return response.hits().hits().stream()
-                .map(Hit::source)
-                .map(doc -> {
-                    BoardResponse res = new BoardResponse();
-                    res.setBoardId(doc.getId());
-                    res.setNickname(doc.getNickname());
-                    res.setUserImage(doc.getUserImage());
-                    res.setIcon(doc.getIcon());
-                    res.setImage(doc.getImage());
-                    res.setContent(doc.getContent());
-                    res.setCategoryId(null); // 카테고리 ID는 필요시 로직 수정
-                    if (doc.getCreatedAt() != null) {
-                        res.setCreatedAt(doc.getCreatedAt().format(FORMATTER));
-                    } else {
-                        res.setCreatedAt("날짜 없음");
-                    }
-//                    res.setView(doc.getView());
-                    res.setNewsId(doc.getNewsId());
-                    res.setIsReported(doc.getIsReported());
-                    res.setLikeCount(doc.getLikeCount());
-                    res.setCommentCount(doc.getCommentCount());
-                    return res;
-                })
-                .toList();
+            List<Hit<BoardDocument>> hits = response.hits().hits();
+
+            if (hits == null || hits.isEmpty()) {
+                log.info("📭 검색 결과 없음");
+                return List.of(); // 빈 리스트 반환
+            }
+
+            return hits.stream()
+                    .map(Hit::source)
+                    .filter(Objects::nonNull)
+                    .map(doc -> {
+                        BoardResponse res = new BoardResponse();
+                        res.setBoardId(doc.getId());
+                        res.setNickname(doc.getNickname());
+                        res.setUserImage(doc.getUserImage());
+                        res.setIcon(doc.getIcon());
+                        res.setImage(doc.getImage());
+                        res.setContent(doc.getContent());
+                        res.setCategoryId(null); // 필요 시 수정
+                        res.setCreatedAt(doc.getCreatedAt() != null
+                                ? doc.getCreatedAt().format(FORMATTER)
+                                : "날짜 없음");
+                        res.setNewsId(doc.getNewsId());
+                        res.setIsReported(doc.getIsReported());
+                        res.setLikeCount(doc.getLikeCount());
+                        res.setCommentCount(doc.getCommentCount());
+                        return res;
+                    })
+                    .toList();
+
+        } catch (Exception e) {
+            log.error("❌ Elasticsearch 게시글 검색 중 오류 발생", e);
+            throw new RuntimeException("게시글 검색 실패", e);
+        }
     }
+
 
     private String getAnalyzerSuffix(String input) {
         boolean hasKor = input.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*");
