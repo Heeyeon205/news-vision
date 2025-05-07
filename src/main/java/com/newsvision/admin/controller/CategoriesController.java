@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Hidden
 @RestController
@@ -47,7 +48,7 @@ public class CategoriesController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<Categories>> addCategory(
-            @RequestParam String name,
+            @RequestBody Map<String, String> request,
             @AuthenticationPrincipal UserDetails userDetails) {
 
         if (userDetails == null || !userDetails.getAuthorities().stream()
@@ -55,9 +56,11 @@ public class CategoriesController {
             return ResponseEntity.status(403).body(null);
         }
 
+        String name = request.get("name");
         Categories category = categoryService.addCategory(name);
         return ResponseEntity.ok(ApiResponse.success(category));
     }
+
 
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<Categories>> updateCategory(
