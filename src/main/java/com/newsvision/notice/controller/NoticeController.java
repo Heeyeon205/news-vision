@@ -53,4 +53,5 @@ public class NoticeController {
         noticeService.checkRead(id);
         return ResponseEntity.ok(ApiResponse.success(id));
     }
+    
 }
