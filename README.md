@@ -80,7 +80,7 @@
 <br/>
 
 ## API Docs
-👉 <a href="https://meek-squirrel-beb71b.netlify.app/" target="_blank">API Docs 바로가기</a>
+👉 [API Docs 바로가기](https://meek-squirrel-beb71b.netlify.app/)
 <br/>
 <br/>
 
