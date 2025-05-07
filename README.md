@@ -4,10 +4,13 @@
 <br/>
 
 ## Overview
-뉴스는 넘쳐나고, 커뮤니티는 시끄럽고, 지식은 어렵습니다.
-뉴션은 쉽고, 재미있게 세상의 지식을 연결하는 플랫폼입니다.
+
+**뉴스는 넘쳐나고, 커뮤니티는 시끄럽고, 지식은 어렵습니다.**  
+뉴션은 쉽고, 재미있게 세상의 지식을 연결하는 플랫폼입니다.  
 뉴션과 함께 나만의 세상을 확장해보세요.
+
 <br/>
+
 - 뉴션(NEWSION)은 읽기 어려운 뉴스를 공식 계정 및 크리에이터들이 쉽고 명확하게 풀어주는 뉴스 플랫폼입니다.
 - 바쁜 현대인을 위해 하루 10개의 주요 뉴스를 3줄 요약으로 핵심 정보를 빠르게 제공합니다.
 - 커뮤니티 기능을 통해 뉴스에 대한 지적인 소통과 다양한 경험을 자유롭게 공유할 수 있습니다.
@@ -41,14 +44,12 @@
 - Slack
 - Discode
 
-### Project Management
+### Management
 - Git
 - GitHub
-
 <br/>
 
 ## Tech Stack
-
 ### Back-End
 <p>
   <img src="https://img.shields.io/badge/Java-007396?style=for-the-badge&logo=Java&logoColor=white" alt="Java" />
@@ -79,16 +80,32 @@
 </p>
 <br/>
 
+## API
+| API                     | 설명                                                                                  |
+|--------------------------|-------------------------------------------------------------------------------------|
+| Social Login (Google, Naver, Kakao) | 소셜 계정을 통한 간편 로그인 기능 제공                                                        |
+| Naver News Search        | 뉴스 사설을 발행하는 크리에이터의 창작 활동을 지원하기 위해 참고용 뉴스를 검색·제공             |
+| OpenAI Chat GPT          | 인기 뉴스 TOP 10을 매일 오전 6시에 자동 요약하여 요약 뉴스 서비스 제공                                           |
+| Elasticsearch            | 빠른 검색 및 인기 검색어 기능 제공                                                          |
+| AWS SES                 | 회원가입, 비밀번호 변경 등 유저 인증을 위한 이메일 인증 제공                                               |
+| AWS S3                  | 프로젝트 내 이미지 파일 스토리지                                                            |
+| PortOne                 | 추후 구독 시스템 도입 시 결제 시스템 제공                                                       |
+
+<br/>
+
 ## ERD Diagram
 <img width="1072" alt="erd-diagram" src="https://github.com/user-attachments/assets/77df6220-c25c-4f4c-b780-59f54237bc6c" />
+<br/>
 <br/>
 
 ## 3 Tier - Architecture
 <img width="1045" alt="스크린샷 2025-05-07 12 48 01" src="https://github.com/user-attachments/assets/bc6e4478-d4fd-4217-b006-edf24be35b9e" />
 <br/>
+<br/>
 
 ## API Docs
 👉 [API Docs 바로가기](https://meek-squirrel-beb71b.netlify.app/)
+<br/>
 <br/>
 
 ## Responsibilities
@@ -98,6 +115,8 @@
 - RESTful API 서버 설계 및 구현
 - Client 서버 설계 및 구현
 - 인증 및 인가(Spring Serurity, OAuth2, JWT) 기능 구현
+- AI 뉴스 핵심 요약 서비스 구현
+- 알림 및 상호작용 서비스 구현
 <br>
 
 구승회
@@ -120,7 +139,7 @@
 <br/>
 
 ## Preview
-👉 [Client Repository 바로가기](https://github.com/Heeyeon205/newsion-client)
+👉 [NEWSION Client Repository 바로가기](https://github.com/Heeyeon205/newsion-client)
 <br/>
 <br/>
 
@@ -175,8 +194,15 @@ public class BoardCommentManager {
 
 비즈니스 로직의 일관성과 캡슐화를 유지하기 위해 각 서비스끼리만 의존하는 개발 과정에서 발생한 문제였으며, 이를 해결하기 위해 위와 같은 구조로 리팩토링하여 순환 참조를 피했다. 하지만 최초의 프로젝트 설계부분에서 좀 더 명확히 책임을 분리하는 방법으로 사전에 예방하는 것이 더 나은 방법이라고 생각한다.
 <br/>
+<br/>
 
 ## Future Improvements
-1. 정기 구독 서비스를 도입해, 결제 모델과 연계된 AI 요약 뉴스 서머리를 구독 고객에게 매일 아침 뉴스레터로 발송하는 기능 추가
-2. 일반 사용자가 작성한 사설 및 아티클을 관리자에게 제출하여, 크리에이터 권한을 신청할 수 있는 기능 추가
+정기 구독 서비스 도입
+- 결제 모델과 연계된 AI 요약 뉴스 서머리를 구독 고객에게 매일 아침 뉴스레터로 발송
+
+크리에이터 신청 기능
+- 일반 사용자가 작성한 사설 및 아티클을 관리자에게 제출하여, 크리에이터 권한을 신청할 수 있는 기능 제공
+
+온라인 토론 이벤트
+- 한 주간 가장 많은 투표를 기록한 주제로 온라인 토론 이벤트 진행
 <br/>
