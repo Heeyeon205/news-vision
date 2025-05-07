@@ -18,7 +18,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info()
                         .title("NEWSION")
-                        .description("NEWSION 입니당.")
+                        .description("NEWSION API DOCS.")
                         .version("v1.0.0"))
                 .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
                 .components(new Components()
