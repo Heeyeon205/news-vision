@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "news")
@@ -75,4 +76,10 @@ public class News {
         this.category = category;
         this.createdAt = createdAt;
     }
+
+    @OneToMany(mappedBy = "news", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<Scrap> scraps;
+
+    @OneToMany(mappedBy = "news", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<NewsLike> newsLikes;
 }

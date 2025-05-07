@@ -24,7 +24,7 @@ import java.util.List;
 @RequestMapping("/admin/boards")
 @RequiredArgsConstructor
 @Tag(name = "커뮤니티 리스트 컨트롤러", description = "관리자용 커뮤니티 관리 API")
-public class BoardListController {
+public class AdminBoardManageController {
     private final BoardService boardService;
     private final BoardListService boardListService;
 

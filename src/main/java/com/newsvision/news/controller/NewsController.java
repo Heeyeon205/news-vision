@@ -188,7 +188,7 @@ public class NewsController {
         Long userId = customUserDetails.getId();
         News news = newsService.findByNewsId(newsId);
         naverNewsService.deleteNaverNews(news.getNaverNews().getId());
-        newsService.deleteNews(userId, newsId);
+        newsService.deleteNews(news, newsId);
         return ResponseEntity.ok(ApiResponse.success("뉴스가 성공적으로 삭제되었습니다."));
     }
 }

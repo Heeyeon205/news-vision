@@ -261,12 +261,16 @@ public class NewsService {
     }
 
     @Transactional
-    public void deleteNews(Long userId, Long newsId) {
-        News news = findByNewsId(newsId);
+    public void deleteNews(News news, Long newsId) {
+        log.info("뉴스 서비스의 딜리트 매서드 진입");
         scrapService.delete(news);
+        log.info("스크랩 딜리트 완료");
         fileUploaderService.deleteFile(news.getImage());
+        log.info("뉴수 이미지 딜리트 완료");
         newsRepository.delete(news);
+        log.info("뉴스 딜리트 완료");
         newsSearchService.deleteNews(newsId);
+        log.info("뉴스 일라스틱서치 검색어 딜리트 완료");
     }
 
     private byte[] resizeNewsImage(MultipartFile file) {
