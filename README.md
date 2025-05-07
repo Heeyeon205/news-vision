@@ -1,10 +1,7 @@
 # 📙 쉽게 보는 지식 플랫폼 NEWSION
 <p align="center"> <b>2025.04.15 ~ 2025.05.08</b> </p>
 <img width="1535" alt="newsion-title2" src="https://github.com/user-attachments/assets/af28d22c-bf2b-48b3-9d6a-1530e0429ba5" />
-<p>URL : </p>
-<p>Test ID : </p>
-<p>Test PW : </p>
-<br>
+<br/>
 
 ## Overview
 - 뉴션(NEWSION)은 읽기 어려운 뉴스를 공식 계정 및 크리에이터들이 쉽고 명확하게 풀어주는 뉴스 플랫폼입니다.
@@ -76,11 +73,15 @@
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=Docker&logoColor=white" alt="Docker" />
   <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=AmazonAWS&logoColor=white" alt="AWS" />
 </p>
-
 <br/>
 
 ## ERD Diagram
 <img width="1072" alt="erd-diagram" src="https://github.com/user-attachments/assets/77df6220-c25c-4f4c-b780-59f54237bc6c" />
+<br/>
+
+## API Docs
+👉 <a href="https://meek-squirrel-beb71b.netlify.app/" target="_blank">API Docs 바로가기</a>
+<br/>
 <br/>
 
 ## Responsibilities
@@ -112,7 +113,7 @@
 <br/>
 
 ## Preview
-👉 [클라이언트 리포지토리 바로가기](https://github.com/Heeyeon205/newsion-client)
+👉 [Client Repository 바로가기](https://github.com/Heeyeon205/newsion-client)
 <br/>
 <br/>
 
@@ -166,11 +167,9 @@ public class BoardCommentManager {
 
 
 비즈니스 로직의 일관성과 캡슐화를 유지하기 위해 각 서비스끼리만 의존하는 개발 과정에서 발생한 문제였으며, 이를 해결하기 위해 위와 같은 구조로 리팩토링하여 순환 참조를 피했다. 하지만 최초의 프로젝트 설계부분에서 좀 더 명확히 책임을 분리하는 방법으로 사전에 예방하는 것이 더 나은 방법이라고 생각한다.
-
 <br/>
 
 ## Future Improvements
 1. 정기 구독 서비스를 도입해, 결제 모델과 연계된 AI 요약 뉴스 서머리를 구독 고객에게 매일 아침 뉴스레터로 발송하는 기능 추가
 2. 일반 사용자가 작성한 사설 및 아티클을 관리자에게 제출하여, 크리에이터 권한을 신청할 수 있는 기능 추가
-
 <br/>
