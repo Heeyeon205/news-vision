@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/commentreports")
 @RequiredArgsConstructor
-@Tag(name = "CommentReportController", description = "댓글 신고 관리 API")
 @Tag(name = "댓글 신고 관리 컨트롤러", description = "댓글 신고 관리 API")
 public class CommentReportController {
     private final CommentReportService commentReportService;
