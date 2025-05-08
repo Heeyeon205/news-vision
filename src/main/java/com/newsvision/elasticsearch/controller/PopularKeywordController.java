@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping("/api/popular")
 @Tag(name = "인기 검색어 컨트롤러", description = "3일 이내의 인기 검색어 조회 API")
 public class PopularKeywordController {
-
     private final PopularKeywordService popularKeywordService;
 
     @Operation(summary = "타입별 인기 검색어 조회", description = "뉴스 또는 커뮤니티 유형에 따른 인기 검색어 10개를 반환합니다. type에는 'news' 또는 'board'를 사용합니다.")

@@ -30,6 +30,13 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
+        System.out.println("요청 URI: " + request.getRequestURI());
+        System.out.println("요청 URI: " + request.getRequestURI());
+        System.out.println("요청 URI: " + request.getRequestURI());
+        System.out.println("요청 URI: " + request.getRequestURI());
+        System.out.println("요청 URI: " + request.getRequestURI());
+        System.out.println("요청 URI: " + request.getRequestURI());
+
         String bearerToken = request.getHeader("Authorization");
 
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {

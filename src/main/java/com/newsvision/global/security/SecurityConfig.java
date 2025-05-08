@@ -7,6 +7,7 @@ import com.newsvision.global.security.oauth.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -49,7 +50,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://localhost:5173"));
+        config.setAllowedOrigins(List.of(
+                "http://localhost:3000",
+                "http://localhost:5173",
+                "http://52.78.49.204",
+                "https://newsion.kro.kr"
+        ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -63,7 +69,8 @@ public class SecurityConfig {
         http.csrf(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configure(http));
+//                .cors(cors -> cors.configure(http));
+          .cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
         http.sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -75,8 +82,9 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> auth
                 .requestMatchers(
+                        "/**",
                         // basic
-                        "/api/auth/**", "/oauth2/**", "/email/**", "/api/auth/**", "/hc", "/env",
+                        "/api/auth/**", "/oauth2/**", "/email/**", "/api/auth/**", "/hc", "/env", "/api/email/**",
                         // dev
                         "/api/**", "/news/**", "/board/**", "/admin/**", "/user/**", "/payment/payments","/api/v1/payment/validation/**",
                         // auth
@@ -86,7 +94,7 @@ public class SecurityConfig {
                         // Swagger
                         "/swagger-ui/**","/v3/api-docs/**", "/swagger-resources/**", "/swagger-ui.html", "/webjars/**"
                 ).permitAll()
-                .requestMatchers("???").hasAnyRole("ADMIN", "CREATOR", "USER")
+                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
         );

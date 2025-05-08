@@ -17,9 +17,10 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         String uri = request.getRequestURI();
         if (uri.startsWith("/oauth2")) {
-            response.sendRedirect("http://localhost:5173/login?error=" +
+//            response.sendRedirect("http://localhost:5173/login?error=" +
+//                    URLEncoder.encode(authException.getMessage(), "UTF-8"));
+            response.sendRedirect("https://newsion.kro.kr/login?error=" +
                     URLEncoder.encode(authException.getMessage(), "UTF-8"));
-
             return;
         }
 
