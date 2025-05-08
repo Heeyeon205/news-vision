@@ -1,6 +1,15 @@
 # 📙 쉽게 보는 지식 플랫폼 NEWSION
 <p align="center"> <b>2025.04.15 ~ 2025.05.08</b> </p>
 <img width="1535" alt="newsion-title2" src="https://github.com/user-attachments/assets/af28d22c-bf2b-48b3-9d6a-1530e0429ba5" />
+URL: http://newsion.kro.kr
+<br>
+
+### Test Account
+|ID|PW|ROLE|Remarks|
+|--|--|--|--|
+|admin|admin|ROLE_ADMIN|모든 권한|
+|creator|1234|ROLE_CREATOR|뉴스, 커뮤니티 작성|
+|user|1234|ROLE_USER|커뮤니티 작성|
 <br/>
 
 ## Overview
