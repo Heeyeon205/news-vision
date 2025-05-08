@@ -99,7 +99,7 @@
 <br/>
 
 ## 3 Tier - Architecture
-<img width="1045" alt="스크린샷 2025-05-07 12 48 01" src="https://github.com/user-attachments/assets/bc6e4478-d4fd-4217-b006-edf24be35b9e" />
+<img width="1501" alt="3TierArchitectuere" src="https://github.com/user-attachments/assets/79e5fb83-1c8e-44dc-969e-ae1e119d993d" />
 <br/>
 <br/>
 
