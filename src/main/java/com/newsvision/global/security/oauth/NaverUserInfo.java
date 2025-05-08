@@ -1,7 +1,5 @@
 package com.newsvision.global.security.oauth;
 
-import lombok.RequiredArgsConstructor;
-
 import java.util.Map;
 
 public class NaverUserInfo implements OAuth2UserInfo {

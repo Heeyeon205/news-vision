@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest request) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(request);
-        String registrationId = request.getClientRegistration().getRegistrationId(); // google, kakao, naver
+        String registrationId = request.getClientRegistration().getRegistrationId();
 
         Map<String, Object> attributes = oAuth2User.getAttributes();
 
@@ -41,7 +42,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String nickname = "Social_User_" + UUID.randomUUID().toString().substring(0, 6);
         String email = userInfo.getEmail();
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseGet(() -> userRepository.save(User.builder()
                         .username(username)
                         .password("SOCIAL_LOGIN_PASSWORD")
@@ -51,6 +52,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                         .providerId(providerId)
                         .image(defaultProfileImage)
                         .role(User.Role.ROLE_USER)
+                        .isDeleted(false)
                         .build()));
 
         return new CustomOAuth2User(user, attributes);

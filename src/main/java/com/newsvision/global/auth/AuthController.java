@@ -44,6 +44,11 @@ public class AuthController {
     public ResponseEntity<ApiResponse<LoginTokenUserResponse>> login(@RequestBody LoginUserRequest request) {
         User user = userService.findByUsername(request.getUsername());
 
+        if (user.getIsDeleted()) {
+            log.warn("삭제된 계정으로 로그인 시도: {}", request.getUsername());
+            throw new CustomException(ErrorCode.UNAUTHORIZED);
+        }
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             log.warn("ID or PW 불일치: {}", request.getPassword());
             throw new CustomException(ErrorCode.INVALID_LOGIN_INFO);

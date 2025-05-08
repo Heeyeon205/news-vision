@@ -44,8 +44,14 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
                 }
 
                 String username = jwtTokenProvider.getUsername(token);
-
                 CustomUserDetails userDetails = (CustomUserDetails) customUserDetailsService.loadUserByUsername(username);
+
+                if(userDetails.getUser().getIsDeleted()) {
+                    response.setStatus(401);
+                    response.getWriter().write("Deactivated account");
+                    return;
+                }
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails,null,userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

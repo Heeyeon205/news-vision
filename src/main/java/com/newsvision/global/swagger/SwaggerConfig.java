@@ -27,7 +27,7 @@ public class SwaggerConfig {
                                         .name(SECURITY_SCHEME_NAME)
                                         .type(SecurityScheme.Type.HTTP)
                                         .scheme("bearer")
-                                        .bearerFormat("JWT") // 이 줄이 있어야 UI에 토큰 입력창이 잘 보임
+                                        .bearerFormat("JWT")
                         )
                 );
     }

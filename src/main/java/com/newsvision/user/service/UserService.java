@@ -44,7 +44,7 @@ public class UserService {
     }
 
     public User findByUsername(String username) {
-        return userRepository.findByUsername(username)
+        return userRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
