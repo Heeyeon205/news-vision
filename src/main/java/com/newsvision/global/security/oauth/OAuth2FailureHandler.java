@@ -26,6 +26,7 @@ public class OAuth2FailureHandler implements AuthenticationFailureHandler {
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
                                         AuthenticationException exception) throws IOException, ServletException {
         log.warn("소셜 로그인 실패: {}", exception.getMessage());
-        response.sendRedirect("http://localhost:5173/login?error=" + exception.getMessage());
+//        response.sendRedirect("http://localhost:5173/login?error=" + exception.getMessage());
+        response.sendRedirect("https://newsion.kro.kr/login?error=" + exception.getMessage());
     }
 }

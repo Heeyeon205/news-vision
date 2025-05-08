@@ -34,7 +34,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         String refreshToken = jwtTokenProvider.createRefreshToken(username);
         refreshTokenRepository.save(username, refreshToken);
 
-        String redirectUrl = "http://localhost:5173/oauth2/redirect"
+//        String redirectUrl = "http://localhost:5173/oauth2/redirect"
+        String redirectUrl = "https://newsion.kro.kr/oauth2/redirect"
                 + "?accessToken=" + accessToken
                 + "&refreshToken=" + refreshToken
                 + "&userId=" + user.getId()

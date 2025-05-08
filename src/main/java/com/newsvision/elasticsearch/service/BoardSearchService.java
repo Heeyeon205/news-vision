@@ -20,7 +20,6 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class BoardSearchService {
-
     private final BoardSearchRepository boardSearchRepository;
     private final ElasticsearchClient elasticsearchClient;
 
@@ -87,7 +86,7 @@ public class BoardSearchService {
                         res.setIcon(doc.getIcon());
                         res.setImage(doc.getImage());
                         res.setContent(doc.getContent());
-                        res.setCategoryId(null); // 필요 시 수정
+                        res.setCategoryId(null);
                         res.setCreatedAt(doc.getCreatedAt() != null
                                 ? doc.getCreatedAt().format(FORMATTER)
                                 : "날짜 없음");
@@ -98,7 +97,6 @@ public class BoardSearchService {
                         return res;
                     })
                     .toList();
-
         } catch (Exception e) {
             log.error("Elasticsearch 게시글 검색 중 오류 발생", e);
             e.printStackTrace();
@@ -106,11 +104,9 @@ public class BoardSearchService {
         }
     }
 
-
     private String getAnalyzerSuffix(String input) {
         boolean hasKor = input.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*");
         boolean hasEng = input.matches(".*[a-zA-Z]+.*");
-
         if (hasKor && hasEng) return "mixed";
         if (hasKor) return "kor";
         return "eng";
