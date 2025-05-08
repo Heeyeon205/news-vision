@@ -20,13 +20,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NewsSearchService {
-
     private final NewsSearchRepository newsSearchRepository;
     private final ElasticsearchClient elasticsearchClient;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-    // 🟢 뉴스 저장
-    public void saveNews(News news) {
 
+    public void saveNews(News news) {
 
         NewsDocument doc = NewsDocument.builder()
                 .id(news.getId())
@@ -41,16 +39,13 @@ public class NewsSearchService {
                 .build();
 
         newsSearchRepository.save(doc);
-        log.info("✅ 뉴스 검색 인덱스 저장 완료");
+        log.info("뉴스 검색 인덱스 저장 완료");
     }
 
-
-    // 🔴 뉴스 삭제
     public void deleteNews(Long newsId) {
         newsSearchRepository.deleteById(newsId);
     }
 
-    // 🔍 뉴스 검색 (title + content)
     public List<NewsSummaryResponse> searchNews(String keyword) throws Exception {
         String analyzerSuffix = getAnalyzerSuffix(keyword);
 
@@ -93,8 +88,8 @@ public class NewsSearchService {
         return "eng";
     }
     public List<String> autocompleteTitle(String keyword) throws Exception {
-        String jasoQuery = JasoUtils.splitJaso(keyword);     // 자소 분리
-        String chosungQuery = JasoUtils.extractChosung(keyword); // 초성 추출
+        String jasoQuery = JasoUtils.splitJaso(keyword);
+        String chosungQuery = JasoUtils.extractChosung(keyword);
 
         SearchResponse<NewsDocument> response = elasticsearchClient.search(s -> s
                         .index("news")
@@ -115,7 +110,7 @@ public class NewsSearchService {
         return response.hits().hits().stream()
                 .map(hit -> hit.source().getTitle())
                 .flatMap(title -> {
-                    log.info("🔎 title: {}, jaso: {}, chosung: {}", title, JasoUtils.splitJaso(title), JasoUtils.extractChosung(title));
+                    log.info("title: {}, jaso: {}, chosung: {}", title, JasoUtils.splitJaso(title), JasoUtils.extractChosung(title));
                     return List.of(title.split(" ")).stream()
                             .filter(word ->
                                     JasoUtils.splitJaso(word).contains(jasoQuery) ||
@@ -126,8 +121,4 @@ public class NewsSearchService {
                 .limit(10)
                 .toList();
     }
-
-
-
-
 }

@@ -26,9 +26,7 @@ public class BoardSearchService {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
-    // 게시글 저장
     public void saveBoard(Board board, int likeCount, int commentCount) {
-        // createdAt 포맷 보장
         LocalDateTime formattedDateTime = LocalDateTime.parse(board.getCreatedAt().format(FORMATTER), FORMATTER);
 
         BoardDocument doc = BoardDocument.builder()
@@ -51,16 +49,14 @@ public class BoardSearchService {
         boardSearchRepository.save(doc);
     }
 
-    // 게시글 삭제
     public void deleteBoard(Long boardId) {
         boardSearchRepository.deleteById(boardId);
     }
 
-    // 게시글 검색 (content 기준)
     public List<BoardResponse> searchBoard(String keyword) throws Exception {
         String analyzerSuffix = getAnalyzerSuffix(keyword);
-        log.info("🔍 검색 필드: content.{}", analyzerSuffix);
-        log.info("🔍 검색어: {}", keyword);
+        log.info("검색 필드: content.{}", analyzerSuffix);
+        log.info("검색어: {}", keyword);
 
         try {
             SearchResponse<BoardDocument> response = elasticsearchClient.search(s -> s
@@ -76,8 +72,8 @@ public class BoardSearchService {
             List<Hit<BoardDocument>> hits = response.hits().hits();
 
             if (hits == null || hits.isEmpty()) {
-                log.info("📭 검색 결과 없음");
-                return List.of(); // 빈 리스트 반환
+                log.info("검색 결과 없음");
+                return List.of();
             }
 
             return hits.stream()
@@ -104,7 +100,8 @@ public class BoardSearchService {
                     .toList();
 
         } catch (Exception e) {
-            log.error("❌ Elasticsearch 게시글 검색 중 오류 발생", e);
+            log.error("Elasticsearch 게시글 검색 중 오류 발생", e);
+            e.printStackTrace();
             throw new RuntimeException("게시글 검색 실패", e);
         }
     }
