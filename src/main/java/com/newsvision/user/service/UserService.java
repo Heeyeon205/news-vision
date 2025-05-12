@@ -39,7 +39,7 @@ public class UserService {
     private final AuthService authService;
 
     public User findByUserId(Long userId) {
-        return userRepository.findById(userId)
+        return userRepository.findByIdAndIsDeletedFalse(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NOT_FOUND));
     }
 
@@ -93,9 +93,9 @@ public class UserService {
 
     @Transactional
     public void delete(Long userId) {
-        deleteProfileImage(userId, findByUserId(userId).getImage());
         User user = findByUserId(userId);
-        user.stateIsDeleted(true);
+        deleteProfileImage(userId, user.getImage());
+        user.stateIsDeleted();
         userRepository.save(user);
     }
 

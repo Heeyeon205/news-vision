@@ -81,8 +81,8 @@ public class User {
         }
     }
 
-    public void stateIsDeleted(boolean b) {
-        this.isDeleted = b;
+    public void stateIsDeleted() {
+        this.isDeleted = true;
     }
 
     public enum Role {
