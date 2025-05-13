@@ -76,7 +76,6 @@ public class AuthController {
             String username = jwtTokenProvider.getUsername(refreshToken);
             refreshTokenRepository.delete(username);
         }
-
         return ResponseEntity.ok(ApiResponse.success("로그아웃 성공"));
     }
 
