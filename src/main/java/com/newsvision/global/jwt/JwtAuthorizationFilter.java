@@ -40,6 +40,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
 
                 if (tokenBlacklistService.isBlacklisted(token)) {
                     filterChain.doFilter(request, response);
+                    response.getWriter().write("해당 토큰은 로그아웃 처리되었습니다.");
                     return;
                 }
 

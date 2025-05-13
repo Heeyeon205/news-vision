@@ -21,12 +21,10 @@ public class TokenBlacklistService {
                 expirationMillis,
                 TimeUnit.MILLISECONDS
         );
-        log.info("블랙리스트 등록 token: {}, ttl(ms): {}", token, expirationMillis);
     }
 
     public boolean isBlacklisted(String token) {
         boolean result = redisTemplate.hasKey(TOKEN_PREFIX + token);
-        log.info("블랙리스트 조회 token: {}, isBlacklisted: {}", token, result);
         return result;
     }
 }

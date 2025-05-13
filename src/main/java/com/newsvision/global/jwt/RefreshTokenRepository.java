@@ -15,16 +15,13 @@ public class RefreshTokenRepository {
         long expireTime = 60 * 60 * 24 * 7;
         redisTemplate.opsForValue().set(username, refreshToken, Duration.ofSeconds(expireTime));
     }
+
     public String get(String username) {
         return redisTemplate.opsForValue().get(username);
     }
 
     public void delete(String username) {
         redisTemplate.delete(username);
-    }
-
-    public boolean exists(String username) {
-        return redisTemplate.hasKey(username);
     }
 
     public boolean exists(String username, String refreshToken) {

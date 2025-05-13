@@ -93,6 +93,7 @@ public class JwtTokenProvider {
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("JWT: {}", e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
