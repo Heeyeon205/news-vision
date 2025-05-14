@@ -36,7 +36,7 @@ URL: https://newsion.kro.kr
 - 🏗️ [3 Tier - Architecture](#3-tier---architecture)
 - 📄 [API Docs](#api-docs)
 - 👤 [Responsibilities](#responsibilities)
-- 🔍 [Preview](#preview)
+- 🔍 [Preview](https://github.com/Heeyeon205/newsion-client)
 - 🐞 [Troubleshooting](#troubleshooting)
 - 🚀 [Future Improvements](#future-improvements)
 <br/>
