@@ -1,7 +1,9 @@
 # 📙 쉽게 보는 지식 플랫폼 NEWSION
 <p align="center"> <b>2025.04.15 ~ 2025.05.08</b> </p>
 <img width="1535" alt="newsion-title2" src="https://github.com/user-attachments/assets/af28d22c-bf2b-48b3-9d6a-1530e0429ba5" />
+<!--
 URL: https://newsion.kro.kr
+-->
 <br>
 
 <!-- 
