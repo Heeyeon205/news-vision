@@ -59,7 +59,7 @@ public class User {
     @Column(name = "is_paid")
     private Boolean isPaid;
     @Column(name = "is_deleted")
-    private Boolean isDeleted = false;
+    private Boolean isDeleted;
 
     @PrePersist
     public void prePersist() {

@@ -36,7 +36,7 @@ public class Poll {
     private User user;
 
     @OneToMany(mappedBy = "poll", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<PollOption> pollOptions = new ArrayList<>();
+    private List<PollOption> pollOptions;
 
     @PrePersist
     public void prePersist() {
