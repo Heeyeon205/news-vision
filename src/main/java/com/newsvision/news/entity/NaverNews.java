@@ -30,5 +30,5 @@ public class NaverNews {
     private LocalDateTime publishedAt;
 
     @OneToMany(mappedBy = "naverNews", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<News> newsList = new ArrayList<>();
+    private List<News> newsList;
 }
